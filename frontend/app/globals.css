@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+:root {
+  /* Kitchen/pantry palette — warm paper base, clinical accents reserved for their jobs only */
+  --paper: #fbf7f0;
+  --ink: #2b2620;
+  --sage: #4a7c59;      /* in-stock / fresh signal */
+  --clay: #c17a4f;      /* warmth accent, primary actions */
+  --brick: #b23a48;     /* expiry / alert ONLY — never decorative */
+  --border-warm: #e8dfd0;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-sage: var(--sage);
+  --color-clay: var(--clay);
+  --color-brick: var(--brick);
+  --color-border-warm: var(--border-warm);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Signature element: the "receipt tag" notch, used on pantry item cards
+   to tie the visual language back to the app's real mechanism —
+   these items are literally derived from scanned receipts. */
+.receipt-tag {
+  position: relative;
+  clip-path: polygon(
+    0 0, 100% 0, 100% 100%, 0 100%,
+    0 60%, 8px 54%, 0 48%
+  );
+}
+
