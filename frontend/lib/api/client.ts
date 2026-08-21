@@ -43,7 +43,7 @@ export function clearStoredToken(): void {
 }
 
 interface RequestOptions {
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
   // Most routes need a token; auth/register and auth/login don't have
   // one yet, so this defaults to true and those two calls opt out.

@@ -42,6 +42,7 @@ export interface MealItemView {
   label: string;
   quantityUsed: number;
   unit: RawMealItem["unit"];
+  source: RawMealItem["entry_source"];
 }
 
 export function parseMealItem(raw: RawMealItem): MealItemView {
@@ -51,6 +52,7 @@ export function parseMealItem(raw: RawMealItem): MealItemView {
     label: raw.label,
     quantityUsed: Number(raw.quantity_used),
     unit: raw.unit,
+    source: raw.entry_source,
   };
 }
 
@@ -60,6 +62,13 @@ export interface NotificationView {
   message: string;
   read: boolean;
   createdAt: string;
+  localDate: string | null;
+  foodName: string | null;
+  nutrientName: string | null;
+  currentAmount: number | null;
+  limitAmount: number | null;
+  unit: string | null;
+  metadata: Record<string, unknown>;
 }
 
 export function parseNotification(raw: RawNotification): NotificationView {
@@ -69,5 +78,12 @@ export function parseNotification(raw: RawNotification): NotificationView {
     message: raw.message,
     read: raw.read,
     createdAt: raw.created_at,
+    localDate: raw.local_date,
+    foodName: raw.food_name,
+    nutrientName: raw.nutrient_name,
+    currentAmount: raw.current_amount === null ? null : Number(raw.current_amount),
+    limitAmount: raw.limit_amount === null ? null : Number(raw.limit_amount),
+    unit: raw.unit,
+    metadata: raw.metadata || {},
   };
 }

@@ -6,8 +6,9 @@ import { fileURLToPath } from 'url';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { randomUUID } from 'crypto';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requireRole } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
+import { checkAvoidedFoodsFromOcr } from '../services/supervisionService.js';
 import { errorMessage } from '../utils/errorMessage.js';
 
 const runFile = promisify(execFile);
@@ -58,7 +59,12 @@ router.post('/scan', asyncHandler(async (req, res) => {
     // Some OCR versions log before the program's final JSON line.
     const jsonLine = stdout.trim().split(/\r?\n/).reverse().find((line) => line.trim().startsWith('{'));
     if (!jsonLine) throw new Error('OCR did not return a result.');
-    res.json(JSON.parse(jsonLine));
+    const result = JSON.parse(jsonLine);
+    const planWarnings = await checkAvoidedFoodsFromOcr({
+      patientId: req.user.userId,
+      foodNames: (result.products || []).map((product) => product.suggestedName),
+    });
+    res.json({ ...result, planWarnings });
   } catch (error) {
     console.error('OCR scan failed:', error);
     const detail = error?.stderr?.trim() || errorMessage(error, 'Unknown OCR error');
@@ -70,6 +76,27 @@ router.post('/scan', asyncHandler(async (req, res) => {
   } finally {
     await fs.unlink(imagePath).catch(() => {});
   }
+}));
+
+/**
+ * POST /ocr/check-foods { foodNames: string[] }
+ * Accepts already-detected/suggested names for clients that perform image
+ * recognition elsewhere. Names may create possible-purchase warnings, but
+ * never consumption records.
+ */
+router.post('/check-foods', requireRole('hospital_patient'), asyncHandler(async (req, res) => {
+  const foodNames = req.body?.foodNames;
+  if (!Array.isArray(foodNames) || foodNames.length === 0 || foodNames.length > 50) {
+    return res.status(400).json({ error: 'foodNames must be a non-empty array with at most 50 entries' });
+  }
+  if (foodNames.some((name) => typeof name !== 'string' || !name.trim() || name.length > 200)) {
+    return res.status(400).json({ error: 'Each detected food name must be 1 to 200 characters' });
+  }
+  const planWarnings = await checkAvoidedFoodsFromOcr({
+    patientId: req.user.userId,
+    foodNames,
+  });
+  res.json({ planWarnings });
 }));
 
 export default router;

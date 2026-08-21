@@ -3,21 +3,31 @@
 import { useCallback, useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/Button";
+import { RecommendationLists } from "@/components/supervision/RecommendationLists";
 import { ApiError } from "@/lib/api/client";
 import * as notifApi from "@/lib/api/notifications";
+import * as supervisionApi from "@/lib/api/supervision";
 import type { NotificationView } from "@/lib/api/parse";
+import { useAuth } from "@/lib/auth/context";
+import type { FoodRecommendation } from "@/lib/types/api";
 
 function NotificationsPageInner() {
+  const { user } = useAuth();
   const [items, setItems] = useState<NotificationView[]>([]);
+  const [recommendations, setRecommendations] = useState<FoodRecommendation[]>([]);
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
-    const list = await notifApi.listNotifications({ unreadOnly });
+    const [list, plan] = await Promise.all([
+      notifApi.listNotifications({ unreadOnly }),
+      user?.role === "hospital_patient" ? supervisionApi.getMyPlan() : Promise.resolve(null),
+    ]);
     setItems(list);
-  }, [unreadOnly]);
+    setRecommendations(plan?.recommendations ?? []);
+  }, [unreadOnly, user?.role]);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,6 +89,13 @@ function NotificationsPageInner() {
         <p role="alert" className="mb-3 rounded-lg bg-brick/10 px-3 py-2 text-sm text-brick">
           {error}
         </p>
+      )}
+
+      {user?.role === "hospital_patient" && !loading && (
+        <section className="mb-6 border-y border-border-warm py-5">
+          <h2 className="mb-4 text-lg font-semibold text-ink">Doctor guidance</h2>
+          <RecommendationLists items={recommendations} />
+        </section>
       )}
 
       {loading ? (

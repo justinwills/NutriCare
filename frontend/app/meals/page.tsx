@@ -10,14 +10,17 @@ import type { MealView } from "@/lib/api/meals";
 import * as pantryApi from "@/lib/api/pantry";
 import type { PantryItemView } from "@/lib/api/parse";
 import { formatQty, unitsForBase } from "@/lib/units";
-import type { MeasurementUnit } from "@/lib/types/api";
+import type { MealItemSource, MeasurementUnit } from "@/lib/types/api";
 import { playAlertSound } from "@/lib/playAlertSound";
+import { MealNutritionDetails } from "@/components/meals/MealNutritionDetails";
+import { Icon } from "@/components/ui/Icons";
 
 type DraftItem = {
   pantryItemId: string;
   label: string;
   quantityUsed: string;
   unit: MeasurementUnit;
+  source: MealItemSource;
 };
 
 function MealsPageInner() {
@@ -27,6 +30,7 @@ function MealsPageInner() {
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [expandedMealId, setExpandedMealId] = useState<string | null>(null);
 
   const [notes, setNotes] = useState("");
   const [draft, setDraft] = useState<DraftItem>({
@@ -34,6 +38,7 @@ function MealsPageInner() {
     label: "",
     quantityUsed: "",
     unit: "g",
+    source: "manual",
   });
   const [queued, setQueued] = useState<DraftItem[]>([]);
 
@@ -65,12 +70,26 @@ function MealsPageInner() {
   }, [refresh]);
 
   function onPantryPick(id: string) {
+    if (id === "__bought__") {
+      setQueued([]);
+      setDraft((prev) => ({
+        ...prev,
+        pantryItemId: "",
+        label: "",
+        quantityUsed: "",
+        unit: "g",
+        source: "bought",
+      }));
+      return;
+    }
+
     const item = pantry.find((p) => p.id === id);
     setDraft((prev) => ({
       ...prev,
       pantryItemId: id,
       label: item ? item.productName : prev.label,
       unit: item ? item.baseUnit : prev.unit,
+      source: item ? "pantry" : "manual",
     }));
   }
 
@@ -86,6 +105,7 @@ function MealsPageInner() {
       label: "",
       quantityUsed: "",
       unit: "g",
+      source: "manual",
     });
   }
 
@@ -102,7 +122,7 @@ function MealsPageInner() {
           : [];
 
     if (items.length === 0) {
-      setError("Add at least one item to the meal");
+      setError("Add at least one food and confirm the amount eaten");
       return;
     }
 
@@ -110,17 +130,25 @@ function MealsPageInner() {
     try {
       const result = await mealsApi.logMeal({
         notes: notes.trim() || undefined,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
         items: items.map((item) => ({
           pantryItemId: item.pantryItemId || null,
           label: item.label.trim(),
           quantityUsed: Number(item.quantityUsed),
           unit: item.unit,
+          source: item.source,
         })),
       });
       if (result.alertsCreated > 0) playAlertSound();
       setNotes("");
       setQueued([]);
-      setDraft({ pantryItemId: "", label: "", quantityUsed: "", unit: "g" });
+      setDraft({
+        pantryItemId: "",
+        label: "",
+        quantityUsed: "",
+        unit: "g",
+        source: "manual",
+      });
       setStatus("Meal logged");
       await refresh();
     } catch (err) {
@@ -158,21 +186,15 @@ function MealsPageInner() {
         onSubmit={handleSubmit}
         className="app-surface mb-8 flex flex-col gap-4 rounded-[24px] p-5 sm:p-6"
       >
-        <TextField
-          label="Notes (optional)"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Lunch"
-        />
-
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-ink/80">Pantry item (optional)</label>
+          <label className="text-sm font-medium text-ink/80">Item source</label>
           <select
             className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base"
-            value={draft.pantryItemId}
+            value={draft.source === "bought" ? "__bought__" : draft.pantryItemId}
             onChange={(e) => onPantryPick(e.target.value)}
           >
             <option value="">Manual entry — no deduction</option>
+            <option value="__bought__">Bought outside — no pantry deduction</option>
             {pantry.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.productName} ({formatQty(item.remainingQuantity, item.baseUnit)} left)
@@ -182,30 +204,44 @@ function MealsPageInner() {
         </div>
 
         <TextField
-          label="Label"
+          label="Notes (optional)"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Lunch"
+        />
+
+        <TextField
+          label={draft.source === "bought" ? "Food name" : "Label"}
           required={queued.length === 0}
           value={draft.label}
           onChange={(e) => setDraft((prev) => ({ ...prev, label: e.target.value }))}
-          placeholder="Chicken breast"
+          placeholder={draft.source === "bought" ? "Nasi padang" : "Chicken breast"}
         />
 
         <div className="grid grid-cols-2 gap-3">
           <TextField
-            label="Quantity used"
+            label={draft.source === "bought" ? "Amount eaten" : "Quantity used"}
             type="number"
             min={0.01}
             step="any"
             required={queued.length === 0}
             value={draft.quantityUsed}
-            onChange={(e) => setDraft((prev) => ({ ...prev, quantityUsed: e.target.value }))}
+            onChange={(e) =>
+              setDraft((prev) => ({ ...prev, quantityUsed: e.target.value }))
+            }
           />
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-ink/80">Unit</label>
+            <label className="text-sm font-medium text-ink/80">
+              {draft.source === "bought" ? "Confirmed unit" : "Unit"}
+            </label>
             <select
               className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base"
               value={draft.unit}
               onChange={(e) =>
-                setDraft((prev) => ({ ...prev, unit: e.target.value as MeasurementUnit }))
+                setDraft((prev) => ({
+                  ...prev,
+                  unit: e.target.value as MeasurementUnit,
+                }))
               }
             >
               {unitOptions.map((u) => (
@@ -224,7 +260,7 @@ function MealsPageInner() {
                 <span>
                   {item.label} · {item.quantityUsed}
                   {item.unit}
-                  {item.pantryItemId ? " (from pantry)" : " (manual)"}
+                  {item.source === "pantry" ? " (from pantry)" : " (manual)"}
                 </span>
                 <button
                   type="button"
@@ -239,9 +275,11 @@ function MealsPageInner() {
         )}
 
         <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="secondary" onClick={addToQueue}>
-            Add another item
-          </Button>
+          {draft.source !== "bought" && (
+            <Button type="button" variant="secondary" onClick={addToQueue}>
+              Add another item
+            </Button>
+          )}
           <Button type="submit" loading={submitting}>
             Log meal
           </Button>
@@ -256,19 +294,57 @@ function MealsPageInner() {
       ) : (
         <ul className="flex flex-col gap-3">
           {meals.map((meal) => (
-            <li key={meal.id} className="app-surface rounded-[22px] p-5 transition hover:-translate-y-0.5">
-              <p className="font-medium text-ink">
-                {new Date(meal.loggedAt).toLocaleString()}
-              </p>
-              <p className="mt-0.5 text-sm text-ink/60">{meal.notes || "No notes"}</p>
-              <ul className="mt-2 space-y-1 text-sm text-ink/80">
-                {meal.items.map((item) => (
-                  <li key={item.id}>
-                    {item.label} — {formatQty(item.quantityUsed, item.unit)}
-                    {item.pantryItemId ? "" : " (manual)"}
-                  </li>
-                ))}
-              </ul>
+            <li key={meal.id} className="app-surface overflow-hidden rounded-[22px]">
+              <button
+                type="button"
+                className="flex w-full items-start justify-between gap-4 p-5 text-left outline-none transition hover:bg-sage/[0.04] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sage/40 sm:p-6"
+                aria-expanded={expandedMealId === meal.id}
+                aria-controls={`meal-nutrition-${meal.id}`}
+                onClick={() =>
+                  setExpandedMealId((current) => current === meal.id ? null : meal.id)
+                }
+              >
+                <span className="min-w-0">
+                  <span className="block font-medium text-ink">
+                    {new Date(meal.loggedAt).toLocaleString()}
+                  </span>
+                  <span className="mt-0.5 block text-sm text-ink/60">
+                    {meal.notes || "No notes"}
+                  </span>
+                  <span className="mt-2 block space-y-1 text-sm text-ink/80">
+                    {meal.items.map((item) => (
+                      <span key={item.id} className="block">
+                        {item.label} — {formatQty(item.quantityUsed, item.unit)}
+                        {item.source === "pantry"
+                          ? ""
+                          : item.source === "bought"
+                            ? " (bought)"
+                            : " (manual)"}
+                      </span>
+                    ))}
+                  </span>
+                </span>
+                <span className="flex shrink-0 items-center gap-3">
+                  {meal.nutrition.matchedItems.length > 0 && (
+                    <span className="hidden text-sm font-semibold text-ink/60 sm:block">
+                      {Math.round(meal.nutrition.totals.caloriesKcal).toLocaleString()} kcal
+                    </span>
+                  )}
+                  <span className="grid h-10 w-10 place-items-center rounded-xl border border-border-warm bg-white text-ink/55">
+                    <Icon
+                      name="chevron"
+                      className={`h-4 w-4 transition-transform ${
+                        expandedMealId === meal.id ? "rotate-180" : ""
+                      }`}
+                    />
+                  </span>
+                </span>
+              </button>
+              {expandedMealId === meal.id && (
+                <div id={`meal-nutrition-${meal.id}`}>
+                  <MealNutritionDetails nutrition={meal.nutrition} />
+                </div>
+              )}
             </li>
           ))}
         </ul>

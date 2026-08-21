@@ -39,6 +39,7 @@ export interface AuthResponse {
 }
 
 export type BaseUnit = "g" | "ml";
+export type MealItemSource = "manual" | "bought" | "pantry";
 
 // Units the meal-logging form can offer — wider than BaseUnit because
 // the backend's units.js converts tsp/tbsp/etc into a pantry item's
@@ -100,10 +101,11 @@ export interface ScannedPantryItem {
 
 // Request body shape for POST /meals items[] -- confirmed camelCase in.
 export interface MealItemInput {
-  pantryItemId: string | null; // null for manual entries not tracked in pantry
+  pantryItemId: string | null; // null for manual or bought items not tracked in pantry
   label: string;
   quantityUsed: number;
   unit: MeasurementUnit;
+  source: MealItemSource;
 }
 
 // What comes back in meal_items via GET /meals and POST /meals --
@@ -115,6 +117,40 @@ export interface RawMealItem {
   label: string;
   quantity_used: string;
   unit: MeasurementUnit;
+  entry_source: MealItemSource;
+}
+
+export interface MealNutritionTotals {
+  caloriesKcal: number;
+  proteinG: number;
+  carbohydrateG: number;
+  fatG: number;
+  fiberG: number;
+  sugarG: number;
+  sodiumMg: number;
+}
+
+export interface MealNutritionMatch {
+  itemId: string;
+  label: string;
+  foodId: string;
+  foodName: string;
+  foodState: string;
+  quantityGrams: number;
+}
+
+export interface MealNutritionUnmatchedItem {
+  itemId: string;
+  label: string;
+  reason: string;
+}
+
+export interface MealNutrition {
+  totals: MealNutritionTotals;
+  matchedItems: MealNutritionMatch[];
+  unmatchedItems: MealNutritionUnmatchedItem[];
+  source: string;
+  estimated: boolean;
 }
 
 export interface RawMeal {
@@ -123,6 +159,7 @@ export interface RawMeal {
   notes: string | null;
   logged_at: string;
   items: RawMealItem[]; // only present on GET /meals, which nests items per meal
+  nutrition: MealNutrition;
 }
 
 export type NutrientKey =
@@ -152,7 +189,10 @@ export type NotificationType =
   | "medicine_due"
   | "medicine_missed"
   | "nutrition_low"
-  | "nutrition_high";
+  | "nutrition_high"
+  | "nutrition_limit_exceeded"
+  | "doctor_food_recommendation"
+  | "possible_avoid_food_purchase";
 
 // Verified via GET /notifications -- snake_case, RETURNING *.
 export interface RawNotification {
@@ -162,6 +202,17 @@ export interface RawNotification {
   message: string;
   read: boolean;
   created_at: string;
+  related_patient_id: string | null;
+  related_doctor_id: string | null;
+  dietary_limit_id: string | null;
+  food_recommendation_id: string | null;
+  local_date: string | null;
+  food_name: string | null;
+  nutrient_name: string | null;
+  current_amount: string | null;
+  limit_amount: string | null;
+  unit: string | null;
+  metadata: Record<string, unknown>;
 }
 
 // GET /doctor/patients does NOT return the full user row -- it's an
@@ -172,4 +223,80 @@ export interface DoctorPatientLink {
   full_name: string;
   email: string;
   status: "pending" | "active" | "revoked";
+}
+
+export type DietaryLimitType = "nutrient" | "ingredient";
+export type DietaryLimitUnit = "mg" | "g" | "ml" | "kcal";
+export type RecommendationType = "avoid" | "consume_more";
+export type RecommendationPriority = "low" | "medium" | "high";
+
+export interface PatientCondition {
+  id: string;
+  patient_id: string;
+  doctor_id: string;
+  condition_name: string;
+  condition_key: string;
+  created_at: string;
+}
+
+export interface DietaryLimit {
+  id: string;
+  patient_id: string;
+  doctor_id: string;
+  limit_type: DietaryLimitType;
+  name: string;
+  name_key: string;
+  maximum_amount: string;
+  unit: DietaryLimitUnit;
+  explanation: string | null;
+  enabled: boolean;
+  created_at: string;
+  updated_at: string;
+  current_amount: number | null;
+  progress_percent: number | null;
+  exceeded: boolean;
+}
+
+export interface FoodRecommendation {
+  id: string;
+  patient_id: string;
+  doctor_id: string;
+  recommendation_type: RecommendationType;
+  food_name: string;
+  food_key: string;
+  doctor_reason: string;
+  priority: RecommendationPriority;
+  recommended_frequency: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DailyConsumptionTotal {
+  metric_type: "nutrient" | "ingredient";
+  metric_name: string;
+  metric_key: string;
+  amount: number;
+  unit: DietaryLimitUnit;
+}
+
+export interface SupervisionPlan {
+  patient: {
+    id: string;
+    full_name: string;
+    email: string;
+    role: "hospital_patient";
+    timezone: string;
+  };
+  date: string;
+  conditions: PatientCondition[];
+  limits: DietaryLimit[];
+  recommendations: FoodRecommendation[];
+  daily_totals: DailyConsumptionTotal[];
+}
+
+export interface OcrPlanWarning {
+  foodName: string;
+  recommendationId: string;
+  priority: RecommendationPriority;
+  message: string;
 }

@@ -1,5 +1,16 @@
 import { apiRequest } from "./client";
-import type { DoctorPatientLink, NutrientKey, RawNutritionTarget } from "@/lib/types/api";
+import type {
+  DietaryLimit,
+  DietaryLimitType,
+  DietaryLimitUnit,
+  DoctorPatientLink,
+  FoodRecommendation,
+  NutrientKey,
+  RawNutritionTarget,
+  RecommendationPriority,
+  RecommendationType,
+  SupervisionPlan,
+} from "@/lib/types/api";
 
 // GET /doctor/patients returns { id, full_name, email, status } —
 // verified live, NOT the full user row. `id` here is the patient's
@@ -14,6 +25,101 @@ export async function linkPatient(patientId: string): Promise<void> {
   await apiRequest("/doctor/link-patient", {
     method: "POST",
     body: { patientId },
+  });
+}
+
+export async function getPatientPlan(patientId: string): Promise<SupervisionPlan> {
+  const result = await apiRequest<{ plan: SupervisionPlan }>(
+    `/doctor/patients/${patientId}/plan`
+  );
+  return result.plan;
+}
+
+export async function savePatientConditions(
+  patientId: string,
+  conditions: string[]
+): Promise<void> {
+  await apiRequest(`/doctor/patients/${patientId}/conditions`, {
+    method: "PUT",
+    body: { conditions },
+  });
+}
+
+export interface DietaryLimitInput {
+  limitType: DietaryLimitType;
+  name: string;
+  maximumAmount: number;
+  unit: DietaryLimitUnit;
+  explanation?: string;
+  enabled: boolean;
+}
+
+export async function createDietaryLimit(
+  patientId: string,
+  input: DietaryLimitInput
+): Promise<DietaryLimit> {
+  const result = await apiRequest<{ limit: DietaryLimit }>(
+    `/doctor/patients/${patientId}/limits`,
+    { method: "POST", body: input }
+  );
+  return result.limit;
+}
+
+export async function updateDietaryLimit(
+  patientId: string,
+  limitId: string,
+  input: Partial<DietaryLimitInput>
+): Promise<DietaryLimit> {
+  const result = await apiRequest<{ limit: DietaryLimit }>(
+    `/doctor/patients/${patientId}/limits/${limitId}`,
+    { method: "PATCH", body: input }
+  );
+  return result.limit;
+}
+
+export async function deleteDietaryLimit(patientId: string, limitId: string): Promise<void> {
+  await apiRequest(`/doctor/patients/${patientId}/limits/${limitId}`, {
+    method: "DELETE",
+  });
+}
+
+export interface FoodRecommendationInput {
+  recommendationType: RecommendationType;
+  foodName: string;
+  doctorReason: string;
+  priority: RecommendationPriority;
+  recommendedFrequency?: string;
+}
+
+export async function createFoodRecommendation(
+  patientId: string,
+  input: FoodRecommendationInput
+): Promise<FoodRecommendation> {
+  const result = await apiRequest<{ recommendation: FoodRecommendation }>(
+    `/doctor/patients/${patientId}/recommendations`,
+    { method: "POST", body: input }
+  );
+  return result.recommendation;
+}
+
+export async function updateFoodRecommendation(
+  patientId: string,
+  recommendationId: string,
+  input: Partial<FoodRecommendationInput>
+): Promise<FoodRecommendation> {
+  const result = await apiRequest<{ recommendation: FoodRecommendation }>(
+    `/doctor/patients/${patientId}/recommendations/${recommendationId}`,
+    { method: "PATCH", body: input }
+  );
+  return result.recommendation;
+}
+
+export async function deleteFoodRecommendation(
+  patientId: string,
+  recommendationId: string
+): Promise<void> {
+  await apiRequest(`/doctor/patients/${patientId}/recommendations/${recommendationId}`, {
+    method: "DELETE",
   });
 }
 

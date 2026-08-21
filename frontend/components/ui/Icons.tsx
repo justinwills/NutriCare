@@ -4,6 +4,7 @@ export type IconName =
   | "alert"
   | "arrow"
   | "check"
+  | "chevron"
   | "doctor"
   | "leaf"
   | "logout"
@@ -21,6 +22,7 @@ const paths: Record<IconName, React.ReactNode> = {
   ),
   arrow: <path d="M5 12h14m-5-5 5 5-5 5" />,
   check: <path d="m5 12 4 4L19 6" />,
+  chevron: <path d="m6 9 6 6 6-6" />,
   doctor: (
     <>
       <path d="M9 3h6v4H9z" />

@@ -1,13 +1,63 @@
 import { pool } from '../db/pool.js';
 
-export async function createNotification({ userId, type, message, client = pool }) {
+export async function createNotification({
+  userId,
+  type,
+  message,
+  relatedPatientId = null,
+  relatedDoctorId = null,
+  dietaryLimitId = null,
+  foodRecommendationId = null,
+  localDate = null,
+  foodName = null,
+  nutrientName = null,
+  currentAmount = null,
+  limitAmount = null,
+  unit = null,
+  dedupKey = null,
+  metadata = {},
+  client = pool,
+}) {
   const { rows } = await client.query(
-    `INSERT INTO notifications (user_id, type, message)
-     VALUES ($1, $2, $3)
+    `INSERT INTO notifications (
+       user_id,
+       type,
+       message,
+       related_patient_id,
+       related_doctor_id,
+       dietary_limit_id,
+       food_recommendation_id,
+       local_date,
+       food_name,
+       nutrient_name,
+       current_amount,
+       limit_amount,
+       unit,
+       dedup_key,
+       metadata
+     )
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+     ON CONFLICT (user_id, dedup_key) WHERE dedup_key IS NOT NULL DO NOTHING
      RETURNING *`,
-    [userId, type, message]
+    [
+      userId,
+      type,
+      message,
+      relatedPatientId,
+      relatedDoctorId,
+      dietaryLimitId,
+      foodRecommendationId,
+      localDate,
+      foodName,
+      nutrientName,
+      currentAmount,
+      limitAmount,
+      unit,
+      dedupKey,
+      metadata,
+    ]
   );
-  return rows[0];
+  return rows[0] || null;
 }
 
 export async function listNotifications(userId, { unreadOnly = false } = {}) {

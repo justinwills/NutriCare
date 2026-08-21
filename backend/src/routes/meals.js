@@ -3,11 +3,14 @@ import { requireAuth } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { pool } from '../db/pool.js';
 import { deductFromPantry } from '../services/pantryService.js';
+import { calculateMealNutrition } from '../services/nutritionService.js';
+import { recordConfirmedMealAndCheckLimits } from '../services/supervisionService.js';
 import { errorMessage } from '../utils/errorMessage.js';
 
 const router = Router();
 router.use(requireAuth);
 const MEASUREMENT_UNITS = new Set(['g', 'ml', 'kg', 'l', 'tsp', 'tbsp', 'cup', 'fl_oz', 'oz', 'lb', 'pinch']);
+const MEAL_ITEM_SOURCES = new Set(['manual', 'bought', 'pantry']);
 
 /**
  * POST /meals
@@ -15,21 +18,23 @@ const MEASUREMENT_UNITS = new Set(['g', 'ml', 'kg', 'l', 'tsp', 'tbsp', 'cup', '
  * {
  *   notes?: string,
  *   items: [
- *     { pantryItemId: "uuid" | null, label: "Chicken breast", quantityUsed: 150, unit: "g" }
+ *     {
+ *       pantryItemId: "uuid" | null,
+ *       label: "Chicken breast",
+ *       quantityUsed: 150,
+ *       unit: "g",
+ *       source: "manual" | "bought" | "pantry"
+ *     }
  *   ]
  * }
  * items with a pantryItemId trigger a real deduction. Items without one
- * (manual entries like "1 tbsp oil" with nothing tracked in pantry) are
- * just recorded for nutrition calculation -- see the pantry_item_id
- * nullable comment in migration 004.
- *
- * This does NOT calculate nutrition itself -- that's Person 3's job.
- * Once this returns the meal_id, hand meal.items off to Person 3's
- * calculation function, then feed the result into
- * notificationService.checkNutritionRange for each nutrient.
+ * are recorded as manual or bought and do not change pantry inventory.
+ * Older clients may omit source; the API derives pantry/manual from
+ * pantryItemId for backward compatibility.
  */
 router.post('/', asyncHandler(async (req, res) => {
   const notes = typeof req.body?.notes === 'string' ? req.body.notes.trim() : null;
+  const timezone = req.body?.timezone;
   const { items } = req.body ?? {};
 
   if (!Array.isArray(items) || items.length === 0) {
@@ -54,10 +59,27 @@ router.post('/', asyncHandler(async (req, res) => {
       const label = typeof item?.label === 'string' ? item.label.trim() : '';
       const quantityUsed = Number(item?.quantityUsed);
       const unit = item?.unit;
+      const requestedSource = item?.source;
 
       if (!label || !Number.isFinite(quantityUsed) || quantityUsed <= 0 || !MEASUREMENT_UNITS.has(unit)) {
         throw new Error('Each item needs label, quantityUsed, and unit');
       }
+      if (requestedSource && !MEAL_ITEM_SOURCES.has(requestedSource)) {
+        throw new Error('Each item source must be manual, bought, or pantry');
+      }
+      if (requestedSource === 'pantry' && !pantryItemId) {
+        throw new Error('Pantry items need a pantryItemId');
+      }
+      if (pantryItemId && requestedSource && requestedSource !== 'pantry') {
+        throw new Error('Items with a pantryItemId must use the pantry source');
+      }
+
+      // Older clients do not send source, so continue deriving it from pantryItemId.
+      const entrySource = pantryItemId
+        ? 'pantry'
+        : requestedSource === 'bought'
+          ? 'bought'
+          : 'manual';
 
       let pantryItemWasDeleted = false;
       // Deduct on the same transaction client. If any deduction fails,
@@ -75,18 +97,42 @@ router.post('/', asyncHandler(async (req, res) => {
       }
 
       const { rows: itemRows } = await client.query(
-        `INSERT INTO meal_items (meal_id, pantry_item_id, label, quantity_used, unit)
-         VALUES ($1, $2, $3, $4, $5)
+        `INSERT INTO meal_items (meal_id, pantry_item_id, label, quantity_used, unit, entry_source)
+         VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING *`,
         // A fully consumed pantry row is deleted by the deduction service.
         // Keep the meal item, but let the FK remain nullable in that case.
-        [meal.id, pantryItemId && !pantryItemWasDeleted ? pantryItemId : null, label, quantityUsed, unit]
+        [
+          meal.id,
+          pantryItemId && !pantryItemWasDeleted ? pantryItemId : null,
+          label,
+          quantityUsed,
+          unit,
+          entrySource,
+        ]
       );
       savedItems.push(itemRows[0]);
     }
 
+    const nutrition = calculateMealNutrition(savedItems);
+    const supervision = await recordConfirmedMealAndCheckLimits({
+      client,
+      patientId: req.user.userId,
+      meal,
+      items: savedItems,
+      nutrition,
+      timezone,
+    });
+    alertsCreated += supervision.alertsCreated;
+
     await client.query('COMMIT');
-    res.status(201).json({ meal, items: savedItems, alertsCreated });
+    res.status(201).json({
+      meal,
+      items: savedItems,
+      nutrition,
+      alertsCreated,
+      consumptionDate: supervision.localDate,
+    });
   } catch (err) {
     await client.query('ROLLBACK').catch(() => {});
     res.status(400).json({ error: errorMessage(err, 'Unable to log meal') });
@@ -117,7 +163,10 @@ router.get('/', asyncHandler(async (req, res) => {
   }
 
   res.json({
-    meals: meals.map((m) => ({ ...m, items: itemsByMeal[m.id] || [] })),
+    meals: meals.map((m) => {
+      const items = itemsByMeal[m.id] || [];
+      return { ...m, items, nutrition: calculateMealNutrition(items) };
+    }),
   });
 }));
 

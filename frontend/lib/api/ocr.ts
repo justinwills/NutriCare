@@ -1,10 +1,22 @@
 import { apiRequest } from "./client";
-import type { ScannedPantryItem } from "@/lib/types/api";
+import type { OcrPlanWarning, ScannedPantryItem } from "@/lib/types/api";
 
-export async function scanReceipt(imageData: string): Promise<ScannedPantryItem[]> {
-  const result = await apiRequest<{ products: ScannedPantryItem[] }>("/ocr/scan", {
+export interface ReceiptScanResult {
+  products: ScannedPantryItem[];
+  planWarnings: OcrPlanWarning[];
+}
+
+export async function scanReceipt(imageData: string): Promise<ReceiptScanResult> {
+  return apiRequest<ReceiptScanResult>("/ocr/scan", {
     method: "POST",
     body: { imageData },
   });
-  return result.products;
+}
+
+export async function checkDetectedFoodNames(foodNames: string[]): Promise<OcrPlanWarning[]> {
+  const result = await apiRequest<{ planWarnings: OcrPlanWarning[] }>("/ocr/check-foods", {
+    method: "POST",
+    body: { foodNames },
+  });
+  return result.planWarnings;
 }

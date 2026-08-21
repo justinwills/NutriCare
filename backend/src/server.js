@@ -13,6 +13,7 @@ import mealRoutes from './routes/meals.js';
 import notificationRoutes from './routes/notifications.js';
 import doctorRoutes from './routes/doctor.js';
 import ocrRoutes from './routes/ocr.js';
+import supervisionRoutes from './routes/supervision.js';
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.use('/meals', mealRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/doctor', doctorRoutes);
 app.use('/ocr', ocrRoutes);
+app.use('/supervision', supervisionRoutes);
 
 // Last-resort error handler: anything an individual route didn't
 // already catch and format lands here instead of crashing the process.

@@ -9,8 +9,12 @@ import * as pantryApi from "@/lib/api/pantry";
 import * as ocrApi from "@/lib/api/ocr";
 import type { PantryItemView } from "@/lib/api/parse";
 import { formatQty, unitsForBase } from "@/lib/units";
-import type { BaseUnit, MeasurementUnit } from "@/lib/types/api";
-import type { ScannedPantryItem } from "@/lib/types/api";
+import type {
+  BaseUnit,
+  MeasurementUnit,
+  OcrPlanWarning,
+  ScannedPantryItem,
+} from "@/lib/types/api";
 import { useAuth } from "@/lib/auth/context";
 import { playAlertSound } from "@/lib/playAlertSound";
 
@@ -29,6 +33,9 @@ function PantryPageInner() {
   const [scanning, setScanning] = useState(false);
   const [scanResults, setScanResults] = useState<ScannedPantryItem[]>([]);
   const [scanNames, setScanNames] = useState<Record<number, string>>({});
+  const [scanQuantities, setScanQuantities] = useState<Record<number, string>>({});
+  const [scanUnits, setScanUnits] = useState<Record<number, BaseUnit>>({});
+  const [ocrWarnings, setOcrWarnings] = useState<OcrPlanWarning[]>([]);
   const [savingScan, setSavingScan] = useState<string | null>(null);
 
   const [deductQty, setDeductQty] = useState<Record<string, string>>({});
@@ -110,9 +117,15 @@ function PantryPageInner() {
         reader.onerror = () => reject(new Error("Could not read this image"));
         reader.readAsDataURL(file);
       });
-      const results = await ocrApi.scanReceipt(imageData);
+      const result = await ocrApi.scanReceipt(imageData);
+      const results = result.products;
       setScanResults(results);
       setScanNames(Object.fromEntries(results.map((item, index) => [index, item.suggestedName])));
+      setScanQuantities(
+        Object.fromEntries(results.map((item, index) => [index, String(item.initialQuantity)]))
+      );
+      setScanUnits(Object.fromEntries(results.map((item, index) => [index, item.baseUnit])));
+      setOcrWarnings(result.planWarnings || []);
       setStatus(results.length ? "Review the detected items, then add the ones you want." : "No products were detected. Try a clearer receipt image.");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Could not scan this image");
@@ -124,8 +137,14 @@ function PantryPageInner() {
   async function saveScannedItem(item: ScannedPantryItem, index: number) {
     const key = `${index}-${item.suggestedName}`;
     const productName = (scanNames[index] ?? item.suggestedName).trim();
+    const confirmedQuantity = Number(scanQuantities[index]);
+    const confirmedUnit = scanUnits[index] ?? item.baseUnit;
     if (!productName) {
       setError("Enter a product name before adding it to the pantry");
+      return;
+    }
+    if (!Number.isFinite(confirmedQuantity) || confirmedQuantity <= 0) {
+      setError("Confirm a positive purchase quantity before adding it to the pantry");
       return;
     }
     setSavingScan(key);
@@ -134,12 +153,26 @@ function PantryPageInner() {
       await pantryApi.createPantryItem({
         productName,
         rawName: item.rawName,
-        initialQuantity: item.initialQuantity,
-        baseUnit: item.baseUnit,
+        initialQuantity: confirmedQuantity,
+        baseUnit: confirmedUnit,
         source: "ocr_receipt",
       });
       setScanResults((current) => current.filter((_, currentIndex) => currentIndex !== index));
       setScanNames((current) =>
+        Object.fromEntries(
+          Object.entries(current)
+            .filter(([key]) => Number(key) !== index)
+            .map(([key, value]) => [Number(key) > index ? Number(key) - 1 : Number(key), value])
+        )
+      );
+      setScanQuantities((current) =>
+        Object.fromEntries(
+          Object.entries(current)
+            .filter(([key]) => Number(key) !== index)
+            .map(([key, value]) => [Number(key) > index ? Number(key) - 1 : Number(key), value])
+        )
+      );
+      setScanUnits((current) =>
         Object.fromEntries(
           Object.entries(current)
             .filter(([key]) => Number(key) !== index)
@@ -242,13 +275,25 @@ function PantryPageInner() {
             }}
           />
         </label>
+        {ocrWarnings.length > 0 && (
+          <ul className="mt-4 flex flex-col gap-2" aria-label="Doctor plan warnings">
+            {ocrWarnings.map((warning) => (
+              <li
+                key={`${warning.recommendationId}-${warning.foodName}`}
+                className="rounded-xl border border-brick/25 bg-brick/5 px-3 py-2 text-sm text-brick"
+              >
+                {warning.message}
+              </li>
+            ))}
+          </ul>
+        )}
         {scanResults.length > 0 && (
           <ul className="mt-4 flex flex-col gap-2" aria-label="Scanned items">
             {scanResults.map((item, index) => {
               const key = `${index}-${item.suggestedName}`;
               return (
                 <li key={key} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border-warm bg-white p-3">
-                  <div>
+                  <div className="grid min-w-0 flex-1 gap-3 sm:grid-cols-[minmax(0,1fr)_120px_100px]">
                     <label className="flex flex-col gap-1 text-sm font-medium text-ink">
                       Product name
                       <input
@@ -259,7 +304,41 @@ function PantryPageInner() {
                         }
                       />
                     </label>
-                    <p className="text-sm text-ink/60">{formatQty(item.initialQuantity, item.baseUnit)} · {Math.round(item.confidence * 100)}% OCR confidence</p>
+                    <label className="flex flex-col gap-1 text-sm font-medium text-ink">
+                      Purchase quantity
+                      <input
+                        type="number"
+                        min={0.01}
+                        step="any"
+                        className="w-full rounded-lg border border-border-warm bg-white px-2.5 py-1.5 text-base font-normal text-ink outline-none focus:border-clay focus:ring-2 focus:ring-clay/20"
+                        value={scanQuantities[index] ?? ""}
+                        onChange={(event) =>
+                          setScanQuantities((current) => ({
+                            ...current,
+                            [index]: event.target.value,
+                          }))
+                        }
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1 text-sm font-medium text-ink">
+                      Unit
+                      <select
+                        className="rounded-lg border border-border-warm bg-white px-2.5 py-1.5 text-base font-normal text-ink outline-none focus:border-clay focus:ring-2 focus:ring-clay/20"
+                        value={scanUnits[index] ?? item.baseUnit}
+                        onChange={(event) =>
+                          setScanUnits((current) => ({
+                            ...current,
+                            [index]: event.target.value as BaseUnit,
+                          }))
+                        }
+                      >
+                        <option value="g">g</option>
+                        <option value="ml">ml</option>
+                      </select>
+                    </label>
+                    <p className="text-xs text-ink/55 sm:col-span-3">
+                      {Math.round(item.confidence * 100)}% OCR confidence
+                    </p>
                   </div>
                   <Button type="button" variant="secondary" loading={savingScan === key} onClick={() => void saveScannedItem(item, index)}>
                     Add to pantry

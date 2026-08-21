@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth/context";
 import type { UserRole } from "@/lib/types/api";
 
 const NAV: { href: string; label: string; icon: IconName; roles?: UserRole[] }[] = [
+  { href: "/dashboard", label: "Care plan", icon: "doctor", roles: ["hospital_patient"] },
   { href: "/pantry", label: "Pantry", icon: "pantry" },
   { href: "/meals", label: "Meals", icon: "meal" },
   { href: "/notifications", label: "Alerts", icon: "alert" },
