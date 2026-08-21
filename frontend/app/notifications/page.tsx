@@ -54,10 +54,11 @@ function NotificationsPageInner() {
 
   return (
     <>
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-ink">Alerts</h1>
-          <p className="mt-1 text-sm text-ink/60">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-sage">Stay ahead</p>
+          <h1 className="font-display text-4xl font-semibold tracking-[-0.04em] text-ink sm:text-5xl">Your alerts</h1>
+          <p className="mt-2 text-sm text-ink/55">
             Low stock, expiry, and nutrition target notifications
           </p>
         </div>
@@ -89,7 +90,7 @@ function NotificationsPageInner() {
           {items.map((n) => (
             <li
               key={n.id}
-              className={`rounded-2xl border p-4 ${
+              className={`rounded-[22px] border p-5 shadow-[0_12px_40px_rgba(23,37,30,0.04)] transition hover:-translate-y-0.5 ${
                 n.read
                   ? "border-border-warm bg-white/50"
                   : "border-clay/30 bg-clay/5"

@@ -131,9 +131,10 @@ function DoctorPageInner() {
 
   return (
     <>
-      <div className="mb-6">
-        <h1 className="font-display text-2xl font-semibold text-ink">Doctor tools</h1>
-        <p className="mt-1 text-sm text-ink/60">
+      <div className="mb-8">
+        <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-sage">Clinical workspace</p>
+        <h1 className="font-display text-4xl font-semibold tracking-[-0.04em] text-ink sm:text-5xl">Patient care</h1>
+        <p className="mt-2 text-sm text-ink/55">
           Link patients, set nutrition targets, and check values
         </p>
       </div>
@@ -147,7 +148,7 @@ function DoctorPageInner() {
         </p>
       )}
 
-      <section className="mb-6 rounded-2xl border border-border-warm bg-white/60 p-4">
+      <section className="app-surface mb-5 rounded-[24px] p-5 sm:p-6">
         <h2 className="mb-3 text-lg font-semibold text-ink">Linked patients</h2>
         {loading ? (
           <p className="text-sm text-ink/55">Loading…</p>
@@ -191,7 +192,7 @@ function DoctorPageInner() {
         </form>
       </section>
 
-      <section className="mb-6 rounded-2xl border border-border-warm bg-white/60 p-4">
+      <section className="app-surface mb-5 rounded-[24px] p-5 sm:p-6">
         <h2 className="mb-3 text-lg font-semibold text-ink">Nutrition target</h2>
         <form onSubmit={handleTarget} className="grid gap-3 sm:grid-cols-2">
           <div className="sm:col-span-2">
@@ -240,7 +241,7 @@ function DoctorPageInner() {
         </form>
       </section>
 
-      <section className="rounded-2xl border border-border-warm bg-white/60 p-4">
+      <section className="app-surface rounded-[24px] p-5 sm:p-6">
         <h2 className="mb-3 text-lg font-semibold text-ink">Check nutrition value</h2>
         <p className="mb-3 text-xs text-ink/55">
           Reports a value against the patient&apos;s target (used after meal nutrition calc).

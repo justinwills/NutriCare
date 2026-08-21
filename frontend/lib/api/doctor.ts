@@ -34,12 +34,9 @@ export async function setNutritionTarget(
   return result.target;
 }
 
-// Not doctor-role-gated server-side (verified in doctor.js — this
-// route has no requireRole('doctor') unlike the others in this file),
-// so any authenticated caller can report a value for a patient. This
-// is intended to be called by Person 3's nutrition-calculation flow
-// after computing a meal's nutrients, not directly by a doctor-facing
-// screen.
+// The backend allows the patient themself or a doctor with an active link
+// to report a calculated value. This is intended to be called by Person 3's
+// nutrition-calculation flow after computing a meal's nutrients.
 export async function checkNutritionValue(input: {
   patientId: string;
   nutrient: NutrientKey;

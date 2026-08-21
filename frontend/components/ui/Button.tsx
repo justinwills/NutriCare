@@ -6,10 +6,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT_CLASSES: Record<NonNullable<ButtonProps["variant"]>, string> = {
-  primary: "bg-clay text-white hover:bg-clay/90 focus-visible:ring-clay/40",
+  primary: "bg-forest text-white shadow-[0_8px_24px_rgba(21,53,42,0.16)] hover:-translate-y-0.5 hover:bg-forest/92 focus-visible:ring-forest/30",
   secondary:
-    "bg-transparent text-ink border border-border-warm hover:bg-border-warm/40 focus-visible:ring-ink/20",
-  danger: "bg-brick text-white hover:bg-brick/90 focus-visible:ring-brick/40",
+    "bg-white/75 text-ink border border-border-warm shadow-sm hover:-translate-y-0.5 hover:border-sage/30 hover:bg-white focus-visible:ring-ink/15",
+  danger: "bg-brick text-white shadow-sm hover:-translate-y-0.5 hover:bg-brick/90 focus-visible:ring-brick/30",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -20,7 +20,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     <button
       ref={ref}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold outline-none transition focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${VARIANT_CLASSES[variant]} ${className}`}
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none transition duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 ${VARIANT_CLASSES[variant]} ${className}`}
       {...props}
     >
       {loading && (

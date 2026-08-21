@@ -16,6 +16,7 @@ function jwtSecret() {
 
 export async function registerUser({ email, password, fullName, role }) {
   const normalizedEmail = normalizeEmail(email);
+  const normalizedFullName = String(fullName || '').trim();
 
   const existing = await pool.query(
     'SELECT id FROM users WHERE lower(email) = $1',
@@ -31,10 +32,16 @@ export async function registerUser({ email, password, fullName, role }) {
     `INSERT INTO users (email, password_hash, full_name, role)
      VALUES ($1, $2, $3, $4)
      RETURNING id, email, full_name, role, created_at`,
-    [normalizedEmail, passwordHash, fullName, role]
+    [normalizedEmail, passwordHash, normalizedFullName, role]
   );
 
-  return rows[0];
+  // Keep the original snake_case fields for older clients, while exposing
+  // the same camelCase contract returned by login.
+  return {
+    ...rows[0],
+    fullName: rows[0].full_name,
+    createdAt: rows[0].created_at,
+  };
 }
 
 export async function loginUser({ email, password }) {

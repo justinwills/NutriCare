@@ -5,7 +5,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
+import { randomUUID } from 'crypto';
 import { requireAuth } from '../middleware/auth.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
+import { errorMessage } from '../utils/errorMessage.js';
 
 const runFile = promisify(execFile);
 const router = Router();
@@ -16,10 +19,22 @@ const defaultPython = process.platform === 'win32'
   : path.join(projectRoot, '.venv', 'bin', 'python');
 const MAX_IMAGE_BYTES = 7 * 1024 * 1024;
 
+async function resolvePython() {
+  if (process.env.PYTHON_EXECUTABLE) return process.env.PYTHON_EXECUTABLE;
+  try {
+    await fs.access(defaultPython);
+    return defaultPython;
+  } catch {
+    // Fall back to a Python executable on PATH for machines that installed
+    // PaddleOCR globally instead of creating the documented .venv.
+    return process.platform === 'win32' ? 'python' : 'python3';
+  }
+}
+
 router.use(requireAuth);
 
 // POST /ocr/scan { imageData: "data:image/jpeg;base64,..." }
-router.post('/scan', async (req, res) => {
+router.post('/scan', asyncHandler(async (req, res) => {
   const { imageData } = req.body ?? {};
   const match = typeof imageData === 'string' && imageData.match(/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/);
   if (!match) return res.status(400).json({ error: 'Upload a PNG, JPEG, or WebP image.' });
@@ -30,10 +45,10 @@ router.post('/scan', async (req, res) => {
   }
 
   const extension = match[1] === 'jpeg' ? 'jpg' : match[1];
-  const imagePath = path.join(os.tmpdir(), `reverie-ocr-${crypto.randomUUID()}.${extension}`);
+  const imagePath = path.join(os.tmpdir(), `reverie-ocr-${randomUUID()}.${extension}`);
   try {
     await fs.writeFile(imagePath, image);
-    const python = process.env.PYTHON_EXECUTABLE || defaultPython;
+    const python = await resolvePython();
     const { stdout } = await runFile(python, [path.join(projectRoot, 'ocr_pipeline.py'), imagePath], {
       cwd: projectRoot,
       // PaddleOCR may download/warm its model the first time it is used.
@@ -46,11 +61,15 @@ router.post('/scan', async (req, res) => {
     res.json(JSON.parse(jsonLine));
   } catch (error) {
     console.error('OCR scan failed:', error);
-    const reason = error instanceof Error ? error.message : 'Unknown OCR error';
-    res.status(500).json({ error: `Could not scan this image: ${reason}` });
+    const detail = error?.stderr?.trim() || errorMessage(error, 'Unknown OCR error');
+    const unavailable = error?.code === 'ENOENT' || /No module named ['"]?(paddle|paddleocr)/i.test(detail);
+    const message = unavailable
+      ? 'OCR is unavailable. Install PaddleOCR and PaddlePaddle, then set PYTHON_EXECUTABLE if needed.'
+      : `Could not scan this image: ${detail}`;
+    res.status(unavailable ? 503 : 500).json({ error: message });
   } finally {
     await fs.unlink(imagePath).catch(() => {});
   }
-});
+}));
 
 export default router;

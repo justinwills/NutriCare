@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
 import { pool } from '../db/pool.js';
 import { deductFromPantry, checkExpiringItems } from '../services/pantryService.js';
+import { errorMessage } from '../utils/errorMessage.js';
 
 const router = Router();
 router.use(requireAuth);
@@ -14,15 +16,27 @@ router.use(requireAuth);
  * confirmed-write step, conversion already happened on Person 3's side
  * (or you normalize before calling this, see units.js).
  */
-router.post('/', async (req, res) => {
-  const { productName, rawName, baseUnit, initialQuantity, expirationDate, source } = req.body;
+router.post('/', asyncHandler(async (req, res) => {
+  const { rawName, expirationDate } = req.body ?? {};
+  const productName = String(req.body?.productName ?? '').trim();
+  const baseUnit = req.body?.baseUnit;
+  const initialQuantity = Number(req.body?.initialQuantity);
+  const source = req.body?.source;
 
-  if (!productName || !baseUnit || !initialQuantity) {
+  if (!productName || !baseUnit || !Number.isFinite(initialQuantity) || initialQuantity <= 0) {
     return res.status(400).json({ error: 'productName, baseUnit, and initialQuantity are required' });
   }
 
   if (!['g', 'ml'].includes(baseUnit)) {
     return res.status(400).json({ error: 'baseUnit must be g or ml' });
+  }
+
+  if (expirationDate && !/^\d{4}-\d{2}-\d{2}$/.test(expirationDate)) {
+    return res.status(400).json({ error: 'expirationDate must use YYYY-MM-DD format' });
+  }
+
+  if (source && !['ocr_online', 'ocr_receipt', 'manual'].includes(source)) {
+    return res.status(400).json({ error: 'source must be ocr_online, ocr_receipt, or manual' });
   }
 
   try {
@@ -43,18 +57,18 @@ router.post('/', async (req, res) => {
     );
     res.status(201).json({ item: rows[0] });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: errorMessage(err, 'Unable to save pantry item') });
   }
-});
+}));
 
 /** GET /pantry -- list the current user's pantry */
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const { rows } = await pool.query(
     `SELECT * FROM pantry_items WHERE user_id = $1 ORDER BY expiration_date ASC NULLS LAST`,
     [req.user.userId]
   );
   res.json({ items: rows });
-});
+}));
 
 /**
  * POST /pantry/:id/deduct
@@ -62,10 +76,11 @@ router.get('/', async (req, res) => {
  * unit does NOT need to match the item's base_unit -- conversion
  * happens inside deductFromPantry via units.js.
  */
-router.post('/:id/deduct', async (req, res) => {
-  const { quantityUsed, unit } = req.body;
+router.post('/:id/deduct', asyncHandler(async (req, res) => {
+  const quantityUsed = Number(req.body?.quantityUsed);
+  const unit = req.body?.unit;
 
-  if (!quantityUsed || !unit) {
+  if (!Number.isFinite(quantityUsed) || quantityUsed <= 0 || typeof unit !== 'string' || !unit) {
     return res.status(400).json({ error: 'quantityUsed and unit are required' });
   }
 
@@ -78,9 +93,9 @@ router.post('/:id/deduct', async (req, res) => {
     });
     res.json(result);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ error: errorMessage(err, 'Unable to deduct pantry item') });
   }
-});
+}));
 
 /**
  * POST /pantry/check-expiring
@@ -88,9 +103,9 @@ router.post('/:id/deduct', async (req, res) => {
  * exposing it as an endpoint is handy for demoing the alert flow live
  * without waiting for a scheduler to tick.
  */
-router.post('/check-expiring', async (req, res) => {
+router.post('/check-expiring', asyncHandler(async (req, res) => {
   const alertsCreated = await checkExpiringItems();
   res.json({ checked: true, alertsCreated });
-});
+}));
 
 export default router;

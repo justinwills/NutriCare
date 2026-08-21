@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth/context";
 import { ApiError } from "@/lib/api/client";
 import { TextField } from "@/components/ui/TextField";
 import { Button } from "@/components/ui/Button";
+import { AuthScaffold } from "@/components/AuthScaffold";
 
 // useSearchParams() requires a Suspense boundary in the App Router or
 // static prerendering fails at build time (confirmed via a real
@@ -44,24 +45,14 @@ function LoginForm() {
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center px-4 py-12">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <h1 className="font-display text-3xl font-semibold text-ink">
-            Welcome back
-          </h1>
-          <p className="mt-2 text-sm text-ink/60">
-            Sign in to your pantry
-          </p>
-        </div>
-
+    <AuthScaffold eyebrow="Welcome back" title="Pick up where you left off." description="Sign in to see your pantry, meals, alerts, and nutrition goals.">
         {justRegistered && (
-          <p className="mb-4 rounded-lg bg-sage/10 px-3 py-2 text-center text-sm text-sage">
+          <p className="mb-4 rounded-xl border border-sage/15 bg-sage/8 px-3 py-2.5 text-sm font-medium text-sage">
             Account created. Sign in to continue.
           </p>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 rounded-2xl border border-border-warm bg-white/60 p-6">
+        <form onSubmit={handleSubmit} className="app-surface flex flex-col gap-4 rounded-[24px] p-5 sm:p-6">
           <TextField
             label="Email"
             type="email"
@@ -82,7 +73,7 @@ function LoginForm() {
           />
 
           {error && (
-            <p role="alert" className="rounded-lg bg-brick/10 px-3 py-2 text-sm text-brick">
+            <p role="alert" className="rounded-xl bg-brick/10 px-3 py-2.5 text-sm text-brick">
               {error}
             </p>
           )}
@@ -92,14 +83,13 @@ function LoginForm() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-ink/60">
+        <p className="mt-6 text-center text-sm text-ink/55">
           New here?{" "}
           <Link href="/register" className="font-medium text-clay hover:underline">
             Create an account
           </Link>
         </p>
-      </div>
-    </main>
+    </AuthScaffold>
   );
 }
 

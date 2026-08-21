@@ -7,9 +7,9 @@ const { Pool } = pg;
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  // Supabase's direct connection needs SSL; the pooled one usually
-  // doesn't require this override. Uncomment if you get SSL errors:
-  // ssl: { rejectUnauthorized: false },
+  // Supabase direct connections require TLS. Local Postgres can leave this
+  // disabled; set DATABASE_SSL=true for hosted databases.
+  ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
 });
 
 pool.on('error', (err) => {

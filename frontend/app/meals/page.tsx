@@ -137,9 +137,10 @@ function MealsPageInner() {
 
   return (
     <>
-      <div className="mb-6">
-        <h1 className="font-display text-2xl font-semibold text-ink">Meals</h1>
-        <p className="mt-1 text-sm text-ink/60">
+      <div className="mb-8">
+        <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-sage">Daily rhythm</p>
+        <h1 className="font-display text-4xl font-semibold tracking-[-0.04em] text-ink sm:text-5xl">Meal journal</h1>
+        <p className="mt-2 text-sm text-ink/55">
           Log what you ate — pantry-linked items get deducted automatically
         </p>
       </div>
@@ -155,7 +156,7 @@ function MealsPageInner() {
 
       <form
         onSubmit={handleSubmit}
-        className="mb-8 flex flex-col gap-3 rounded-2xl border border-border-warm bg-white/60 p-4"
+        className="app-surface mb-8 flex flex-col gap-4 rounded-[24px] p-5 sm:p-6"
       >
         <TextField
           label="Notes (optional)"
@@ -255,7 +256,7 @@ function MealsPageInner() {
       ) : (
         <ul className="flex flex-col gap-3">
           {meals.map((meal) => (
-            <li key={meal.id} className="rounded-2xl border border-border-warm bg-white/70 p-4">
+            <li key={meal.id} className="app-surface rounded-[22px] p-5 transition hover:-translate-y-0.5">
               <p className="font-medium text-ink">
                 {new Date(meal.loggedAt).toLocaleString()}
               </p>

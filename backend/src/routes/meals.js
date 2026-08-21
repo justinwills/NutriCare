@@ -1,10 +1,13 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
 import { pool } from '../db/pool.js';
 import { deductFromPantry } from '../services/pantryService.js';
+import { errorMessage } from '../utils/errorMessage.js';
 
 const router = Router();
 router.use(requireAuth);
+const MEASUREMENT_UNITS = new Set(['g', 'ml', 'kg', 'l', 'tsp', 'tbsp', 'cup', 'fl_oz', 'oz', 'lb', 'pinch']);
 
 /**
  * POST /meals
@@ -25,8 +28,9 @@ router.use(requireAuth);
  * calculation function, then feed the result into
  * notificationService.checkNutritionRange for each nutrient.
  */
-router.post('/', async (req, res) => {
-  const { notes, items } = req.body;
+router.post('/', asyncHandler(async (req, res) => {
+  const notes = typeof req.body?.notes === 'string' ? req.body.notes.trim() : null;
+  const { items } = req.body ?? {};
 
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'items must be a non-empty array' });
@@ -46,31 +50,37 @@ router.post('/', async (req, res) => {
     let alertsCreated = 0;
 
     for (const item of items) {
-      const { pantryItemId, label, quantityUsed, unit } = item;
+      const pantryItemId = item?.pantryItemId || null;
+      const label = typeof item?.label === 'string' ? item.label.trim() : '';
+      const quantityUsed = Number(item?.quantityUsed);
+      const unit = item?.unit;
 
-      if (!label || !quantityUsed || !unit) {
+      if (!label || !Number.isFinite(quantityUsed) || quantityUsed <= 0 || !MEASUREMENT_UNITS.has(unit)) {
         throw new Error('Each item needs label, quantityUsed, and unit');
       }
 
-      // Deduct first (outside this transaction -- it manages its own).
-      // If a deduction fails (e.g. insufficient stock), the whole meal
-      // log fails too, since the meal shouldn't claim ingredients it
-      // couldn't actually use.
+      let pantryItemWasDeleted = false;
+      // Deduct on the same transaction client. If any deduction fails,
+      // the meal and all earlier deductions roll back together.
       if (pantryItemId) {
         const deduction = await deductFromPantry({
           userId: req.user.userId,
           pantryItemId,
           quantityUsed,
           unit,
+          client,
         });
         if (deduction.notificationCreated) alertsCreated += 1;
+        pantryItemWasDeleted = deduction.itemDeleted;
       }
 
       const { rows: itemRows } = await client.query(
         `INSERT INTO meal_items (meal_id, pantry_item_id, label, quantity_used, unit)
          VALUES ($1, $2, $3, $4, $5)
          RETURNING *`,
-        [meal.id, pantryItemId || null, label, quantityUsed, unit]
+        // A fully consumed pantry row is deleted by the deduction service.
+        // Keep the meal item, but let the FK remain nullable in that case.
+        [meal.id, pantryItemId && !pantryItemWasDeleted ? pantryItemId : null, label, quantityUsed, unit]
       );
       savedItems.push(itemRows[0]);
     }
@@ -78,15 +88,15 @@ router.post('/', async (req, res) => {
     await client.query('COMMIT');
     res.status(201).json({ meal, items: savedItems, alertsCreated });
   } catch (err) {
-    await client.query('ROLLBACK');
-    res.status(400).json({ error: err.message });
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(400).json({ error: errorMessage(err, 'Unable to log meal') });
   } finally {
     client.release();
   }
-});
+}));
 
 /** GET /meals -- list the current user's logged meals with their items */
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const { rows: meals } = await pool.query(
     `SELECT * FROM meals WHERE user_id = $1 ORDER BY logged_at DESC`,
     [req.user.userId]
@@ -109,6 +119,6 @@ router.get('/', async (req, res) => {
   res.json({
     meals: meals.map((m) => ({ ...m, items: itemsByMeal[m.id] || [] })),
   });
-});
+}));
 
 export default router;

@@ -45,6 +45,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedUser = window.localStorage.getItem(USER_STORAGE_KEY);
     if (token && storedUser) {
       try {
+        // Browser storage is the source of truth after hydration; this is an
+        // intentional one-time restore, not a render-to-render synchronization.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setUser(JSON.parse(storedUser) as User);
       } catch {
         // Corrupted stored value -- treat as logged out rather than crash.
