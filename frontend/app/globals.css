@@ -1,13 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  /* Kitchen/pantry palette — warm paper base, clinical accents reserved for their jobs only */
-  --paper: #fbf7f0;
-  --ink: #2b2620;
-  --sage: #4a7c59;      /* in-stock / fresh signal */
-  --clay: #c17a4f;      /* warmth accent, primary actions */
-  --brick: #b23a48;     /* expiry / alert ONLY — never decorative */
-  --border-warm: #e8dfd0;
+  /* Calm-clinical, grounded in ingredients rather than generic health-tech blue. */
+  --paper: #f5f6ee;
+  --ink: #17251e;
+  --sage: #3f7256;
+  --clay: #e76545;
+  --brick: #b93e49;
+  --border-warm: #dfe3d5;
+  --forest: #15352a;
+  --lime: #dce983;
+  --mist: #e8eee5;
 
   --background: var(--paper);
   --foreground: var(--ink);
@@ -20,16 +23,77 @@
   --color-clay: var(--clay);
   --color-brick: var(--brick);
   --color-border-warm: var(--border-warm);
+  --color-forest: var(--forest);
+  --color-lime: var(--lime);
+  --color-mist: var(--mist);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-display: var(--font-fraunces);
   --font-sans: var(--font-inter);
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--lime);
+  color: var(--forest);
+}
+
+button,
+a,
+input,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-surface {
+  border: 1px solid color-mix(in srgb, var(--border-warm) 82%, white);
+  background: color-mix(in srgb, white 86%, var(--paper));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 70%) inset, 0 18px 50px rgb(23 37 30 / 5%);
+}
+
+.grid-wash {
+  background-image:
+    linear-gradient(rgb(23 53 42 / 5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(23 53 42 / 5%) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, black, transparent 88%);
+}
+
+.soft-noise {
+  background-image: radial-gradient(rgb(255 255 255 / 18%) 0.6px, transparent 0.6px);
+  background-size: 5px 5px;
+}
+
+.float-slow {
+  animation: float-slow 7s ease-in-out infinite;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-9px) rotate(1deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Signature element: the "receipt tag" notch, used on pantry item cards
@@ -41,5 +105,407 @@ body {
     0 0, 100% 0, 100% 100%, 0 100%,
     0 60%, 8px 54%, 0 48%
   );
+}
+
+/* Scroll-led landing page motion. Elements begin quietly and only resolve
+   when they enter the reader's field of view. */
+.cinematic-reveal {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  filter: blur(4px);
+  transition: opacity 800ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 800ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 800ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.cinematic-reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  filter: blur(0);
+}
+
+.journey-section {
+  isolation: isolate;
+}
+
+.journey-glow {
+  position: absolute;
+  z-index: -1;
+  width: 32rem;
+  height: 32rem;
+  border-radius: 999px;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.journey-glow-one {
+  top: 15%;
+  right: -16rem;
+  background: rgb(220 233 131 / 14%);
+}
+
+.journey-glow-two {
+  bottom: -18rem;
+  left: -14rem;
+  background: rgb(231 101 69 / 12%);
+}
+
+.journey-steps {
+  position: relative;
+}
+
+.journey-steps::before {
+  content: "";
+  position: absolute;
+  top: 1.1rem;
+  bottom: 1.1rem;
+  left: 1rem;
+  width: 1px;
+  background: linear-gradient(to bottom, rgb(220 233 131 / 45%), rgb(255 255 255 / 8%));
+}
+
+.journey-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 1rem;
+  min-height: min(58vh, 510px);
+  align-items: center;
+  opacity: 0.38;
+  transition: opacity 600ms ease;
+}
+
+.journey-step.is-active {
+  opacity: 1;
+}
+
+.journey-step-marker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 999px;
+  background: var(--forest);
+  color: rgb(255 255 255 / 45%);
+  font-size: 0.65rem;
+  font-weight: 700;
+  transition: background 500ms ease, color 500ms ease, border-color 500ms ease, transform 500ms ease;
+}
+
+.journey-step.is-active .journey-step-marker {
+  border-color: var(--lime);
+  background: var(--lime);
+  color: var(--forest);
+  transform: scale(1.12);
+}
+
+.journey-step-content {
+  max-width: 24rem;
+}
+
+.journey-step-content p {
+  margin: 0;
+  color: rgb(220 233 131 / 70%);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.journey-step-content h3 {
+  margin-top: 0.8rem;
+  color: white;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: clamp(1.7rem, 3vw, 2.35rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+}
+
+.journey-step-content > span {
+  display: block;
+  margin-top: 1rem;
+  color: rgb(255 255 255 / 48%);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.journey-stage-sticky {
+  position: sticky;
+  top: 6.5rem;
+  display: flex;
+  min-height: min(70vh, 620px);
+  align-items: center;
+}
+
+.journey-stage {
+  position: relative;
+  display: flex;
+  min-height: min(70vh, 620px);
+  width: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 24%);
+  border-radius: 2rem;
+  padding: 1.2rem;
+  box-shadow: 0 30px 100px rgb(0 0 0 / 25%);
+  transition: background-color 700ms cubic-bezier(0.22, 1, 0.36, 1), color 700ms ease;
+}
+
+.journey-stage-0 {
+  background: var(--lime);
+  color: var(--forest);
+}
+
+.journey-stage-1 {
+  background: #f2f0e5;
+  color: var(--forest);
+}
+
+.journey-stage-2 {
+  background: var(--clay);
+  color: white;
+}
+
+.journey-stage-orb {
+  position: absolute;
+  top: -8rem;
+  right: -4rem;
+  width: 20rem;
+  height: 20rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 30%);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.journey-stage-2 .journey-stage-orb {
+  background: rgb(255 206 148 / 26%);
+}
+
+.journey-stage-topline,
+.journey-stage-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.journey-stage-topline > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.journey-stage-topline i,
+.journey-live-dot {
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.journey-stage-topline > span:last-child,
+.journey-stage-footer > span {
+  opacity: 0.44;
+}
+
+.journey-stage-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2.5rem 1rem 2rem;
+}
+
+.journey-stage-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  align-self: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.journey-scene {
+  animation: journey-scene-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes journey-scene-in {
+  from { opacity: 0; transform: translateY(1.2rem) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.journey-stage-footer {
+  gap: 0.8rem;
+}
+
+.journey-stage-footer > div {
+  display: flex;
+  flex: 1;
+  gap: 0.3rem;
+}
+
+.journey-stage-footer i {
+  display: block;
+  height: 0.18rem;
+  flex: 1;
+  border-radius: 99px;
+  background: currentColor;
+  opacity: 0.16;
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+
+.journey-stage-footer i.is-on {
+  opacity: 0.8;
+  transform: scaleY(1.6);
+}
+
+.journey-receipt,
+.journey-pantry-scene,
+.journey-meal-scene {
+  position: relative;
+  width: min(100%, 23rem);
+  margin: 1.75rem auto 0;
+  border-radius: 1.25rem;
+  background: rgb(255 255 255 / 76%);
+  color: var(--forest);
+  box-shadow: 0 1.5rem 3.5rem rgb(21 53 42 / 14%);
+}
+
+.journey-receipt {
+  min-height: 20rem;
+  padding: 1.5rem;
+  background: #f8f5ed;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  transform: rotate(-2deg);
+}
+
+.journey-receipt::before,
+.journey-receipt::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 0.5rem;
+  background: linear-gradient(135deg, transparent 35%, #f8f5ed 36% 65%, transparent 66%) 0 0 / 0.9rem 0.5rem repeat-x;
+}
+
+.journey-receipt::before { top: -0.45rem; }
+.journey-receipt::after { bottom: -0.45rem; transform: rotate(180deg); }
+
+.journey-receipt-top,
+.journey-receipt-item,
+.journey-receipt-total {
+  display: flex;
+  justify-content: space-between;
+}
+
+.journey-receipt-top { font-size: 0.6rem; font-weight: 700; opacity: 0.48; }
+.journey-receipt-line { height: 1px; margin: 1.1rem 0; background: currentColor; opacity: 0.17; }
+.journey-receipt-line-wide { margin-top: 0.75rem; }
+
+.journey-receipt-item {
+  padding: 0.52rem 0;
+  opacity: 0;
+  animation: receipt-item-in 500ms 350ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(350ms + var(--item-delay));
+}
+
+@keyframes receipt-item-in { from { opacity: 0; transform: translateX(-0.7rem); } to { opacity: 1; transform: translateX(0); } }
+.journey-receipt-total { align-items: baseline; font-size: 0.65rem; opacity: 0.55; }
+.journey-receipt-total strong { font-size: 1.3rem; color: var(--clay); }
+
+.journey-scan-line {
+  position: absolute;
+  top: 1rem;
+  right: 0.9rem;
+  left: 0.9rem;
+  height: 2px;
+  background: var(--clay);
+  box-shadow: 0 0 1rem rgb(231 101 69 / 65%);
+  animation: receipt-scan 2.6s 600ms ease-in-out infinite;
+}
+
+@keyframes receipt-scan { 0%, 100% { transform: translateY(0); opacity: 0.12; } 45%, 65% { transform: translateY(16rem); opacity: 0.9; } }
+
+.journey-pantry-scene,
+.journey-meal-scene { padding: 1.35rem; }
+
+.journey-scene-header { display: flex; justify-content: space-between; color: var(--forest); font-size: 0.6rem; font-weight: 800; letter-spacing: 0.14em; }
+.journey-live-dot { margin-right: 0.25rem; width: 0.35rem; height: 0.35rem; background: var(--sage); }
+.journey-pantry-score { display: flex; align-items: end; justify-content: space-between; margin-top: 1.7rem; }
+.journey-pantry-score span:first-child { display: block; font-size: 0.7rem; font-weight: 600; opacity: 0.5; }
+.journey-pantry-score strong { display: block; margin-top: 0.1rem; font-family: var(--font-fraunces), Georgia, serif; font-size: 3.2rem; line-height: 1; letter-spacing: -0.06em; }
+.journey-fresh-pill { border-radius: 999px; background: var(--lime); padding: 0.42rem 0.6rem; font-size: 0.57rem; font-weight: 800; }
+.journey-pantry-items { display: grid; gap: 0.55rem; margin-top: 1.45rem; }
+.journey-pantry-item { display: flex; align-items: center; gap: 0.65rem; border: 1px solid var(--border-warm); border-radius: 0.8rem; background: rgb(255 255 255 / 62%); padding: 0.62rem; }
+.journey-food-emoji { display: grid; width: 2rem; height: 2rem; place-items: center; border-radius: 0.6rem; background: var(--mist); font-size: 1.1rem; }
+.journey-pantry-item > span:nth-child(2) { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+.journey-pantry-item strong { overflow: hidden; font-size: 0.7rem; text-overflow: ellipsis; white-space: nowrap; }
+.journey-pantry-item small { margin-top: 0.15rem; font-size: 0.6rem; opacity: 0.5; }
+.journey-pantry-item > svg { color: var(--sage); }
+.journey-stock { margin-top: 1.2rem; font-size: 0.62rem; font-weight: 700; }
+.journey-stock > span { display: inline-block; margin-bottom: 0.4rem; opacity: 0.56; }
+.journey-stock > span:last-of-type { float: right; opacity: 1; }
+.journey-stock > div { clear: both; height: 0.4rem; overflow: hidden; border-radius: 99px; background: var(--border-warm); }
+.journey-stock i { display: block; width: 82%; height: 100%; border-radius: inherit; background: var(--sage); animation: stock-fill 900ms 300ms cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: left; }
+@keyframes stock-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.journey-meal-scene { background: rgb(255 255 255 / 92%); }
+.journey-meal-title { display: flex; align-items: center; gap: 0.7rem; margin-top: 1.7rem; }
+.journey-meal-icon { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border-radius: 0.85rem; background: var(--lime); color: var(--forest); }
+.journey-meal-title > div { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+.journey-meal-title > div span { font-size: 0.6rem; opacity: 0.5; }
+.journey-meal-title strong { margin-top: 0.2rem; font-size: 0.85rem; }
+.journey-check { display: grid; width: 1.7rem; height: 1.7rem; place-items: center; border-radius: 999px; background: var(--sage); color: white; }
+.journey-nutrition-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; margin-top: 1.7rem; }
+.journey-nutrition-row > div { border-radius: 0.75rem; background: var(--mist); padding: 0.65rem; }
+.journey-nutrition-row strong { display: block; font-family: var(--font-fraunces), Georgia, serif; font-size: 1.4rem; letter-spacing: -0.04em; }
+.journey-nutrition-row span { display: block; margin-top: 0.15rem; font-size: 0.55rem; opacity: 0.5; }
+.journey-nutrition-bars { display: grid; gap: 0.75rem; margin-top: 1.5rem; }
+.journey-nutrition-bars > div { display: grid; grid-template-columns: 3.5rem 1fr 2rem; align-items: center; gap: 0.5rem; font-size: 0.58rem; font-weight: 700; }
+.journey-nutrition-bars i { height: 0.35rem; overflow: hidden; border-radius: 99px; background: var(--border-warm); }
+.journey-nutrition-bars b { display: block; height: 100%; border-radius: inherit; background: var(--clay); animation: bar-in 900ms 300ms cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: left; }
+@keyframes bar-in { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.journey-nutrition-bars small { text-align: right; font-size: 0.55rem; opacity: 0.5; }
+.journey-meal-note { display: flex; align-items: center; gap: 0.4rem; margin: 1.3rem 0 0; color: var(--sage); font-size: 0.6rem; font-weight: 700; }
+
+@media (max-width: 1023px) {
+  .journey-step { min-height: 22rem; }
+  .journey-stage-sticky { position: relative; top: auto; min-height: 31rem; }
+  .journey-stage { min-height: 31rem; }
+}
+
+@media (max-width: 639px) {
+  .journey-stage { border-radius: 1.5rem; padding: 1rem; }
+  .journey-stage-content { padding-right: 0; padding-left: 0; }
+  .journey-receipt { min-height: 18rem; }
+  .journey-step { min-height: 20rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-reveal { opacity: 1; transform: none; filter: none; transition: none; }
+  .journey-scene,
+  .journey-receipt-item,
+  .journey-scan-line,
+  .journey-stock i,
+  .journey-nutrition-bars b { animation: none; opacity: 1; transform: none; }
 }
 

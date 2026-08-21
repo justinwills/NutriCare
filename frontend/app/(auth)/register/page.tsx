@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth/context";
 import { ApiError } from "@/lib/api/client";
 import { TextField } from "@/components/ui/TextField";
 import { Button } from "@/components/ui/Button";
+import { AuthScaffold } from "@/components/AuthScaffold";
 import type { UserRole } from "@/lib/types/api";
 
 const ROLE_OPTIONS: { value: UserRole; label: string; blurb: string }[] = [
@@ -68,18 +69,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <h1 className="font-display text-3xl font-semibold text-ink">
-            Create your account
-          </h1>
-          <p className="mt-2 text-sm text-ink/60">
-            Set up your pantry in a minute
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5 rounded-2xl border border-border-warm bg-white/60 p-6">
+    <AuthScaffold eyebrow="Start fresh" title="Build a clearer food routine." description="Choose the account that fits your needs. You can set up your first pantry item right after this.">
+        <form onSubmit={handleSubmit} className="app-surface flex flex-col gap-5 rounded-[24px] p-5 sm:p-6">
           <TextField
             label="Full name"
             name="fullName"
@@ -115,10 +106,10 @@ export default function RegisterPage() {
             {ROLE_OPTIONS.map((option) => (
               <label
                 key={option.value}
-                className={`flex cursor-pointer flex-col gap-0.5 rounded-lg border px-3.5 py-2.5 transition ${
+                className={`flex cursor-pointer flex-col gap-0.5 rounded-xl border px-3.5 py-3 transition ${
                   role === option.value
-                    ? "border-clay bg-clay/5 ring-1 ring-clay/30"
-                    : "border-border-warm hover:bg-border-warm/20"
+                    ? "border-sage/50 bg-sage/8 ring-2 ring-sage/10"
+                    : "border-border-warm bg-white/50 hover:border-sage/25 hover:bg-white"
                 }`}
               >
                 <span className="flex items-center gap-2 text-sm font-medium text-ink">
@@ -148,13 +139,12 @@ export default function RegisterPage() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-ink/60">
+        <p className="mt-6 text-center text-sm text-ink/55">
           Already have an account?{" "}
           <Link href="/login" className="font-medium text-clay hover:underline">
             Sign in
           </Link>
         </p>
-      </div>
-    </main>
+    </AuthScaffold>
   );
 }

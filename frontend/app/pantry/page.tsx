@@ -196,10 +196,11 @@ function PantryPageInner() {
 
   return (
     <>
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-ink">Pantry</h1>
-          <p className="mt-1 text-sm text-ink/60">Add items, deduct usage, scan for expiry</p>
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-sage">Kitchen overview</p>
+          <h1 className="font-display text-4xl font-semibold tracking-[-0.04em] text-ink sm:text-5xl">Your pantry</h1>
+          <p className="mt-2 text-sm text-ink/55">Know what you have, what is low, and what to use next.</p>
         </div>
         <Button type="button" variant="secondary" onClick={handleExpiryScan}>
           Scan expiring
@@ -221,10 +222,14 @@ function PantryPageInner() {
         </p>
       )}
 
-      <section className="mb-6 rounded-2xl border border-border-warm bg-white/60 p-4">
-        <h2 className="font-display text-lg font-semibold text-ink">Scan a receipt</h2>
+      <section className="app-surface mb-5 rounded-[24px] p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div><p className="mb-1 text-[10px] font-bold uppercase tracking-[0.15em] text-clay">Fastest way in</p>
+        <h2 className="font-display text-2xl font-semibold tracking-[-0.02em] text-ink">Scan a receipt</h2>
         <p className="mt-1 text-sm text-ink/60">Upload a receipt or grocery-order screenshot. We’ll extract products for you to review.</p>
-        <label className="mt-3 inline-flex cursor-pointer items-center rounded-lg bg-clay px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-clay/90">
+          </div><span className="hidden h-12 w-12 shrink-0 place-items-center rounded-2xl bg-lime text-2xl sm:grid" aria-hidden="true">⌁</span>
+        </div>
+        <label className="mt-4 inline-flex min-h-11 cursor-pointer items-center rounded-xl bg-forest px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-forest/92">
           {scanning ? "Scanning…" : "Choose image"}
           <input
             type="file"
@@ -268,7 +273,7 @@ function PantryPageInner() {
 
       <form
         onSubmit={handleAdd}
-        className="mb-6 grid gap-3 rounded-2xl border border-border-warm bg-white/60 p-4 sm:grid-cols-2"
+        className="app-surface mb-8 grid gap-4 rounded-[24px] p-5 sm:grid-cols-2 sm:p-6"
       >
         <TextField
           label="Product name"
@@ -289,7 +294,7 @@ function PantryPageInner() {
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-ink/80">Unit</label>
           <select
-            className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-ink outline-none focus:border-clay focus:ring-2 focus:ring-clay/20"
+            className="min-h-12 rounded-xl border border-border-warm bg-white/85 px-3.5 py-2.5 text-base text-ink outline-none focus:border-sage/55 focus:ring-4 focus:ring-sage/10"
             value={baseUnit}
             onChange={(e) => setBaseUnit(e.target.value as BaseUnit)}
           >
@@ -311,18 +316,18 @@ function PantryPageInner() {
       </form>
 
       {loading ? (
-        <p className="text-sm text-ink/55">Loading pantry…</p>
+        <p className="rounded-2xl border border-dashed border-border-warm p-8 text-center text-sm text-ink/55">Loading your pantry…</p>
       ) : items.length === 0 ? (
-        <p className="text-sm text-ink/55">No pantry items yet. Add one above.</p>
+        <p className="rounded-2xl border border-dashed border-border-warm p-8 text-center text-sm text-ink/55">Your shelves are empty. Add an item above to get started.</p>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="grid gap-3 md:grid-cols-2">
           {items.map((item) => {
             const low = item.remainingRatio < 0.15;
             const units = unitsForBase(item.baseUnit);
             return (
               <li
                 key={item.id}
-                className="rounded-2xl border border-border-warm bg-white/70 p-4"
+                className="receipt-tag app-surface rounded-[22px] p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(23,37,30,0.09)]"
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
@@ -338,7 +343,7 @@ function PantryPageInner() {
                     {item.source}
                   </span>
                 </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-border-warm">
+                <div className="mt-4 h-2 overflow-hidden rounded-full bg-border-warm/70">
                   <div
                     className={`h-full ${low ? "bg-brick" : "bg-sage"}`}
                     style={{ width: `${Math.max(0, Math.min(100, item.remainingRatio * 100))}%` }}
@@ -360,7 +365,7 @@ function PantryPageInner() {
                   <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-ink/80">Unit</label>
                     <select
-                      className="rounded-lg border border-border-warm bg-white px-3 py-2.5 text-sm"
+                      className="min-h-12 rounded-xl border border-border-warm bg-white px-3 py-2.5 text-sm outline-none focus:border-sage/55 focus:ring-4 focus:ring-sage/10"
                       value={deductUnit[item.id] ?? item.baseUnit}
                       onChange={(e) =>
                         setDeductUnit((prev) => ({
