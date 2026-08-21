@@ -1,7 +1,7 @@
 import { pool } from '../db/pool.js';
 
-export async function createNotification({ userId, type, message }) {
-  const { rows } = await pool.query(
+export async function createNotification({ userId, type, message, client = pool }) {
+  const { rows } = await client.query(
     `INSERT INTO notifications (user_id, type, message)
      VALUES ($1, $2, $3)
      RETURNING *`,

@@ -17,10 +17,11 @@ const EXPIRING_SOON_DAYS = 3;
  *
  * Returns the updated pantry item row.
  */
-export async function deductFromPantry({ userId, pantryItemId, quantityUsed, unit }) {
-  const client = await pool.connect();
+export async function deductFromPantry({ userId, pantryItemId, quantityUsed, unit, client: providedClient }) {
+  const ownsClient = !providedClient;
+  const client = providedClient || await pool.connect();
   try {
-    await client.query('BEGIN');
+    if (ownsClient) await client.query('BEGIN');
 
     const { rows } = await client.query(
       `SELECT * FROM pantry_items WHERE id = $1 AND user_id = $2 FOR UPDATE`,
@@ -40,7 +41,10 @@ export async function deductFromPantry({ userId, pantryItemId, quantityUsed, uni
       );
     }
 
-    const newRemaining = Number(item.remaining_quantity) - amountInBase;
+    const newRemaining = Math.max(
+      0,
+      Number((Number(item.remaining_quantity) - amountInBase).toFixed(2))
+    );
 
     const { rows: updatedRows } = await client.query(
       `UPDATE pantry_items
@@ -59,24 +63,25 @@ export async function deductFromPantry({ userId, pantryItemId, quantityUsed, uni
       await client.query('DELETE FROM pantry_items WHERE id = $1', [pantryItemId]);
     }
 
-    await client.query('COMMIT');
-
-    // Fire-and-forget style, but awaited so a demo doesn't race ahead
-    // of the notification actually landing in the DB.
+    // Create alerts in the same transaction as the deduction. This keeps
+    // pantry, meal, and notification state consistent if anything fails.
     const notification = itemDeleted
       ? await createNotification({
           userId: updated.user_id,
           type: 'out_of_stock',
           message: `${updated.product_name} is out of stock and was removed from the pantry.`,
+          client,
         })
-      : await checkLowStock(item, updated);
+      : await checkLowStock(item, updated, client);
+
+    if (ownsClient) await client.query('COMMIT');
 
     return { item: updated, notificationCreated: !!notification, itemDeleted };
   } catch (err) {
-    await client.query('ROLLBACK');
+    if (ownsClient) await client.query('ROLLBACK').catch(() => {});
     throw err;
   } finally {
-    client.release();
+    if (ownsClient) client.release();
   }
 }
 
@@ -84,7 +89,7 @@ export async function deductFromPantry({ userId, pantryItemId, quantityUsed, uni
  * Checks one pantry item against the low-stock threshold and creates
  * a notification if it's crossed. Called after every deduction.
  */
-async function checkLowStock(previousItem, updatedItem) {
+async function checkLowStock(previousItem, updatedItem, client = pool) {
   const previousRatio = Number(previousItem.remaining_quantity) / Number(previousItem.initial_quantity);
   const updatedRatio = Number(updatedItem.remaining_quantity) / Number(updatedItem.initial_quantity);
   if (previousRatio > LOW_STOCK_THRESHOLD && updatedRatio <= LOW_STOCK_THRESHOLD) {
@@ -92,6 +97,7 @@ async function checkLowStock(previousItem, updatedItem) {
       userId: updatedItem.user_id,
       type: 'low_stock',
       message: `${updatedItem.product_name} is running low (${updatedItem.remaining_quantity}${updatedItem.base_unit} left).`,
+      client,
     });
   }
   return null;
@@ -126,10 +132,13 @@ export async function checkExpiringItems() {
 
     if (existing.length > 0) continue;
 
+    const expiration = item.expiration_date instanceof Date
+      ? item.expiration_date.toISOString().slice(0, 10)
+      : String(item.expiration_date).slice(0, 10);
     await createNotification({
       userId: item.user_id,
       type: 'expiring_soon',
-      message: `${item.product_name} expires on ${item.expiration_date.toISOString().split('T')[0]}.`,
+      message: `${item.product_name} expires on ${expiration}.`,
     });
     alertsCreated += 1;
   }

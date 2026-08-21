@@ -75,21 +75,12 @@ aren't built yet.
   about failing to fetch Google Fonts, that's a network problem on
   your end worth checking, not expected behavior.
 
-## Two real backend bugs found while integrating (worth fixing in
-## Person 2's code, independent of this frontend)
+## Backend integration fixes
 
-1. `POST /auth/register` returns the user's name as `full_name`;
-   `POST /auth/login` returns the same field as `fullName`. Confirmed
-   live — same server, two different casings for the same field. The
-   frontend works around this (see `lib/types/api.ts`'s
-   `RawUserFromRegister` vs `User`), but it's worth a one-line fix in
-   `authService.js`'s `registerUser` for its own sake.
-2. `POST /doctor/check-nutrition` is missing the
-   `requireRole('doctor')` guard that every other doctor-scoped route
-   has. Right now any authenticated user (not just a doctor) can
-   trigger a nutrition alert for any patient ID. Confirmed by reading
-   `doctor.js` directly — the other three doctor routes all have it,
-   this one doesn't.
+The backend now exposes a camelCase `fullName` alias on registration,
+uses one transaction for meal deductions plus meal writes, accepts all
+frontend measurement units in `meal_items`, and restricts nutrition checks
+to the patient or an actively linked doctor.
 
 ## Key contract notes for whoever builds against `lib/api/`
 

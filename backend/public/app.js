@@ -8,6 +8,20 @@ const state = {
 
 const el = (id) => document.getElementById(id);
 const statusEl = el('status');
+const UNITS_BY_BASE = {
+  g: ['g', 'kg', 'oz', 'lb', 'pinch'],
+  ml: ['ml', 'l', 'tsp', 'tbsp', 'cup', 'fl_oz'],
+};
+
+function unitsForBase(baseUnit) {
+  return UNITS_BY_BASE[baseUnit] || [...new Set([...UNITS_BY_BASE.g, ...UNITS_BY_BASE.ml])];
+}
+
+function unitOptions(units, selected = '') {
+  return units
+    .map((unit) => `<option value="${escapeHtml(unit)}"${unit === selected ? ' selected' : ''}>${escapeHtml(unit)}</option>`)
+    .join('');
+}
 
 function setStatus(msg, kind = '') {
   statusEl.textContent = msg || '';
@@ -128,14 +142,7 @@ function renderPantry() {
           </div>
           <div class="actions">
             <input class="deduct-qty" type="number" step="any" min="0.01" placeholder="qty" style="width:5.5rem" />
-            <select class="deduct-unit">
-              <option value="${escapeHtml(item.base_unit)}">${escapeHtml(item.base_unit)}</option>
-              <option value="tsp">tsp</option>
-              <option value="tbsp">tbsp</option>
-              <option value="cup">cup</option>
-              <option value="g">g</option>
-              <option value="ml">ml</option>
-            </select>
+            <select class="deduct-unit">${unitOptions(unitsForBase(item.base_unit), item.base_unit)}</select>
             <button type="button" class="secondary deduct-btn">Deduct</button>
           </div>
         </div>
@@ -219,10 +226,10 @@ async function loadNotifications() {
       return `
         <div class="card" data-id="${n.id}">
           <strong>${escapeHtml(n.type || 'alert')}</strong>
-          ${n.read_at ? '' : ' · unread'}
+          ${n.read ? '' : ' · unread'}
           <div class="meta">${escapeHtml(n.message || '')}</div>
           ${
-            n.read_at
+            n.read
               ? ''
               : '<div class="actions"><button type="button" class="secondary mark-read">Mark read</button></div>'
           }
@@ -362,7 +369,7 @@ function wireForms() {
   el('checkExpiringBtn').onclick = async () => {
     try {
       const data = await api('/pantry/check-expiring', { method: 'POST' });
-      setStatus(`Expiry scan done — flagged ${data.itemsFlagged}`, 'ok');
+      setStatus(`Expiry scan done — flagged ${data.alertsCreated}`, 'ok');
       await loadNotifications();
     } catch (err) {
       setStatus(err.message, 'err');
@@ -413,6 +420,9 @@ function wireForms() {
     if (item) {
       el('mealForm').label.value = item.product_name;
       el('mealForm').unit.value = item.base_unit;
+      el('mealForm').unit.innerHTML = unitOptions(unitsForBase(item.base_unit), item.base_unit);
+    } else {
+      el('mealForm').unit.innerHTML = unitOptions([...new Set([...UNITS_BY_BASE.g, ...UNITS_BY_BASE.ml])], 'g');
     }
   };
 

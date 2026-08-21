@@ -11,6 +11,7 @@ covers.
 npm install
 cp .env.example .env
 # edit .env: set DATABASE_URL (Supabase connection string, or local Postgres)
+# use PORT=3002 so the Next.js frontend can reach the backend
 npm run migrate
 npm run dev
 ```
@@ -28,7 +29,7 @@ usually doesn't — see the "Supabase-specific notes" section below.
 ## Project layout
 
 ```
-migrations/          6 numbered .sql files, run in order by src/db/migrate.js
+migrations/          numbered .sql files, run in order by src/db/migrate.js
 src/db/pool.js        pg connection pool
 src/db/migrate.js     migration runner (tracks applied files, safe to re-run)
 src/services/         actual logic: units.js, pantryService.js,
@@ -59,7 +60,7 @@ not `routes/`.
 | POST   | /doctor/link-patient          | doctor      | |
 | GET    | /doctor/patients              | doctor      | |
 | POST   | /doctor/nutrition-targets     | doctor      | set/update a min/max per nutrient |
-| POST   | /doctor/check-nutrition       | any         | Person 3 calls this after computing a meal's nutrients |
+| POST   | /doctor/check-nutrition       | linked doctor or patient | Person 3 calls this after computing a meal's nutrients |
 
 All authenticated routes read `Authorization: Bearer <token>`.
 
@@ -72,10 +73,9 @@ integration contract's confirmed-item JSON in the jobdesk doc).
 **Person 3 → you, for nutrition:** once Person 3 calculates a meal's
 nutrients, call `POST /doctor/check-nutrition` once per nutrient that
 has a target set, so out-of-range values create a notification. This
-endpoint doesn't require the doctor role — any authenticated caller
-can report a value for a patient (the actual check reads the target
-by `patientId`, not by who's calling), which is a shortcut worth
-knowing about, not a subtle security model.
+endpoint accepts the patient themself or a doctor with an active link to
+that patient, so the calculation flow cannot report values for arbitrary
+patient IDs.
 
 **Person 1 → you, for meals:** `POST /meals` accepts an `items` array.
 Each item can have a `pantryItemId` (real deduction happens) or omit
@@ -94,13 +94,12 @@ recorded for nutrition math only, no deduction).
 - **Low-stock threshold (15%) and expiring-soon window (3 days) are
   hardcoded** in `pantryService.js`, not per-user or per-item
   configurable. Fine for a demo; flag as a "future work" line if asked.
-- **Meal logging deducts each item as its own transaction**, not one
-  atomic transaction for the whole meal. If item 2 of 3 fails
-  (insufficient stock), items before it have already been deducted.
-  For a hackathon this is an acceptable rough edge, not a silent gap —
-  worth a one-line mention if a judge asks about atomicity.
-- **`check-nutrition` doesn't verify caller identity against the
-  patient**, as noted above. Fine for a demo, not fine to ship.
+- **Meal logging uses one transaction for the meal, deductions, and any
+  low-stock/out-of-stock alert.** If an item fails, earlier deductions
+  roll back with the meal.
+- **`check-nutrition` accepts the patient themself or a doctor with an
+  active patient link.** Arbitrary authenticated users cannot trigger
+  alerts for someone else's patient ID.
 - **Expiry checking is a manual-trigger endpoint**
   (`POST /pantry/check-expiring`), not a real cron. Good enough to
   demo live; wire it to `node-cron` or a Supabase scheduled function
@@ -119,12 +118,16 @@ recorded for nutrition math only, no deduction).
 - `pgcrypto` is enabled by default on Supabase, so `gen_random_uuid()`
   in the migrations should just work.
 
-## What's been tested (not just read)
+## What's been tested
 
-Actually run against a live Postgres 16 instance and a live Express
-server, via real HTTP requests, in this session:
+The backend JavaScript is syntax-checked and the Express server has been
+smoke-tested locally. Full data-flow verification requires a PostgreSQL
+instance configured through `DATABASE_URL`.
 
-- All 6 migrations run clean, and re-running `npm run migrate` correctly
+Previously verified against a live Postgres 16 instance and a live Express
+server, via real HTTP requests:
+
+- All migrations run clean, and re-running `npm run migrate` correctly
   skips already-applied files
 - register → login → JWT issued
 - `POST /pantry` → `POST /meals` (with a `pantryItemId`) → deduction

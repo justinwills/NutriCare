@@ -40,13 +40,22 @@ const TO_G = {
  *   ingredients weigh the same per teaspoon.
  */
 export function toBaseUnit(amount, fromUnit, targetBaseUnit) {
+  const numericAmount = Number(amount);
+  if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+    throw new Error('Quantity must be a positive number');
+  }
+
+  if (typeof fromUnit !== 'string' || !fromUnit.trim()) {
+    throw new Error('Unit is required');
+  }
+
   if (targetBaseUnit === 'ml') {
     if (!(fromUnit in TO_ML)) {
       throw new Error(
         `"${fromUnit}" is a mass unit and can't convert to ml (volume) without a density`
       );
     }
-    return amount * TO_ML[fromUnit];
+    return numericAmount * TO_ML[fromUnit];
   }
 
   if (targetBaseUnit === 'g') {
@@ -55,7 +64,7 @@ export function toBaseUnit(amount, fromUnit, targetBaseUnit) {
         `"${fromUnit}" is a volume unit and can't convert to g (mass) without a density`
       );
     }
-    return amount * TO_G[fromUnit];
+    return numericAmount * TO_G[fromUnit];
   }
 
   throw new Error(`Unknown base unit "${targetBaseUnit}"`);
