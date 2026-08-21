@@ -1,0 +1,39 @@
+{
+  "patientId": "PATIENT-001",
+  "doctorId": "DOCTOR-001",
+  "source": "ocr-output\\all_groceries_nutrition.json",
+  "summary": {
+    "productsChecked": 3,
+    "alertsCreated": 1,
+    "itemsNeedingReview": 2
+  },
+  "alerts": [
+    {
+      "alertType": "RESTRICTED_PURCHASE_DETECTED",
+      "ruleType": "restricted_food",
+      "severity": "warning",
+      "product": "Mozzarella, low-moisture, part-skim, shredded",
+      "foodId": "mozzarella_shredded_part_skim",
+      "reason": "Demo restricted food",
+      "detectedFrom": "receipt_ocr",
+      "purchaseDetected": true,
+      "consumptionConfirmed": false,
+      "requiresHumanConfirmation": true,
+      "notifyPatient": true,
+      "notifyDoctor": true
+    }
+  ],
+  "itemsNeedingReview": [
+    {
+      "product": "Production date: July 23, 2026?",
+      "status": "unmatched",
+      "message": "No reliable nutrition match was found."
+    },
+    {
+      "product": "Vegetarian beer meat slices",
+      "status": "nutrition_label_required",
+      "message": "This is a branded product. Scan or enter its nutrition label before calculating nutrients."
+    }
+  ],
+  "importantNotice": "These alerts indicate a possible restricted purchase found by receipt OCR. They do not prove that the patient consumed the product."
+}

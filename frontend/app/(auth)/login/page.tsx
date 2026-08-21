@@ -31,8 +31,8 @@ function LoginForm() {
     setError(null);
     setSubmitting(true);
     try {
-      await login(email, password);
-      router.push("/dashboard");
+      await login(email.trim().toLowerCase(), password);
+      router.push("/pantry");
     } catch (err) {
       // authService.js's loginUser throws the same message for a wrong
       // email or a wrong password ("Invalid email or password") —

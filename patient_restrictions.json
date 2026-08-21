@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "patientId": "PATIENT-001",
+  "doctorId": "DOCTOR-001",
+  "restrictedFoods": [
+    {
+      "foodId": "milk_whole",
+      "reason": "DEMO ONLY - replace with a restriction entered by the patient's doctor",
+      "severity": "warning",
+      "enabled": false
+    },
+    {
+      "foodId": "mozzarella_shredded_part_skim",
+      "reason": "Demo restricted food",
+      "severity": "warning",
+      "enabled": true
+    }
+  ],
+  "nutrientRules": [
+    {
+      "nutrient": "sodiumMg",
+      "maximumPer100g": 500,
+      "reason": "DEMO ONLY - replace with a limit entered by the patient's doctor",
+      "severity": "warning",
+      "enabled": false
+    }
+  ],
+  "notificationSettings": {
+    "notifyPatient": true,
+    "notifyDoctor": true
+  },
+
+  "importantNotice": "All enabled restrictions and nutrient limits must be entered or approved by the patient's doctor. Receipt OCR shows a purchase, not confirmed consumption."
+}

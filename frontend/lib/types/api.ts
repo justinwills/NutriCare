@@ -90,6 +90,14 @@ export interface ExtractedItem {
   confidence: number; // 0–1
 }
 
+export interface ScannedPantryItem {
+  rawName: string;
+  suggestedName: string;
+  initialQuantity: number;
+  baseUnit: BaseUnit;
+  confidence: number;
+}
+
 // Request body shape for POST /meals items[] -- confirmed camelCase in.
 export interface MealItemInput {
   pantryItemId: string | null; // null for manual entries not tracked in pantry
@@ -140,6 +148,7 @@ export interface RawNutritionTarget {
 export type NotificationType =
   | "expiring_soon"
   | "low_stock"
+  | "out_of_stock"
   | "medicine_due"
   | "medicine_missed"
   | "nutrition_low"

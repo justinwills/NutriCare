@@ -27,12 +27,15 @@ function parseMeal(raw: RawMeal): MealView {
 export async function logMeal(input: {
   notes?: string;
   items: MealItemInput[];
-}): Promise<MealView> {
-  const result = await apiRequest<{ meal: Omit<RawMeal, "items">; items: RawMeal["items"] }>(
+}): Promise<{ meal: MealView; alertsCreated: number }> {
+  const result = await apiRequest<{ meal: Omit<RawMeal, "items">; items: RawMeal["items"]; alertsCreated: number }>(
     "/meals",
     { method: "POST", body: input }
   );
-  return parseMeal({ ...result.meal, items: result.items });
+  return {
+    meal: parseMeal({ ...result.meal, items: result.items }),
+    alertsCreated: result.alertsCreated,
+  };
 }
 
 export async function listMeals(): Promise<MealView[]> {

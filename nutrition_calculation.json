@@ -1,0 +1,27 @@
+{
+  "query": "",
+  "confirmedFoodId": "apple_fuji_raw",
+  "confirmedFoodName": "Fuji apple, raw, with skin",
+  "foodState": "raw",
+  "amountConsumed": {
+    "value": 1.0,
+    "unit": "g"
+  },
+  "nutrients": {
+    "caloriesKcal": 0.63,
+    "proteinG": 0.0,
+    "carbohydrateG": 0.15,
+    "fatG": 0.0,
+    "fiberG": 0.02,
+    "sugarG": 0.12,
+    "sodiumMg": 0.01
+  },
+  "source": {
+    "name": "USDA FoodData Central",
+    "fdcId": 167793
+  },
+  "warnings": [
+    "This result uses a generic food-composition record unless an exact nutrition label was entered.",
+    "Null nutrient values mean unknown, not zero."
+  ]
+}

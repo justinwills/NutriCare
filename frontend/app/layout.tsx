@@ -15,7 +15,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Pantry — grocery, meals, and nutrition tracking",
+  title: "NutriCare — grocery, meals, and nutrition tracking",
   description:
     "Scan receipts into a digital pantry, log meals, and track nutrition against doctor-set targets.",
 };

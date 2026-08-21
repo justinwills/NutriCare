@@ -27,7 +27,7 @@ export function RequireAuth({ children, allowedRoles }: RequireAuthProps) {
       return;
     }
     if (allowedRoles && !allowedRoles.includes(user.role)) {
-      router.replace("/dashboard");
+      router.replace("/pantry");
     }
   }, [loading, user, allowedRoles, router]);
 

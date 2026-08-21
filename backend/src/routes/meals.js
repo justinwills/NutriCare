@@ -43,6 +43,7 @@ router.post('/', async (req, res) => {
     const meal = mealRows[0];
 
     const savedItems = [];
+    let alertsCreated = 0;
 
     for (const item of items) {
       const { pantryItemId, label, quantityUsed, unit } = item;
@@ -56,12 +57,13 @@ router.post('/', async (req, res) => {
       // log fails too, since the meal shouldn't claim ingredients it
       // couldn't actually use.
       if (pantryItemId) {
-        await deductFromPantry({
+        const deduction = await deductFromPantry({
           userId: req.user.userId,
           pantryItemId,
           quantityUsed,
           unit,
         });
+        if (deduction.notificationCreated) alertsCreated += 1;
       }
 
       const { rows: itemRows } = await client.query(
@@ -74,7 +76,7 @@ router.post('/', async (req, res) => {
     }
 
     await client.query('COMMIT');
-    res.status(201).json({ meal, items: savedItems });
+    res.status(201).json({ meal, items: savedItems, alertsCreated });
   } catch (err) {
     await client.query('ROLLBACK');
     res.status(400).json({ error: err.message });

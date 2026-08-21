@@ -70,13 +70,13 @@ router.post('/:id/deduct', async (req, res) => {
   }
 
   try {
-    const updated = await deductFromPantry({
+    const result = await deductFromPantry({
       userId: req.user.userId,
       pantryItemId: req.params.id,
       quantityUsed,
       unit,
     });
-    res.json({ item: updated });
+    res.json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -89,8 +89,8 @@ router.post('/:id/deduct', async (req, res) => {
  * without waiting for a scheduler to tick.
  */
 router.post('/check-expiring', async (req, res) => {
-  const count = await checkExpiringItems();
-  res.json({ checked: true, itemsFlagged: count });
+  const alertsCreated = await checkExpiringItems();
+  res.json({ checked: true, alertsCreated });
 });
 
 export default router;

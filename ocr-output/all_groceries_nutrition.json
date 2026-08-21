@@ -1,0 +1,109 @@
+{
+  "sourceImage": "test.jpg",
+  "calculationPurpose": "full_purchased_package_inventory",
+  "summary": {
+    "productsReceived": 3,
+    "productsCalculated": 1,
+    "productsNeedingReview": 2
+  },
+  "inventoryTotalsKnownMinimum": {
+    "caloriesKcal": 304.0,
+    "proteinG": 23.6,
+    "carbohydrateG": 8.06,
+    "fatG": 19.7,
+    "fiberG": 0.0,
+    "sugarG": 2.24,
+    "sodiumMg": 682.0
+  },
+  "incompleteNutrients": [
+    "caloriesKcal",
+    "carbohydrateG",
+    "fatG",
+    "fiberG",
+    "proteinG",
+    "sodiumMg",
+    "sugarG"
+  ],
+  "products": [
+    {
+      "ocrProduct": {
+        "productName": "Production date: July 23, 2026?",
+        "packageSize": 950.0,
+        "unit": "ml",
+        "packageCount": 2,
+        "orderQuantity": 1,
+        "unitPrice": 14.9,
+        "currency": "CNY",
+        "totalAmount": 1900.0
+      },
+      "ocrProductName": "Production date: July 23, 2026?",
+      "status": "unmatched",
+      "message": "No reliable nutrition match was found."
+    },
+    {
+      "ocrProduct": {
+        "productName": "shredded mozzarella cheese",
+        "packageSize": 100.0,
+        "unit": "g",
+        "packageCount": 1,
+        "orderQuantity": 1,
+        "unitPrice": 7.8,
+        "currency": "CNY",
+        "totalAmount": 100.0
+      },
+      "ocrProductName": "shredded mozzarella cheese",
+      "matchedFoodId": "mozzarella_shredded_part_skim",
+      "matchedFoodName": "Mozzarella, low-moisture, part-skim, shredded",
+      "matchedAlias": "mozzarella",
+      "nameMatchConfidence": 0.96,
+      "foodState": "ready_to_eat",
+      "sourceFdcId": 170900,
+      "reviewRequired": true,
+      "packageTotal": {
+        "value": 100.0,
+        "unit": "g"
+      },
+      "calculatedWeightG": 100.0,
+      "unitConversionMethod": "exact_mass",
+      "status": "calculated_needs_confirmation",
+      "calculationPurpose": "full_purchased_package_inventory",
+      "nutrientsForFullPurchase": {
+        "caloriesKcal": 304.0,
+        "proteinG": 23.6,
+        "carbohydrateG": 8.06,
+        "fatG": 19.7,
+        "fiberG": 0.0,
+        "sugarG": 2.24,
+        "sodiumMg": 682.0
+      },
+      "warnings": [
+        "Confirm the food match and package quantity.",
+        "These values describe the full purchased amount, not the amount eaten.",
+        "Generic USDA food data may differ from the exact brand."
+      ]
+    },
+    {
+      "ocrProduct": {
+        "productName": "Vegetarian beer meat slices",
+        "packageSize": 160.0,
+        "unit": "g",
+        "packageCount": 1,
+        "orderQuantity": 2,
+        "unitPrice": 6.9,
+        "currency": "CNY",
+        "totalAmount": 320.0
+      },
+      "ocrProductName": "Vegetarian beer meat slices",
+      "matchedFoodId": "vegetarian_mock_meat_branded",
+      "matchedFoodName": "Vegetarian mock meat strips, branded product",
+      "matchedAlias": "vegetarian meat",
+      "nameMatchConfidence": 1.0,
+      "foodState": "packaged",
+      "sourceFdcId": null,
+      "reviewRequired": true,
+      "status": "nutrition_label_required",
+      "message": "This is a branded product. Scan or enter its nutrition label before calculating nutrients."
+    }
+  ],
+  "importantNotice": "Inventory totals represent purchased package contents. Meal intake must be calculated separately from quantities manually entered by the user."
+}

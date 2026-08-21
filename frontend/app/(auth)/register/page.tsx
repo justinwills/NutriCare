@@ -4,15 +4,12 @@ import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as authApi from "@/lib/api/auth";
+import { useAuth } from "@/lib/auth/context";
 import { ApiError } from "@/lib/api/client";
 import { TextField } from "@/components/ui/TextField";
 import { Button } from "@/components/ui/Button";
 import type { UserRole } from "@/lib/types/api";
 
-// role is REQUIRED by the backend at registration time (registerUser
-// throws if it's not one of these three — verified against
-// authService.js and live), so role selection has to be part of this
-// same form, not a separate post-registration onboarding step.
 const ROLE_OPTIONS: { value: UserRole; label: string; blurb: string }[] = [
   {
     value: "personal",
@@ -33,6 +30,7 @@ const ROLE_OPTIONS: { value: UserRole; label: string; blurb: string }[] = [
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,17 +43,23 @@ export default function RegisterPage() {
     setError(null);
 
     if (!role) {
-      setError("Choose how you'll use Pantry.");
+      setError("Choose how you'll use NutriCare.");
       return;
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
     setSubmitting(true);
     try {
-      await authApi.register({ email, password, fullName, role });
-      // register does NOT return a token (verified live — only /auth/login
-      // does), so there's no session to start here. Send them to login
-      // with the email pre-filled instead of pretending they're signed in.
-      router.push(`/login?email=${encodeURIComponent(email)}&registered=1`);
+      // Backend register does not return a JWT, so sign in immediately
+      // afterward and land on the dashboard in one step.
+      await authApi.register({
+        email: normalizedEmail,
+        password,
+        fullName,
+        role,
+      });
+      await login(normalizedEmail, password);
+      router.push("/pantry");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong. Try again.");
     } finally {
@@ -106,7 +110,7 @@ export default function RegisterPage() {
 
           <fieldset className="flex flex-col gap-2">
             <legend className="mb-1 text-sm font-medium text-ink/80">
-              How will you use Pantry?
+              How will you use NutriCare?
             </legend>
             {ROLE_OPTIONS.map((option) => (
               <label

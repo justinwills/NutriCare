@@ -1,0 +1,276 @@
+{
+  "sourceImage": "test.jpg",
+  "targetLanguage": "English",
+  "detectedLines": [
+    {
+      "originalText": "=",
+      "englishText": null,
+      "ocrConfidence": 0.5588178634643555,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "小象3.3g蛋白质鲜牛奶95",
+      "englishText": "Little Elephant 3.3g protein fresh milk 95",
+      "ocrConfidence": 0.9985386729240417,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "实付¥14.90",
+      "englishText": "Actual payment¥14.90",
+      "ocrConfidence": 0.9684694409370422,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "鲜牛奶",
+      "englishText": "fresh milk",
+      "ocrConfidence": 0.9940817952156067,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "鲜牛奶",
+      "englishText": "fresh milk",
+      "ocrConfidence": 0.9906456470489502,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "0ml*2盒",
+      "englishText": "0ml*2 boxes",
+      "ocrConfidence": 0.9999625086784363,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "生产日期：26年7月23日?",
+      "englishText": "Production date: July 23, 2026?",
+      "ocrConfidence": 0.9801273941993713,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "规格：950ml*2盒",
+      "englishText": "Specifications: 950ml*2 boxes",
+      "ocrConfidence": 0.9994364380836487,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "单价：¥14.9/组",
+      "englishText": "Unit price: ¥14.9/set",
+      "ocrConfidence": 0.993975043296814,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "数量：1",
+      "englishText": "Quantity: 1",
+      "ocrConfidence": 0.9992254972457886,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "申请退款",
+      "englishText": "Apply for a refund",
+      "ocrConfidence": 0.9999800324440002,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "加购物车",
+      "englishText": "Add to cart",
+      "ocrConfidence": 0.9999682903289795,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "展艺欧澜马苏里拉奶酪碎10",
+      "englishText": "Zhanyi Olan mozzarella cheese shredded 10",
+      "ocrConfidence": 0.9935640096664429,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "实付￥7.80",
+      "englishText": "Actual payment￥7.80",
+      "ocrConfidence": 0.9356260299682617,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "MOZZARELLA",
+      "englishText": "MOZZARELLA",
+      "ocrConfidence": 0.999958336353302,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "马苏里拉奶酪碎",
+      "englishText": "shredded mozzarella cheese",
+      "ocrConfidence": 0.9914432764053345,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "0g",
+      "englishText": "0 g",
+      "ocrConfidence": 0.9993207454681396,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "规格：100g",
+      "englishText": "Specifications: 100g",
+      "ocrConfidence": 0.9980759024620056,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "单价：¥7.8/袋",
+      "englishText": "Unit price: ¥7.8/bag",
+      "ocrConfidence": 0.9957840442657471,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "数量：1",
+      "englishText": "Quantity: 1",
+      "ocrConfidence": 0.9996011853218079,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "申请退款",
+      "englishText": "Apply for a refund",
+      "ocrConfidence": 0.9999828338623047,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "加购物车",
+      "englishText": "Add to cart",
+      "ocrConfidence": 0.9999680519104004,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "白玉素啤酒肉片160g",
+      "englishText": "Baiyu vegetarian beer meat slices 160g",
+      "ocrConfidence": 0.9999507665634155,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "白玉",
+      "englishText": "white jade",
+      "ocrConfidence": 0.9992508888244629,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "实付¥13.80",
+      "englishText": "Actual payment¥13.80",
+      "ocrConfidence": 0.9684652090072632,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "素啤酒肉片",
+      "englishText": "Vegetarian beer meat slices",
+      "ocrConfidence": 0.9924266934394836,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "规格：160g",
+      "englishText": "Specifications: 160g",
+      "ocrConfidence": 0.9974837899208069,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "单价：¥6.9/袋",
+      "englishText": "Unit price: ¥6.9/bag",
+      "ocrConfidence": 0.9823237657546997,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "数量：2",
+      "englishText": "Quantity: 2",
+      "ocrConfidence": 0.9996284246444702,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "申请退款",
+      "englishText": "Apply for a refund",
+      "ocrConfidence": 0.9999822378158569,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "加购物车",
+      "englishText": "Add to cart",
+      "ocrConfidence": 0.9999675750732422,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "商品总额",
+      "englishText": "total merchandise volume",
+      "ocrConfidence": 0.9999772310256958,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "¥36.50",
+      "englishText": "¥36.50",
+      "ocrConfidence": 0.9699969291687012,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "包装费?",
+      "englishText": "Packaging fee?",
+      "ocrConfidence": 0.9841060638427734,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "¥1.00",
+      "englishText": "¥1.00",
+      "ocrConfidence": 0.9912242889404297,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "基础包装费",
+      "englishText": "Basic packaging fee",
+      "ocrConfidence": 0.9999594688415527,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "¥0.5",
+      "englishText": "¥0.5",
+      "ocrConfidence": 0.9967073202133179,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "保温包装费",
+      "englishText": "Insulation packaging fee",
+      "ocrConfidence": 0.9998781085014343,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "¥0.5",
+      "englishText": "¥0.5",
+      "ocrConfidence": 0.9966952800750732,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "配送费?",
+      "englishText": "Delivery fee?",
+      "ocrConfidence": 0.9034345149993896,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "¥3.00",
+      "englishText": "¥3.00",
+      "ocrConfidence": 0.9791358709335327,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "基础配送费",
+      "englishText": "Basic delivery fee",
+      "ocrConfidence": 0.9999690055847168,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "¥3",
+      "englishText": "¥3",
+      "ocrConfidence": 0.9923123121261597,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "¥40.5",
+      "englishText": "¥40.5",
+      "ocrConfidence": 0.9936736822128296,
+      "translationStatus": "success"
+    },
+    {
+      "originalText": "实付总额",
+      "englishText": "Total amount paid",
+      "ocrConfidence": 0.9999681711196899,
+      "translationStatus": "success"
+    }
+  ]
+}

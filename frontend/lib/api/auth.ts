@@ -11,10 +11,8 @@ export async function login(email: string, password: string): Promise<AuthRespon
   return result;
 }
 
-// Note: register does NOT return a token -- only login does (see
-// authService.js, verified live). The register screen must send the
-// user straight to login after a successful registration; it can't
-// sign them in directly from the register response.
+// Register does not return a JWT (backend only issues one on /auth/login).
+// Callers should login right after a successful register for a one-step signup.
 export async function register(input: {
   email: string;
   password: string;

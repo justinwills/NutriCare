@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NutriCare</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">NutriCare</div>
+    <div id="userBar" class="user-bar hidden"></div>
+  </header>
+
+  <main>
+    <p id="status" class="status" aria-live="polite"></p>
+
+    <section id="authView" class="panel">
+      <h1>Sign in</h1>
+      <div class="tabs">
+        <button type="button" class="tab active" data-auth-tab="login">Login</button>
+        <button type="button" class="tab" data-auth-tab="register">Register</button>
+      </div>
+
+      <form id="loginForm" class="stack">
+        <label>Email <input name="email" type="email" required /></label>
+        <label>Password <input name="password" type="password" required /></label>
+        <button type="submit">Login</button>
+      </form>
+
+      <form id="registerForm" class="stack hidden">
+        <label>Full name <input name="fullName" required /></label>
+        <label>Email <input name="email" type="email" required /></label>
+        <label>Password <input name="password" type="password" required minlength="4" /></label>
+        <label>Role
+          <select name="role" required>
+            <option value="personal">personal</option>
+            <option value="hospital_patient">hospital_patient</option>
+            <option value="doctor">doctor</option>
+          </select>
+        </label>
+        <button type="submit">Create account</button>
+      </form>
+    </section>
+
+    <section id="appView" class="hidden">
+      <nav class="tabs" id="appTabs">
+        <button type="button" class="tab active" data-view="pantry">Pantry</button>
+        <button type="button" class="tab" data-view="meals">Meals</button>
+        <button type="button" class="tab" data-view="notifications">Notifications</button>
+        <button type="button" class="tab doctor-only hidden" data-view="doctor">Doctor</button>
+      </nav>
+
+      <div id="pantryView" class="panel view">
+        <h2>Pantry</h2>
+        <form id="addPantryForm" class="grid-form">
+          <label>Product <input name="productName" required placeholder="Olive oil" /></label>
+          <label>Qty <input name="initialQuantity" type="number" step="any" min="0.01" required /></label>
+          <label>Unit
+            <select name="baseUnit" required>
+              <option value="g">g</option>
+              <option value="ml">ml</option>
+            </select>
+          </label>
+          <label>Expires <input name="expirationDate" type="date" /></label>
+          <button type="submit">Add item</button>
+        </form>
+        <div class="row-actions">
+          <button type="button" id="checkExpiringBtn" class="secondary">Scan expiring</button>
+          <button type="button" id="refreshPantryBtn" class="secondary">Refresh</button>
+        </div>
+        <div id="pantryList" class="list"></div>
+      </div>
+
+      <div id="mealsView" class="panel view hidden">
+        <h2>Log meal</h2>
+        <form id="mealForm" class="stack">
+          <label>Notes <input name="notes" placeholder="Lunch" /></label>
+          <label>Pantry item
+            <select name="pantryItemId" id="mealPantrySelect">
+              <option value="">(manual — no deduction)</option>
+            </select>
+          </label>
+          <label>Label <input name="label" required placeholder="Olive oil" /></label>
+          <div class="row">
+            <label>Qty used <input name="quantityUsed" type="number" step="any" min="0.01" required /></label>
+            <label>Unit
+              <select name="unit" required>
+                <option value="g">g</option>
+                <option value="ml">ml</option>
+                <option value="tsp">tsp</option>
+                <option value="tbsp">tbsp</option>
+                <option value="cup">cup</option>
+              </select>
+            </label>
+          </div>
+          <button type="submit">Log meal</button>
+        </form>
+        <h3>Recent meals</h3>
+        <button type="button" id="refreshMealsBtn" class="secondary">Refresh</button>
+        <div id="mealsList" class="list"></div>
+      </div>
+
+      <div id="notificationsView" class="panel view hidden">
+        <h2>Notifications</h2>
+        <div class="row-actions">
+          <button type="button" id="refreshNotifsBtn" class="secondary">Refresh</button>
+          <label class="inline"><input type="checkbox" id="unreadOnly" /> Unread only</label>
+        </div>
+        <div id="notifList" class="list"></div>
+      </div>
+
+      <div id="doctorView" class="panel view hidden">
+        <h2>Doctor tools</h2>
+        <form id="linkPatientForm" class="stack">
+          <h3>Link patient</h3>
+          <label>Patient user ID <input name="patientId" required placeholder="uuid" /></label>
+          <button type="submit">Link</button>
+        </form>
+        <button type="button" id="refreshPatientsBtn" class="secondary">Refresh patients</button>
+        <div id="patientsList" class="list"></div>
+
+        <form id="targetForm" class="stack">
+          <h3>Set nutrition target</h3>
+          <label>Patient ID <input name="patientId" required /></label>
+          <label>Nutrient
+            <select name="nutrient" required>
+              <option>calories</option>
+              <option>protein</option>
+              <option>carbohydrates</option>
+              <option>fat</option>
+              <option>sodium</option>
+              <option>sugar</option>
+              <option>fibre</option>
+            </select>
+          </label>
+          <div class="row">
+            <label>Min <input name="minValue" type="number" step="any" /></label>
+            <label>Max <input name="maxValue" type="number" step="any" /></label>
+          </div>
+          <button type="submit">Save target</button>
+        </form>
+
+        <form id="checkNutritionForm" class="stack">
+          <h3>Check nutrition value</h3>
+          <label>Patient ID <input name="patientId" required /></label>
+          <label>Nutrient
+            <select name="nutrient" required>
+              <option>calories</option>
+              <option>protein</option>
+              <option>carbohydrates</option>
+              <option>fat</option>
+              <option>sodium</option>
+              <option>sugar</option>
+              <option>fibre</option>
+            </select>
+          </label>
+          <label>Value <input name="value" type="number" step="any" required /></label>
+          <button type="submit">Check</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

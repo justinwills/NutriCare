@@ -35,18 +35,26 @@ export async function deductFromPantryItem(
   itemId: string,
   quantityUsed: number,
   unit: MeasurementUnit
-): Promise<PantryItemView> {
-  const result = await apiRequest<{ item: RawPantryItem }>(
+): Promise<{ item: PantryItemView; notificationCreated: boolean; itemDeleted: boolean }> {
+  const result = await apiRequest<{
+    item: RawPantryItem;
+    notificationCreated: boolean;
+    itemDeleted: boolean;
+  }>(
     `/pantry/${itemId}/deduct`,
     { method: "POST", body: { quantityUsed, unit } }
   );
-  return parsePantryItem(result.item);
+  return {
+    item: parsePantryItem(result.item),
+    notificationCreated: result.notificationCreated,
+    itemDeleted: result.itemDeleted,
+  };
 }
 
 export async function checkExpiringItems(): Promise<number> {
-  const result = await apiRequest<{ checked: boolean; itemsFlagged: number }>(
+  const result = await apiRequest<{ checked: boolean; alertsCreated: number }>(
     "/pantry/check-expiring",
     { method: "POST" }
   );
-  return result.itemsFlagged;
+  return result.alertsCreated;
 }

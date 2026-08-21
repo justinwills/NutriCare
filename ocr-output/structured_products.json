@@ -1,0 +1,35 @@
+{
+  "sourceImage": "test.jpg",
+  "products": [
+    {
+      "productName": "Production date: July 23, 2026?",
+      "packageSize": 950.0,
+      "unit": "ml",
+      "packageCount": 2,
+      "orderQuantity": 1,
+      "unitPrice": 14.9,
+      "currency": "CNY",
+      "totalAmount": 1900.0
+    },
+    {
+      "productName": "shredded mozzarella cheese",
+      "packageSize": 100.0,
+      "unit": "g",
+      "packageCount": 1,
+      "orderQuantity": 1,
+      "unitPrice": 7.8,
+      "currency": "CNY",
+      "totalAmount": 100.0
+    },
+    {
+      "productName": "Vegetarian beer meat slices",
+      "packageSize": 160.0,
+      "unit": "g",
+      "packageCount": 1,
+      "orderQuantity": 2,
+      "unitPrice": 6.9,
+      "currency": "CNY",
+      "totalAmount": 320.0
+    }
+  ]
+}

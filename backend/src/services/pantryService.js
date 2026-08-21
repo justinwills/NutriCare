@@ -50,15 +50,28 @@ export async function deductFromPantry({ userId, pantryItemId, quantityUsed, uni
       [newRemaining, pantryItemId]
     );
 
-    await client.query('COMMIT');
-
     const updated = updatedRows[0];
+
+    // A fully consumed item no longer belongs in the active pantry. Remove it
+    // in the same transaction as the deduction so it cannot linger at 0.
+    const itemDeleted = newRemaining === 0;
+    if (itemDeleted) {
+      await client.query('DELETE FROM pantry_items WHERE id = $1', [pantryItemId]);
+    }
+
+    await client.query('COMMIT');
 
     // Fire-and-forget style, but awaited so a demo doesn't race ahead
     // of the notification actually landing in the DB.
-    await checkLowStock(updated);
+    const notification = itemDeleted
+      ? await createNotification({
+          userId: updated.user_id,
+          type: 'out_of_stock',
+          message: `${updated.product_name} is out of stock and was removed from the pantry.`,
+        })
+      : await checkLowStock(item, updated);
 
-    return updated;
+    return { item: updated, notificationCreated: !!notification, itemDeleted };
   } catch (err) {
     await client.query('ROLLBACK');
     throw err;
@@ -71,15 +84,17 @@ export async function deductFromPantry({ userId, pantryItemId, quantityUsed, uni
  * Checks one pantry item against the low-stock threshold and creates
  * a notification if it's crossed. Called after every deduction.
  */
-async function checkLowStock(pantryItem) {
-  const ratio = Number(pantryItem.remaining_quantity) / Number(pantryItem.initial_quantity);
-  if (ratio <= LOW_STOCK_THRESHOLD) {
-    await createNotification({
-      userId: pantryItem.user_id,
+async function checkLowStock(previousItem, updatedItem) {
+  const previousRatio = Number(previousItem.remaining_quantity) / Number(previousItem.initial_quantity);
+  const updatedRatio = Number(updatedItem.remaining_quantity) / Number(updatedItem.initial_quantity);
+  if (previousRatio > LOW_STOCK_THRESHOLD && updatedRatio <= LOW_STOCK_THRESHOLD) {
+    return createNotification({
+      userId: updatedItem.user_id,
       type: 'low_stock',
-      message: `${pantryItem.product_name} is running low (${pantryItem.remaining_quantity}${pantryItem.base_unit} left).`,
+      message: `${updatedItem.product_name} is running low (${updatedItem.remaining_quantity}${updatedItem.base_unit} left).`,
     });
   }
+  return null;
 }
 
 /**
@@ -98,6 +113,7 @@ export async function checkExpiringItems() {
     [EXPIRING_SOON_DAYS]
   );
 
+  let alertsCreated = 0;
   for (const item of items) {
     // Avoid spamming duplicate alerts: skip if an unread expiring_soon
     // notification already exists for this exact product name.
@@ -115,7 +131,8 @@ export async function checkExpiringItems() {
       type: 'expiring_soon',
       message: `${item.product_name} expires on ${item.expiration_date.toISOString().split('T')[0]}.`,
     });
+    alertsCreated += 1;
   }
 
-  return items.length;
+  return alertsCreated;
 }
