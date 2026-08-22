@@ -3,16 +3,37 @@
 // middleware/auth.js, error shape { error: "..." } matches every
 // route's catch block.
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "").trim().replace(/\/$/, "");
 
-if (!API_BASE_URL && typeof window !== "undefined") {
-  // Fail loudly in the browser console rather than silently hitting
-  // a relative path that 404s — this is the single most likely setup
-  // mistake (forgetting to set .env.local before `npm run dev`).
-  console.error(
-    "NEXT_PUBLIC_API_BASE_URL is not set. Copy .env.local.example to " +
-      ".env.local and set it to your backend's URL."
-  );
+function resolveApiUrl(path: string): string {
+  if (!API_BASE_URL) {
+    throw new ApiError(
+      "Frontend configuration error: NEXT_PUBLIC_API_BASE_URL is missing.",
+      500,
+      {
+        hint:
+          "Set NEXT_PUBLIC_API_BASE_URL to your deployed backend URL (example: https://your-backend-domain.com).",
+      }
+    );
+  }
+
+  // Catch the common deploy mistake where localhost is baked into a production build.
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname !== "localhost" &&
+    /^https?:\/\/localhost(?::\d+)?$/i.test(API_BASE_URL)
+  ) {
+    throw new ApiError(
+      "Frontend configuration error: NEXT_PUBLIC_API_BASE_URL points to localhost in production.",
+      500,
+      {
+        hint:
+          "In your hosting dashboard, set NEXT_PUBLIC_API_BASE_URL to your public backend URL and redeploy.",
+      }
+    );
+  }
+
+  return `${API_BASE_URL}${path}`;
 }
 
 export class ApiError extends Error {
@@ -74,7 +95,7 @@ export async function apiRequest<T>(
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await fetch(resolveApiUrl(path), {
     method,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
