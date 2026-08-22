@@ -18,6 +18,12 @@ export const metadata: Metadata = {
   title: "NutriCare — grocery, meals, and nutrition tracking",
   description:
     "Scan receipts into a digital pantry, log meals, and track nutrition against doctor-set targets.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
