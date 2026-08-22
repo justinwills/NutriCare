@@ -36,6 +36,22 @@ function resolveApiUrl(path: string): string {
   return `${API_BASE_URL}${path}`;
 }
 
+// Shown when the server responded, but not with the JSON { error } shape
+// every real route in this backend uses on failure (see server.js's last-
+// resort handler and every route's own catch block). That mismatch means
+// the request never reached actual route logic — it was intercepted
+// somewhere before that (wrong host, wrong path, a platform's own 404/50x
+// page, a sleeping/never-deployed backend, CORS, etc.) — so the true cause
+// isn't something this client can know for certain. Keep this short and
+// honest rather than guessing; resolveApiUrl already gives a precise
+// message for the two config mistakes it can actually detect.
+function fallbackMessageForStatus(status: number): string {
+  if (status === 404) return "We couldn't reach the server for that request. Please try again shortly.";
+  if (status === 401 || status === 403) return "You're not authorized to do that. Try signing in again.";
+  if (status >= 500) return "The server had a problem on its end. Please try again shortly.";
+  return `The server didn't accept that request (status ${status}). Please try again.`;
+}
+
 export class ApiError extends Error {
   status: number;
   body: unknown;
@@ -95,21 +111,49 @@ export async function apiRequest<T>(
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const res = await fetch(resolveApiUrl(path), {
-    method,
-    headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  const url = resolveApiUrl(path);
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  } catch (networkErr) {
+    // fetch() itself throwing (rather than resolving with a bad status)
+    // means the request never got a response at all — offline, DNS
+    // failure, connection refused, or blocked by CORS.
+    console.error(`[api] ${method} ${url} -> network error before any response:`, networkErr);
+    throw new ApiError(
+      "Couldn't connect to the server. Check your connection and try again.",
+      0,
+      { cause: networkErr }
+    );
+  }
 
   const isJson = res.headers.get("content-type")?.includes("application/json");
   const data = isJson ? await res.json() : null;
 
   if (!res.ok) {
-    const message =
-      (data && typeof data === "object" && "error" in data
+    const serverMessage =
+      data && typeof data === "object" && "error" in data
         ? String((data as { error: unknown }).error)
-        : null) ?? `Request failed with status ${res.status}`;
-    throw new ApiError(message, res.status, data);
+        : null;
+
+    if (!serverMessage) {
+      // The response didn't come from this app's own error handling —
+      // log the technical detail for whoever's debugging the deploy,
+      // and show the person something short and honest instead of a
+      // bare status code.
+      console.error(
+        `[api] ${method} ${path} -> ${res.status} with a non-JSON or unrecognized body. ` +
+          `Base URL in use: ${API_BASE_URL || "(empty)"}. This usually means the request ` +
+          `didn't reach a real route on the backend — check NEXT_PUBLIC_API_BASE_URL and ` +
+          `that the backend is actually deployed and running.`
+      );
+    }
+
+    throw new ApiError(serverMessage ?? fallbackMessageForStatus(res.status), res.status, data);
   }
 
   return data as T;
