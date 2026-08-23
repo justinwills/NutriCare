@@ -22,5 +22,5 @@ RUN npm install
 RUN npm --prefix backend install
 COPY . .
 
-EXPOSE 8080
+EXPOSE 3002
 CMD ["npm", "start"]
