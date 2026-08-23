@@ -14,6 +14,8 @@ import tempfile
 # Disable oneDNN / MKLDNN in PaddleX & Paddle to avoid oneDNN PIR execution errors on CPU
 os.environ["PADDLE_PDX_ENABLE_MKLDNN_BYDEFAULT"] = "False"
 os.environ["FLAGS_use_onednn"] = "0"
+os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
+os.environ["PYTHONWARNINGS"] = "ignore"
 
 from paddleocr import PaddleOCR
 

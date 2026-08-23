@@ -5,6 +5,14 @@ RUN apt-get update && apt-get install -y python3 python3-pip libgl1 libglib2.0-0
 
 RUN pip3 install --break-system-packages paddlepaddle paddleocr
 
+ENV PADDLE_PDX_ENABLE_MKLDNN_BYDEFAULT=False \
+    FLAGS_use_onednn=0 \
+    PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK=True \
+    PYTHONWARNINGS=ignore
+
+# Pre-download and cache PaddleOCR models during Docker image build
+RUN python3 -c "import sys, os; os.environ['PADDLE_PDX_ENABLE_MKLDNN_BYDEFAULT']='False'; os.environ['FLAGS_use_onednn']='0'; os.environ['PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK']='True'; from paddleocr import PaddleOCR; ocr = PaddleOCR(use_doc_orientation_classify=False, use_doc_unwarping=False, use_textline_orientation=False, engine='paddle'); list(ocr.predict(sys.executable))" || true
+
 WORKDIR /app
 COPY package*.json ./
 COPY backend/package*.json ./backend/

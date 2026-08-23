@@ -56,6 +56,8 @@ router.post('/scan', asyncHandler(async (req, res) => {
         ...process.env,
         PADDLE_PDX_ENABLE_MKLDNN_BYDEFAULT: 'False',
         FLAGS_use_onednn: '0',
+        PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK: 'True',
+        PYTHONWARNINGS: 'ignore',
       },
       // PaddleOCR may download/warm its model the first time it is used.
       timeout: 300_000,
