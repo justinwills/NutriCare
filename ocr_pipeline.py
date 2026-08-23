@@ -427,7 +427,7 @@ def extract_products(lines):
                 "rawName": original,
                 "suggestedName": clean_name,
                 "initialQuantity": order_qty,
-                "baseUnit": "item",
+                "baseUnit": "g",
                 "confidence": line["ocrConfidence"],
             })
 

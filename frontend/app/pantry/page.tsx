@@ -126,7 +126,11 @@ function PantryPageInner() {
       setScanQuantities(
         Object.fromEntries(results.map((item, index) => [index, String(item.initialQuantity)]))
       );
-      setScanUnits(Object.fromEntries(results.map((item, index) => [index, item.baseUnit])));
+      setScanUnits(
+        Object.fromEntries(
+          results.map((item, index) => [index, item.baseUnit === "ml" ? "ml" : "g"])
+        )
+      );
       setOcrWarnings(result.planWarnings || []);
       setStatus(results.length ? "Review the detected items, then add the ones you want." : "No products were detected. Try a clearer receipt image.");
     } catch (err) {
@@ -140,7 +144,8 @@ function PantryPageInner() {
     const key = `${index}-${item.suggestedName}`;
     const productName = (scanNames[index] ?? item.suggestedName).trim();
     const confirmedQuantity = Number(scanQuantities[index]);
-    const confirmedUnit = scanUnits[index] ?? item.baseUnit;
+    const rawUnit = scanUnits[index] ?? item.baseUnit;
+    const confirmedUnit: BaseUnit = rawUnit === "ml" ? "ml" : "g";
     if (!productName) {
       setError("Enter a product name before adding it to the pantry");
       return;
@@ -367,7 +372,7 @@ function PantryPageInner() {
                       Unit
                       <select
                         className="rounded-lg border border-border-warm bg-white px-2.5 py-1.5 text-base font-normal text-ink outline-none focus:border-clay focus:ring-2 focus:ring-clay/20"
-                        value={scanUnits[index] ?? item.baseUnit}
+                        value={scanUnits[index] ?? (item.baseUnit === "ml" ? "ml" : "g")}
                         onChange={(event) =>
                           setScanUnits((current) => ({
                             ...current,
