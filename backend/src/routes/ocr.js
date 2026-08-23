@@ -52,6 +52,11 @@ router.post('/scan', asyncHandler(async (req, res) => {
     const python = await resolvePython();
     const { stdout } = await runFile(python, [path.join(projectRoot, 'ocr_pipeline.py'), imagePath], {
       cwd: projectRoot,
+      env: {
+        ...process.env,
+        PADDLE_PDX_ENABLE_MKLDNN_BYDEFAULT: 'False',
+        FLAGS_use_onednn: '0',
+      },
       // PaddleOCR may download/warm its model the first time it is used.
       timeout: 300_000,
       maxBuffer: 5 * 1024 * 1024,

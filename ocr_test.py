@@ -1,6 +1,12 @@
 import json
+import os
 from pathlib import Path
 
+# Disable oneDNN / MKLDNN in PaddleX & Paddle to avoid oneDNN PIR execution errors on CPU
+os.environ["PADDLE_PDX_ENABLE_MKLDNN_BYDEFAULT"] = "False"
+os.environ["FLAGS_use_onednn"] = "0"
+
+# pyrefly: ignore [missing-import]
 from deep_translator import GoogleTranslator
 from paddleocr import PaddleOCR
 
