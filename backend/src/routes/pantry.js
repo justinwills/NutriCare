@@ -19,9 +19,13 @@ router.use(requireAuth);
 router.post('/', asyncHandler(async (req, res) => {
   const { rawName, expirationDate } = req.body ?? {};
   const productName = String(req.body?.productName ?? '').trim();
-  const baseUnit = req.body?.baseUnit;
+  let baseUnit = typeof req.body?.baseUnit === 'string' ? req.body.baseUnit.toLowerCase().trim() : req.body?.baseUnit;
   const initialQuantity = Number(req.body?.initialQuantity);
   const source = req.body?.source;
+
+  if (baseUnit === 'kg') baseUnit = 'g';
+  if (baseUnit === 'l') baseUnit = 'ml';
+  if (baseUnit === 'item' || baseUnit === 'piece' || baseUnit === 'pcs' || baseUnit === 'unit') baseUnit = 'g';
 
   if (!productName || !baseUnit || !Number.isFinite(initialQuantity) || initialQuantity <= 0) {
     return res.status(400).json({ error: 'productName, baseUnit, and initialQuantity are required' });
@@ -106,6 +110,21 @@ router.post('/:id/deduct', asyncHandler(async (req, res) => {
 router.post('/check-expiring', asyncHandler(async (req, res) => {
   const alertsCreated = await checkExpiringItems();
   res.json({ checked: true, alertsCreated });
+}));
+
+/**
+ * DELETE /pantry/:id
+ * Removes a pantry item for the authenticated user.
+ */
+router.delete('/:id', asyncHandler(async (req, res) => {
+  const { rowCount } = await pool.query(
+    `DELETE FROM pantry_items WHERE id = $1 AND user_id = $2`,
+    [req.params.id, req.user.userId]
+  );
+  if (rowCount === 0) {
+    return res.status(404).json({ error: 'Pantry item not found' });
+  }
+  res.json({ deleted: true });
 }));
 
 export default router;

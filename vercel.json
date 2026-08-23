@@ -1,0 +1,19 @@
+{
+  "rewrites": [
+    { "source": "/auth/(.*)", "destination": "/api/index.js" },
+    { "source": "/auth", "destination": "/api/index.js" },
+    { "source": "/pantry/(.*)", "destination": "/api/index.js" },
+    { "source": "/pantry", "destination": "/api/index.js" },
+    { "source": "/meals/(.*)", "destination": "/api/index.js" },
+    { "source": "/meals", "destination": "/api/index.js" },
+    { "source": "/notifications/(.*)", "destination": "/api/index.js" },
+    { "source": "/notifications", "destination": "/api/index.js" },
+    { "source": "/doctor/(.*)", "destination": "/api/index.js" },
+    { "source": "/doctor", "destination": "/api/index.js" },
+    { "source": "/ocr/(.*)", "destination": "/api/index.js" },
+    { "source": "/ocr", "destination": "/api/index.js" },
+    { "source": "/supervision/(.*)", "destination": "/api/index.js" },
+    { "source": "/supervision", "destination": "/api/index.js" },
+    { "source": "/health", "destination": "/api/index.js" }
+  ]
+}

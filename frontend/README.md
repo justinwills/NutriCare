@@ -12,6 +12,10 @@ npm.cmd run dev
 
 The frontend expects the backend at `http://localhost:3002` and runs at `http://localhost:3000` by default.
 
+For production deployment, set `NEXT_PUBLIC_API_BASE_URL` in your frontend hosting provider
+to your public backend origin (for example `https://api.yourdomain.com`). If this points
+to `localhost` or is unset, requests like `/auth/register` will fail.
+
 Run frontend verification:
 
 ```powershell

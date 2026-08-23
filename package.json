@@ -1,0 +1,13 @@
+{
+  "name": "nutricare",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "postinstall": "npm --prefix backend install",
+    "build": "npm --prefix backend install",
+    "start": "node backend/src/server.js"
+  }
+}

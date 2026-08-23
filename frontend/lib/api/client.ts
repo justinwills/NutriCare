@@ -3,16 +3,47 @@
 // middleware/auth.js, error shape { error: "..." } matches every
 // route's catch block.
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "").trim().replace(/\/$/, "");
 
-if (!API_BASE_URL && typeof window !== "undefined") {
-  // Fail loudly in the browser console rather than silently hitting
-  // a relative path that 404s — this is the single most likely setup
-  // mistake (forgetting to set .env.local before `npm run dev`).
-  console.error(
-    "NEXT_PUBLIC_API_BASE_URL is not set. Copy .env.local.example to " +
-      ".env.local and set it to your backend's URL."
-  );
+function resolveApiUrl(path: string): string {
+  if (!API_BASE_URL) {
+    // When NEXT_PUBLIC_API_BASE_URL is not set, use relative path (same-origin).
+    // Next.js rewrites or same-origin deployment will proxy/route this to the backend.
+    return path;
+  }
+
+  // Catch the common deploy mistake where localhost is baked into a production build.
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname !== "localhost" &&
+    /^https?:\/\/localhost(?::\d+)?$/i.test(API_BASE_URL)
+  ) {
+    throw new ApiError(
+      "Frontend configuration error: NEXT_PUBLIC_API_BASE_URL points to localhost in production.",
+      500,
+      {
+        hint:
+          "In your hosting dashboard, set NEXT_PUBLIC_API_BASE_URL to your public backend URL and redeploy.",
+      }
+    );
+  }
+
+  return `${API_BASE_URL}${path}`;
+}
+
+// Shown when the server responded, but not with the JSON { error } shape
+// every real route in this backend uses on failure (see server.js's last-
+// resort handler and every route's own catch block). That mismatch means
+// the request never reached actual route logic — it was intercepted
+// somewhere before that (wrong host, wrong path, a platform's own 404/50x
+// page, a sleeping/never-deployed backend, CORS, etc.) — so the true cause
+// isn't something this client can know for certain.
+function fallbackMessageForStatus(status: number): string {
+  if (status === 404)
+    return "The server endpoint was not found (404). Check NEXT_PUBLIC_API_BASE_URL or BACKEND_URL in your deployment settings.";
+  if (status === 401 || status === 403) return "You're not authorized to do that. Try signing in again.";
+  if (status >= 500) return "The server had a problem on its end. Please try again shortly.";
+  return `The server didn't accept that request (status ${status}). Please try again.`;
 }
 
 export class ApiError extends Error {
@@ -74,21 +105,49 @@ export async function apiRequest<T>(
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    method,
-    headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  const url = resolveApiUrl(path);
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  } catch (networkErr) {
+    // fetch() itself throwing (rather than resolving with a bad status)
+    // means the request never got a response at all — offline, DNS
+    // failure, connection refused, or blocked by CORS.
+    console.error(`[api] ${method} ${url} -> network error before any response:`, networkErr);
+    throw new ApiError(
+      "Couldn't connect to the server. Check your connection and try again.",
+      0,
+      { cause: networkErr }
+    );
+  }
 
   const isJson = res.headers.get("content-type")?.includes("application/json");
   const data = isJson ? await res.json() : null;
 
   if (!res.ok) {
-    const message =
-      (data && typeof data === "object" && "error" in data
+    const serverMessage =
+      data && typeof data === "object" && "error" in data
         ? String((data as { error: unknown }).error)
-        : null) ?? `Request failed with status ${res.status}`;
-    throw new ApiError(message, res.status, data);
+        : null;
+
+    if (!serverMessage) {
+      // The response didn't come from this app's own error handling —
+      // log the technical detail for whoever's debugging the deploy,
+      // and show the person something short and honest instead of a
+      // bare status code.
+      console.error(
+        `[api] ${method} ${path} -> ${res.status} with a non-JSON or unrecognized body. ` +
+          `Base URL in use: ${API_BASE_URL || "(empty)"}. This usually means the request ` +
+          `didn't reach a real route on the backend — check NEXT_PUBLIC_API_BASE_URL and ` +
+          `that the backend is actually deployed and running.`
+      );
+    }
+
+    throw new ApiError(serverMessage ?? fallbackMessageForStatus(res.status), res.status, data);
   }
 
   return data as T;

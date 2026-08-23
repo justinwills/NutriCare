@@ -5,7 +5,10 @@ export type IconName =
   | "arrow"
   | "check"
   | "chevron"
+  | "cross"
   | "doctor"
+  | "eye"
+  | "eyeOff"
   | "leaf"
   | "logout"
   | "meal"
@@ -23,11 +26,26 @@ const paths: Record<IconName, React.ReactNode> = {
   arrow: <path d="M5 12h14m-5-5 5 5-5 5" />,
   check: <path d="m5 12 4 4L19 6" />,
   chevron: <path d="m6 9 6 6 6-6" />,
+  cross: <path d="M18 6 6 18M6 6l12 12" />,
   doctor: (
     <>
       <path d="M9 3h6v4H9z" />
       <path d="M5 7h14v14H5z" />
       <path d="M12 10v8m-4-4h8" />
+    </>
+  ),
+  eye: (
+    <>
+      <path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  eyeOff: (
+    <>
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+      <path d="M6.5 6.6C3.4 8.4 1.5 12 1.5 12S5 19 12 19c1.8 0 3.4-.4 4.8-1.1" />
+      <path d="M17.4 17.4C19.9 15.8 22.5 12 22.5 12S19 5 12 5c-.9 0-1.8.1-2.6.4" />
+      <path d="M2 2l20 20" />
     </>
   ),
   leaf: (

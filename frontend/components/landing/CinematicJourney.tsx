@@ -127,7 +127,7 @@ export function CinematicJourney() {
         const next = Number((visible.target as HTMLElement).dataset.step);
         if (!Number.isNaN(next)) setActiveStep(next);
       },
-      { threshold: [0.25, 0.5, 0.75], rootMargin: "-20% 0px -30%" }
+      { threshold: [0.2, 0.4, 0.6, 0.8], rootMargin: "-20% 0px -20% 0px" }
     );
 
     stepRefs.current.forEach((step) => step && observer.observe(step));
@@ -148,7 +148,12 @@ export function CinematicJourney() {
               data-step={index}
               className={`film-journey-step ${activeStep === index ? "is-active" : ""}`}
             >
-              <div><p>{step.eyebrow}</p><h3>{step.title}</h3><span>{step.copy}</span></div>
+              <span className="film-journey-number">{step.number}</span>
+              <div className="film-journey-step-content">
+                <p className="film-journey-eyebrow">{step.eyebrow}</p>
+                <h3 className="film-journey-title">{step.title}</h3>
+                <p className="film-journey-copy">{step.copy}</p>
+              </div>
             </article>
           ))}
         </div>
