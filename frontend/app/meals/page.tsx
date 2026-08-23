@@ -109,6 +109,16 @@ function MealsPageInner() {
     });
   }
 
+  function clearDraft() {
+    setDraft({
+      pantryItemId: "",
+      label: "",
+      quantityUsed: "",
+      unit: "g",
+      source: "manual",
+    });
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
@@ -188,19 +198,32 @@ function MealsPageInner() {
       >
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-ink/80">Item source</label>
-          <select
-            className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base"
-            value={draft.source === "bought" ? "__bought__" : draft.pantryItemId}
-            onChange={(e) => onPantryPick(e.target.value)}
-          >
-            <option value="">Manual entry — no deduction</option>
-            <option value="__bought__">Bought outside — no pantry deduction</option>
-            {pantry.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.productName} ({formatQty(item.remainingQuantity, item.baseUnit)} left)
-              </option>
-            ))}
-          </select>
+          <div className="flex gap-2">
+            <select
+              className="min-w-0 flex-1 rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base"
+              value={draft.source === "bought" ? "__bought__" : draft.pantryItemId}
+              onChange={(e) => onPantryPick(e.target.value)}
+            >
+              <option value="">Manual entry — no deduction</option>
+              <option value="__bought__">Bought outside — no pantry deduction</option>
+              {pantry.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.productName} ({formatQty(item.remainingQuantity, item.baseUnit)} left)
+                </option>
+              ))}
+            </select>
+            {(draft.pantryItemId || draft.source === "bought") && (
+              <button
+                type="button"
+                onClick={() => onPantryPick("")}
+                className="inline-flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-lg border border-border-warm bg-white text-ink/55 transition hover:border-brick/30 hover:bg-brick/10 hover:text-brick focus:outline-none focus-visible:ring-2 focus-visible:ring-brick/40"
+                aria-label="Clear selected product source"
+                title="Clear selected product"
+              >
+                <Icon name="cross" className="h-4 w-4" />
+              </button>
+            )}
+          </div>
         </div>
 
         <TextField
@@ -254,30 +277,55 @@ function MealsPageInner() {
         </div>
 
         {queued.length > 0 && (
-          <ul className="rounded-xl border border-border-warm bg-paper/80 p-3 text-sm">
-            {queued.map((item, idx) => (
-              <li key={`${item.label}-${idx}`} className="flex justify-between gap-2 py-1">
-                <span>
-                  {item.label} · {item.quantityUsed}
-                  {item.unit}
-                  {item.source === "pantry" ? " (from pantry)" : " (manual)"}
-                </span>
-                <button
-                  type="button"
-                  className="text-brick hover:underline"
-                  onClick={() => setQueued((prev) => prev.filter((_, i) => i !== idx))}
+          <div className="flex flex-col gap-1.5">
+            <p className="text-xs font-semibold uppercase tracking-wider text-ink/60">
+              Added items ({queued.length})
+            </p>
+            <ul className="divide-y divide-border-warm/60 rounded-xl border border-border-warm bg-paper/80 p-1 text-sm">
+              {queued.map((item, idx) => (
+                <li
+                  key={`${item.label}-${idx}`}
+                  className="flex items-center justify-between gap-3 px-3 py-2"
                 >
-                  Remove
-                </button>
-              </li>
-            ))}
-          </ul>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="font-medium text-ink truncate">{item.label}</span>
+                    <span className="text-ink/60 shrink-0">
+                      · {item.quantityUsed} {item.unit}
+                    </span>
+                    <span className="rounded-full bg-border-warm/60 px-2 py-0.5 text-xs text-ink/60 shrink-0">
+                      {item.source === "pantry" ? "pantry" : item.source === "bought" ? "bought" : "manual"}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-brick transition hover:bg-brick/10 hover:text-brick/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brick/40"
+                    onClick={() => setQueued((prev) => prev.filter((_, i) => i !== idx))}
+                    aria-label={`Delete ${item.label}`}
+                    title="Delete item"
+                  >
+                    <Icon name="cross" className="h-4 w-4" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
 
         <div className="flex flex-wrap gap-2">
           {draft.source !== "bought" && (
             <Button type="button" variant="secondary" onClick={addToQueue}>
               Add another item
+            </Button>
+          )}
+          {(draft.label || draft.quantityUsed || draft.pantryItemId) && (
+            <Button
+              type="button"
+              variant="secondary"
+              className="text-brick hover:bg-brick/10 hover:border-brick/30"
+              onClick={clearDraft}
+            >
+              <Icon name="cross" className="h-4 w-4" />
+              Clear current item
             </Button>
           )}
           <Button type="submit" loading={submitting}>
