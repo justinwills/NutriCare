@@ -54,7 +54,7 @@ router.post('/scan', asyncHandler(async (req, res) => {
       cwd: projectRoot,
       env: {
         ...process.env,
-        GLOG_minloglevel: '2',
+        GLOG_minloglevel: '3',
         PADDLE_PDX_LOG_LEVEL: 'ERROR',
         PADDLE_PDX_ENABLE_MKLDNN_BYDEFAULT: 'False',
         FLAGS_use_onednn: '0',
@@ -63,12 +63,17 @@ router.post('/scan', asyncHandler(async (req, res) => {
       },
       // PaddleOCR may download/warm its model the first time it is used.
       timeout: 300_000,
-      maxBuffer: 5 * 1024 * 1024,
+      maxBuffer: 10 * 1024 * 1024,
     });
     // Some OCR versions log before the program's final JSON line.
     const jsonLine = stdout.trim().split(/\r?\n/).reverse().find((line) => line.trim().startsWith('{'));
-    if (!jsonLine) throw new Error('OCR did not return a result.');
+    if (!jsonLine) throw new Error('OCR process did not return valid JSON output.');
     const result = JSON.parse(jsonLine);
+
+    if (result.error) {
+      console.warn('OCR pipeline warning/error:', result.error);
+    }
+
     const planWarnings = await checkAvoidedFoodsFromOcr({
       patientId: req.user.userId,
       foodNames: (result.products || []).map((product) => product.suggestedName),
@@ -76,11 +81,26 @@ router.post('/scan', asyncHandler(async (req, res) => {
     res.json({ ...result, planWarnings });
   } catch (error) {
     console.error('OCR scan failed:', error);
-    const rawDetail = error?.stderr?.trim() || errorMessage(error, 'Unknown OCR error');
-    const detailLines = rawDetail
+    const rawStderr = error?.stderr?.trim() || '';
+    const rawStdout = error?.stdout?.trim() || '';
+    const fallbackMessage = errorMessage(error, 'Unknown OCR error');
+
+    const cleanLines = (rawStderr + '\n' + rawStdout)
       .split(/\r?\n/)
-      .filter((line) => !line.includes('Creating model:') && !line.includes('Model files already exist') && !line.includes('Checking connectivity'));
-    const detail = detailLines.join('\n').trim() || rawDetail;
+      .map((line) => line.replace(/\x1B\[[0-9;]*m/g, '').trim()) // Strip ANSI escape codes
+      .filter((line) => {
+        return (
+          line.length > 0 &&
+          !line.startsWith('Creating model:') &&
+          !line.startsWith('Model files already exist') &&
+          !line.startsWith('Checking connectivity') &&
+          !line.startsWith('Using official model') &&
+          !line.startsWith('Fetching ') &&
+          !line.includes('UserWarning: No ccache found')
+        );
+      });
+
+    const detail = cleanLines.join('\n').trim() || fallbackMessage;
     const unavailable = error?.code === 'ENOENT' || /No module named ['"]?(paddle|paddleocr)/i.test(detail);
     const message = unavailable
       ? 'OCR is unavailable. Install PaddleOCR and PaddlePaddle, then set PYTHON_EXECUTABLE if needed.'

@@ -14,7 +14,7 @@ import sys
 import tempfile
 
 # Disable oneDNN / MKLDNN in PaddleX & Paddle to avoid oneDNN PIR execution errors on CPU
-os.environ["GLOG_minloglevel"] = "2"
+os.environ["GLOG_minloglevel"] = "3"
 os.environ["PADDLE_PDX_LOG_LEVEL"] = "ERROR"
 os.environ["PADDLE_PDX_ENABLE_MKLDNN_BYDEFAULT"] = "False"
 os.environ["FLAGS_use_onednn"] = "0"
@@ -24,8 +24,6 @@ os.environ["PYTHONWARNINGS"] = "ignore"
 logging.basicConfig(level=logging.ERROR)
 for _logger in ("paddlex", "paddle", "ppocr", "root"):
     logging.getLogger(_logger).setLevel(logging.ERROR)
-
-from paddleocr import PaddleOCR
 
 
 IGNORED_TERMS = (
@@ -428,7 +426,20 @@ def main():
         sys.stdout.reconfigure(encoding="utf-8")
 
     if len(sys.argv) != 2:
-        raise SystemExit("Usage: ocr_pipeline.py IMAGE_PATH")
+        print(json.dumps({"products": [], "detectedLines": [], "error": "Usage: ocr_pipeline.py IMAGE_PATH"}))
+        return
+
+    image_path = sys.argv[1]
+    if not os.path.exists(image_path):
+        print(json.dumps({"products": [], "detectedLines": [], "error": f"Image file not found: {image_path}"}))
+        return
+
+    try:
+        from paddleocr import PaddleOCR
+    except Exception as e:
+        sys.stderr.write(f"PaddleOCR import error: {e}\n")
+        print(json.dumps({"products": [], "detectedLines": [], "error": f"Failed to import PaddleOCR: {e}"}))
+        return
 
     try:
         ocr = PaddleOCR(
@@ -437,11 +448,11 @@ def main():
             use_textline_orientation=False,
             engine="onnxruntime",
         )
-        prediction = ocr.predict(sys.argv[1])
+        prediction = ocr.predict(image_path)
         result = next(iter(prediction), None)
     except Exception as e:
         sys.stderr.write(f"OCR Exception: {e}\n")
-        print(json.dumps({"products": [], "detectedLines": []}))
+        print(json.dumps({"products": [], "detectedLines": [], "error": str(e)}))
         return
 
     if result is None:
