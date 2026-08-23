@@ -4,12 +4,17 @@
 // route's catch block.
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "").trim().replace(/\/$/, "");
+const API_PREFIX = "/api";
 
 function resolveApiUrl(path: string): string {
+  const apiPath = path === API_PREFIX || path.startsWith(`${API_PREFIX}/`)
+    ? path
+    : `${API_PREFIX}${path.startsWith("/") ? path : `/${path}`}`;
+
   if (!API_BASE_URL) {
     // When NEXT_PUBLIC_API_BASE_URL is not set, use relative path (same-origin).
     // Next.js rewrites or same-origin deployment will proxy/route this to the backend.
-    return path;
+    return apiPath;
   }
 
   // Catch the common deploy mistake where localhost is baked into a production build.
@@ -28,7 +33,7 @@ function resolveApiUrl(path: string): string {
     );
   }
 
-  return `${API_BASE_URL}${path}`;
+  return `${API_BASE_URL}${apiPath}`;
 }
 
 // Shown when the server responded, but not with the JSON { error } shape

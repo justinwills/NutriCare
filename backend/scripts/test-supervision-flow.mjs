@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { pool } from '../src/db/pool.js';
 
 const API_URL = process.env.TEST_API_URL || 'http://localhost:3002';
+const API_PREFIX = '/api';
 const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const password = 'NutriCare-Test-9824!';
 const accounts = {
@@ -16,7 +17,7 @@ function assert(condition, message) {
 }
 
 async function request(path, { token, method = 'GET', body, expected = 200 } = {}) {
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(`${API_URL}${API_PREFIX}${path}`, {
     method,
     headers: {
       'Content-Type': 'application/json',

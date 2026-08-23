@@ -99,28 +99,31 @@ Daily boundaries use the patient browser's IANA timezone when supplied during me
 
 ## Supervision Routes
 
+All application API routes use the `/api` prefix so their URLs do not collide
+with frontend pages such as `/doctor`, `/meals`, and `/notifications`.
+
 | Method   | Route                                                           | Access                                                                    |
 | -------- | --------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `GET`    | `/doctor/patients`                                              | Doctor                                                                    |
-| `POST`   | `/doctor/link-patient`                                          | Doctor; hospital patients only                                            |
-| `GET`    | `/doctor/patients/:patientId/plan`                              | Actively linked doctor                                                    |
-| `PUT`    | `/doctor/patients/:patientId/conditions`                        | Actively linked doctor                                                    |
-| `POST`   | `/doctor/patients/:patientId/limits`                            | Actively linked doctor                                                    |
-| `PATCH`  | `/doctor/patients/:patientId/limits/:limitId`                   | Owning, actively linked doctor                                            |
-| `DELETE` | `/doctor/patients/:patientId/limits/:limitId`                   | Owning, actively linked doctor                                            |
-| `POST`   | `/doctor/patients/:patientId/recommendations`                   | Actively linked doctor                                                    |
-| `PATCH`  | `/doctor/patients/:patientId/recommendations/:recommendationId` | Owning, actively linked doctor                                            |
-| `DELETE` | `/doctor/patients/:patientId/recommendations/:recommendationId` | Owning, actively linked doctor                                            |
-| `GET`    | `/supervision`                                                  | Hospital patient, own plan only                                           |
-| `GET`    | `/supervision/daily-totals`                                     | Hospital patient, own totals only                                         |
-| `PUT`    | `/supervision/timezone`                                         | Hospital patient                                                          |
-| `POST`   | `/ocr/check-foods`                                              | Hospital patient; possible-purchase check only                            |
-| `POST`   | `/food-gallery`                                                 | Authenticated; save own plate photo and recognition results               |
-| `GET`    | `/food-gallery`                                                 | Authenticated; view own saved food photos                                 |
-| `GET`    | `/food-gallery/patient/:patientId`                              | Doctor with an active link to the patient                                 |
-| `POST`   | `/meals`                                                        | Authenticated; supervision calculation is automatic for hospital patients |
+| `GET`    | `/api/doctor/patients`                                              | Doctor                                                                    |
+| `POST`   | `/api/doctor/link-patient`                                          | Doctor; hospital patients only                                            |
+| `GET`    | `/api/doctor/patients/:patientId/plan`                              | Actively linked doctor                                                    |
+| `PUT`    | `/api/doctor/patients/:patientId/conditions`                        | Actively linked doctor                                                    |
+| `POST`   | `/api/doctor/patients/:patientId/limits`                            | Actively linked doctor                                                    |
+| `PATCH`  | `/api/doctor/patients/:patientId/limits/:limitId`                   | Owning, actively linked doctor                                            |
+| `DELETE` | `/api/doctor/patients/:patientId/limits/:limitId`                   | Owning, actively linked doctor                                            |
+| `POST`   | `/api/doctor/patients/:patientId/recommendations`                   | Actively linked doctor                                                    |
+| `PATCH`  | `/api/doctor/patients/:patientId/recommendations/:recommendationId` | Owning, actively linked doctor                                            |
+| `DELETE` | `/api/doctor/patients/:patientId/recommendations/:recommendationId` | Owning, actively linked doctor                                            |
+| `GET`    | `/api/supervision`                                                  | Hospital patient, own plan only                                           |
+| `GET`    | `/api/supervision/daily-totals`                                     | Hospital patient, own totals only                                         |
+| `PUT`    | `/api/supervision/timezone`                                         | Hospital patient                                                          |
+| `POST`   | `/api/ocr/check-foods`                                              | Hospital patient; possible-purchase check only                            |
+| `POST`   | `/api/food-gallery`                                                 | Authenticated; save own plate photo and recognition results               |
+| `GET`    | `/api/food-gallery`                                                 | Authenticated; view own saved food photos                                 |
+| `GET`    | `/api/food-gallery/patient/:patientId`                              | Doctor with an active link to the patient                                 |
+| `POST`   | `/api/meals`                                                        | Authenticated; supervision calculation is automatic for hospital patients |
 
-Legacy `/doctor/nutrition-targets` and `/doctor/check-nutrition` routes remain available for compatibility. New supervision plans use `/doctor/patients/:patientId/*`, and meal logging performs checks automatically.
+Legacy `/api/doctor/nutrition-targets` and `/api/doctor/check-nutrition` routes remain available for compatibility. New supervision plans use `/api/doctor/patients/:patientId/*`, and meal logging performs checks automatically.
 
 ## Testing
 

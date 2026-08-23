@@ -27,36 +27,38 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.static(publicDir));
-app.get("/notificationalert.mp3", (req, res) => res.sendFile(alertSoundPath));
+const healthHandler = asyncHandler(async (req, res) => {
+  try {
+    await pool.query("SELECT 1");
+    res.json({ ok: true, database: "connected" });
+  } catch (error) {
+    console.error(
+      "Health check database failure:",
+      errorMessage(error, "unknown database error"),
+    );
+    res.status(503).json({
+      ok: false,
+      database: "unavailable",
+      error: "Database unavailable",
+    });
+  }
+});
 
-app.get(
-  "/health",
-  asyncHandler(async (req, res) => {
-    try {
-      await pool.query("SELECT 1");
-      res.json({ ok: true, database: "connected" });
-    } catch (error) {
-      console.error(
-        "Health check database failure:",
-        errorMessage(error, "unknown database error"),
-      );
-      res.status(503).json({
-        ok: false,
-        database: "unavailable",
-        error: "Database unavailable",
-      });
-    }
-  }),
-);
+// Keep the public health check outside the API namespace for deployment probes.
+app.get("/health", healthHandler);
+app.get("/api/health", healthHandler);
 
-app.use("/auth", authRoutes);
-app.use("/pantry", pantryRoutes);
-app.use("/meals", mealRoutes);
-app.use("/notifications", notificationRoutes);
-app.use("/doctor", doctorRoutes);
-app.use("/ocr", ocrRoutes);
-app.use("/supervision", supervisionRoutes);
-app.use("/food-gallery", foodGalleryRoutes);
+// All application APIs live under /api so they cannot collide with frontend
+// pages such as /pantry, /meals, /notifications, and /doctor.
+app.get("/api/notificationalert.mp3", (req, res) => res.sendFile(alertSoundPath));
+app.use("/api/auth", authRoutes);
+app.use("/api/pantry", pantryRoutes);
+app.use("/api/meals", mealRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/doctor", doctorRoutes);
+app.use("/api/ocr", ocrRoutes);
+app.use("/api/supervision", supervisionRoutes);
+app.use("/api/food-gallery", foodGalleryRoutes);
 
 // Last-resort error handler: anything an individual route didn't
 // already catch and format lands here instead of crashing the process.

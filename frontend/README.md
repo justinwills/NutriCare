@@ -12,9 +12,10 @@ npm.cmd run dev
 
 The frontend expects the backend at `http://localhost:3002` and runs at `http://localhost:3000` by default.
 
-For production deployment, set `NEXT_PUBLIC_API_BASE_URL` in your frontend hosting provider
-to your public backend origin (for example `https://api.yourdomain.com`). If this points
-to `localhost` or is unset, requests like `/auth/register` will fail.
+For separate frontend/backend deployments, set `NEXT_PUBLIC_API_BASE_URL` in your frontend
+hosting provider to the public backend origin (for example `https://api.yourdomain.com`).
+NutriCare automatically adds the `/api` prefix. For a same-origin Vercel Services deployment,
+leave this variable unset so requests such as `/api/auth/register` use the top-level rewrite.
 
 Run frontend verification:
 

@@ -27,18 +27,9 @@ const nextConfig: NextConfig = {
       ? targetBackend
       : "http://localhost:3002";
     return [
-      { source: "/auth/:path*", destination: `${backendHost}/auth/:path*` },
-      { source: "/pantry/:path*", destination: `${backendHost}/pantry/:path*` },
-      { source: "/meals/:path*", destination: `${backendHost}/meals/:path*` },
       {
-        source: "/notifications/:path*",
-        destination: `${backendHost}/notifications/:path*`,
-      },
-      { source: "/doctor/:path*", destination: `${backendHost}/doctor/:path*` },
-      { source: "/ocr/:path*", destination: `${backendHost}/ocr/:path*` },
-      {
-        source: "/supervision/:path*",
-        destination: `${backendHost}/supervision/:path*`,
+        source: "/api/:path*",
+        destination: `${backendHost}/api/:path*`,
       },
       { source: "/health", destination: `${backendHost}/health` },
     ];

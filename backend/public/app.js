@@ -1,4 +1,4 @@
-const API = '';
+const API = '/api';
 
 const state = {
   token: localStorage.getItem('token') || '',
