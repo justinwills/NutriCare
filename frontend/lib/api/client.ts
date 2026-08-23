@@ -7,14 +7,9 @@ const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "").trim().replace
 
 function resolveApiUrl(path: string): string {
   if (!API_BASE_URL) {
-    throw new ApiError(
-      "Frontend configuration error: NEXT_PUBLIC_API_BASE_URL is missing.",
-      500,
-      {
-        hint:
-          "Set NEXT_PUBLIC_API_BASE_URL to your deployed backend URL (example: https://your-backend-domain.com).",
-      }
-    );
+    // When NEXT_PUBLIC_API_BASE_URL is not set, use relative path (same-origin).
+    // Next.js rewrites or same-origin deployment will proxy/route this to the backend.
+    return path;
   }
 
   // Catch the common deploy mistake where localhost is baked into a production build.
@@ -42,11 +37,10 @@ function resolveApiUrl(path: string): string {
 // the request never reached actual route logic — it was intercepted
 // somewhere before that (wrong host, wrong path, a platform's own 404/50x
 // page, a sleeping/never-deployed backend, CORS, etc.) — so the true cause
-// isn't something this client can know for certain. Keep this short and
-// honest rather than guessing; resolveApiUrl already gives a precise
-// message for the two config mistakes it can actually detect.
+// isn't something this client can know for certain.
 function fallbackMessageForStatus(status: number): string {
-  if (status === 404) return "We couldn't reach the server for that request. Please try again shortly.";
+  if (status === 404)
+    return "The server endpoint was not found (404). Check NEXT_PUBLIC_API_BASE_URL or BACKEND_URL in your deployment settings.";
   if (status === 401 || status === 403) return "You're not authorized to do that. Try signing in again.";
   if (status >= 500) return "The server had a problem on its end. Please try again shortly.";
   return `The server didn't accept that request (status ${status}). Please try again.`;
