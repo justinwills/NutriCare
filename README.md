@@ -83,7 +83,9 @@ Set `PYTHON_EXECUTABLE` in `backend\.env` to the absolute path of `.venv\Scripts
 
 OCR suggestions are review-only. A receipt can suggest a purchased food name and package quantity, but it never confirms consumption. The patient must edit or confirm the food name, consumed quantity, and unit in the meal journal before nutrition totals are updated.
 
-Plate photo recognition uses an OpenAI-compatible vision API. Set `OPENAI_API_KEY` in `backend\.env` (and optionally `OPENAI_VISION_MODEL` or `OPENAI_BASE_URL`), restart the backend, then use **Recognize plate** in the meal journal. The returned foods and estimated portion weights are only suggestions; the patient must review them before logging.
+On Vercel, receipt OCR uses an OpenAI-compatible vision API because the Node service does not include the local PaddleOCR runtime. Set `OPENAI_API_KEY` in Vercel Environment Variables (and optionally `OPENAI_VISION_MODEL` or `OPENAI_BASE_URL`). Locally, `OCR_PROVIDER=auto` continues to use PaddleOCR; set it to `vision` to use the hosted provider instead.
+
+Plate photo recognition uses the same vision configuration. Restart or redeploy after changing these variables, then use **Recognize plate** in the meal journal. Receipt products, recognized foods, quantities, and portion weights are suggestions that the patient must review before saving.
 
 ## Doctor Supervision Flow
 
