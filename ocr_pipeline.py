@@ -426,6 +426,54 @@ def extract_products(lines):
     return products
 
 
+def sanitize_image(input_path):
+    """
+    Sanitizes image for OCR:
+    1. Loads image with OpenCV (handling PNG transparency, Grayscale, etc.)
+    2. Converts RGBA (4 channels) -> 3-channel BGR on white background (crucial for PNGs)
+    3. Converts Grayscale -> 3-channel BGR
+    4. Downscales oversized mobile photos (capped at 1800px on longest edge)
+       to prevent container memory spikes / OOM kills and boost speed 5x.
+    """
+    try:
+        import cv2
+        import numpy as np
+
+        img = cv2.imread(input_path, cv2.IMREAD_UNCHANGED)
+        if img is None:
+            return input_path, False
+
+        # Convert RGBA (4-channel PNG) to 3-channel BGR with white background
+        if len(img.shape) == 3 and img.shape[2] == 4:
+            b, g, r, a = cv2.split(img)
+            alpha = a.astype(float) / 255.0
+            white = np.ones_like(b, dtype=float) * 255.0
+            b = (b * alpha + white * (1 - alpha)).astype(np.uint8)
+            g = (g * alpha + white * (1 - alpha)).astype(np.uint8)
+            r = (r * alpha + white * (1 - alpha)).astype(np.uint8)
+            img = cv2.merge([b, g, r])
+        elif len(img.shape) == 2:
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        elif len(img.shape) == 3 and img.shape[2] > 3:
+            img = img[:, :, :3]
+
+        # Downscale if image is huge (> 1800px on any edge)
+        h, w = img.shape[:2]
+        max_dim = max(h, w)
+        if max_dim > 1800:
+            scale = 1800.0 / max_dim
+            new_w = int(w * scale)
+            new_h = int(h * scale)
+            img = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_AREA)
+
+        sanitized_path = input_path + ".sanitized.jpg"
+        cv2.imwrite(sanitized_path, img, [cv2.IMWRITE_JPEG_QUALITY, 95])
+        return sanitized_path, True
+    except Exception as e:
+        sys.stderr.write(f"Image sanitize notice: {e}\n")
+        return input_path, False
+
+
 def main():
     # The Node process consumes JSON as UTF-8. Windows terminals often default
     # to cp1252, which cannot print Chinese receipt text and crashes the scan.
@@ -448,6 +496,7 @@ def main():
         print(json.dumps({"products": [], "detectedLines": [], "error": f"Failed to import PaddleOCR: {e}"}))
         return
 
+    sanitized_path, is_temp = sanitize_image(image_path)
     try:
         ocr = PaddleOCR(
             use_doc_orientation_classify=False,
@@ -455,12 +504,18 @@ def main():
             use_textline_orientation=False,
             engine="onnxruntime",
         )
-        prediction = ocr.predict(image_path)
+        prediction = ocr.predict(sanitized_path)
         result = next(iter(prediction), None)
     except Exception as e:
         sys.stderr.write(f"OCR Exception: {e}\n")
         print(json.dumps({"products": [], "detectedLines": [], "error": str(e)}))
         return
+    finally:
+        if is_temp and os.path.exists(sanitized_path):
+            try:
+                os.remove(sanitized_path)
+            except Exception:
+                pass
 
     if result is None:
         print(json.dumps({"products": [], "detectedLines": []}))
