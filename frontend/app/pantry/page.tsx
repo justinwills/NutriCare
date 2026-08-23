@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
+import { Icon } from "@/components/ui/Icons";
 import { ApiError } from "@/lib/api/client";
 import * as pantryApi from "@/lib/api/pantry";
 import * as ocrApi from "@/lib/api/ocr";
@@ -37,6 +38,7 @@ function PantryPageInner() {
   const [scanUnits, setScanUnits] = useState<Record<number, BaseUnit>>({});
   const [ocrWarnings, setOcrWarnings] = useState<OcrPlanWarning[]>([]);
   const [savingScan, setSavingScan] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [deductQty, setDeductQty] = useState<Record<string, string>>({});
   const [deductUnit, setDeductUnit] = useState<Record<string, MeasurementUnit>>({});
@@ -185,6 +187,47 @@ function PantryPageInner() {
       setError(err instanceof ApiError ? err.message : "Could not add scanned item");
     } finally {
       setSavingScan(null);
+    }
+  }
+
+  function removeScannedItem(index: number) {
+    setScanResults((current) => current.filter((_, currentIndex) => currentIndex !== index));
+    setScanNames((current) =>
+      Object.fromEntries(
+        Object.entries(current)
+          .filter(([key]) => Number(key) !== index)
+          .map(([key, value]) => [Number(key) > index ? Number(key) - 1 : Number(key), value])
+      )
+    );
+    setScanQuantities((current) =>
+      Object.fromEntries(
+        Object.entries(current)
+          .filter(([key]) => Number(key) !== index)
+          .map(([key, value]) => [Number(key) > index ? Number(key) - 1 : Number(key), value])
+      )
+    );
+    setScanUnits((current) =>
+      Object.fromEntries(
+        Object.entries(current)
+          .filter(([key]) => Number(key) !== index)
+          .map(([key, value]) => [Number(key) > index ? Number(key) - 1 : Number(key), value])
+      )
+    );
+  }
+
+  async function handleDelete(item: PantryItemView) {
+    if (!window.confirm(`Remove "${item.productName}" from your pantry?`)) return;
+    setError(null);
+    setStatus(null);
+    setDeletingId(item.id);
+    try {
+      await pantryApi.deletePantryItem(item.id);
+      setStatus(`${item.productName} removed from pantry`);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not delete item");
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -340,9 +383,20 @@ function PantryPageInner() {
                       {Math.round(item.confidence * 100)}% OCR confidence
                     </p>
                   </div>
-                  <Button type="button" variant="secondary" loading={savingScan === key} onClick={() => void saveScannedItem(item, index)}>
-                    Add to pantry
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button type="button" variant="secondary" loading={savingScan === key} onClick={() => void saveScannedItem(item, index)}>
+                      Add to pantry
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => removeScannedItem(index)}
+                      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border-warm bg-white text-brick transition hover:border-brick/30 hover:bg-brick/10 hover:text-brick focus:outline-none focus-visible:ring-2 focus-visible:ring-brick/40"
+                      aria-label={`Delete ${scanNames[index] ?? item.suggestedName}`}
+                      title="Delete detected product"
+                    >
+                      <Icon name="cross" className="h-4 w-4" />
+                    </button>
+                  </div>
                 </li>
               );
             })}
@@ -387,10 +441,26 @@ function PantryPageInner() {
           value={expirationDate}
           onChange={(e) => setExpirationDate(e.target.value)}
         />
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-2 flex flex-wrap gap-2">
           <Button type="submit" loading={adding} className="w-full sm:w-auto">
             Add to pantry
           </Button>
+          {(productName || initialQuantity || expirationDate) && (
+            <Button
+              type="button"
+              variant="secondary"
+              className="text-brick hover:border-brick/30 hover:bg-brick/10"
+              onClick={() => {
+                setProductName("");
+                setInitialQuantity("");
+                setExpirationDate("");
+                setBaseUnit("g");
+              }}
+            >
+              <Icon name="cross" className="h-4 w-4" />
+              Clear
+            </Button>
+          )}
         </div>
       </form>
 
@@ -409,8 +479,8 @@ function PantryPageInner() {
                 className="receipt-tag app-surface rounded-[22px] p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(23,37,30,0.09)]"
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <p className="font-medium text-ink">{item.productName}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-ink truncate">{item.productName}</p>
                     <p className="mt-0.5 text-sm text-ink/60">
                       {formatQty(item.remainingQuantity, item.baseUnit)} left of{" "}
                       {formatQty(item.initialQuantity, item.baseUnit)}
@@ -418,9 +488,21 @@ function PantryPageInner() {
                       {low ? " · low stock" : ""}
                     </p>
                   </div>
-                  <span className="rounded-full bg-border-warm/50 px-2 py-0.5 text-xs text-ink/60">
-                    {item.source}
-                  </span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="rounded-full bg-border-warm/50 px-2 py-0.5 text-xs text-ink/60">
+                      {item.source}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={deletingId === item.id}
+                      onClick={() => void handleDelete(item)}
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-ink/40 transition hover:bg-brick/10 hover:text-brick focus:outline-none focus-visible:ring-2 focus-visible:ring-brick/40 disabled:opacity-50"
+                      aria-label={`Delete ${item.productName}`}
+                      title="Delete product"
+                    >
+                      <Icon name="cross" className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 </div>
                 <div className="mt-4 h-2 overflow-hidden rounded-full bg-border-warm/70">
                   <div

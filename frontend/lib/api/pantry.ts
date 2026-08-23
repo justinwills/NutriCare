@@ -58,3 +58,9 @@ export async function checkExpiringItems(): Promise<number> {
   );
   return result.alertsCreated;
 }
+
+export async function deletePantryItem(itemId: string): Promise<void> {
+  await apiRequest<{ deleted: boolean }>(`/pantry/${itemId}`, {
+    method: "DELETE",
+  });
+}

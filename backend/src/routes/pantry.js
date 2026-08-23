@@ -108,4 +108,19 @@ router.post('/check-expiring', asyncHandler(async (req, res) => {
   res.json({ checked: true, alertsCreated });
 }));
 
+/**
+ * DELETE /pantry/:id
+ * Removes a pantry item for the authenticated user.
+ */
+router.delete('/:id', asyncHandler(async (req, res) => {
+  const { rowCount } = await pool.query(
+    `DELETE FROM pantry_items WHERE id = $1 AND user_id = $2`,
+    [req.params.id, req.user.userId]
+  );
+  if (rowCount === 0) {
+    return res.status(404).json({ error: 'Pantry item not found' });
+  }
+  res.json({ deleted: true });
+}));
+
 export default router;
