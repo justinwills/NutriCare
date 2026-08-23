@@ -313,7 +313,15 @@ def extract_products(lines):
             elif unit == "l":
                 amount, unit = amount * 1000, "ml"
 
-            name_line = next((item for item in reversed(candidates) if useful_name(item["englishText"])), None)
+            valid_candidates = [
+                item for item in candidates
+                if useful_name(item["englishText"]) and len(item["englishText"].strip()) > 1 and item.get("ocrConfidence", 1.0) >= 0.5
+            ]
+            food_candidates = [
+                item for item in valid_candidates
+                if any(kw in item["englishText"].lower() for kw in FOOD_KEYWORDS)
+            ]
+            name_line = food_candidates[-1] if food_candidates else (valid_candidates[-1] if valid_candidates else None)
             if name_line:
                 raw_name = name_line["originalText"]
                 sug_name = name_line["englishText"]
