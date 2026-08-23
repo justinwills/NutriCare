@@ -435,7 +435,7 @@ def main():
             use_doc_orientation_classify=False,
             use_doc_unwarping=False,
             use_textline_orientation=False,
-            engine="paddle",
+            engine="onnxruntime",
         )
         prediction = ocr.predict(sys.argv[1])
         result = next(iter(prediction), None)
@@ -449,28 +449,27 @@ def main():
         return
 
     payload = {}
-    temp_dir = tempfile.mkdtemp()
-    try:
-        if hasattr(result, "save_to_json"):
-            result.save_to_json(temp_dir)
-        for root_dir, _, files in os.walk(temp_dir):
-            for file_name in files:
-                if file_name.endswith(".json"):
-                    with open(os.path.join(root_dir, file_name), "r", encoding="utf-8") as f:
-                        payload = json.load(f)
-                    break
-    except Exception:
-        pass
-    finally:
-        shutil.rmtree(temp_dir, ignore_errors=True)
+    if hasattr(result, "get"):
+        payload = result
+    elif hasattr(result, "json"):
+        payload = result.json
 
     if not payload:
-        if isinstance(result, dict):
-            payload = result
-        elif hasattr(result, "json"):
-            payload = result.json
-        else:
-            payload = {}
+        temp_dir = tempfile.mkdtemp()
+        try:
+            if hasattr(result, "save_to_json"):
+                result.save_to_json(temp_dir)
+            for root_dir, _, files in os.walk(temp_dir):
+                for file_name in files:
+                    if file_name.endswith(".json"):
+                        with open(os.path.join(root_dir, file_name), "r", encoding="utf-8") as f:
+                            payload = json.load(f)
+                        break
+        except Exception:
+            pass
+        finally:
+            shutil.rmtree(temp_dir, ignore_errors=True)
+
     data = payload.get("res", payload)
     texts = data.get("rec_texts", [])
     scores = data.get("rec_scores", [])
