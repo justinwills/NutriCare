@@ -54,6 +54,8 @@ router.post('/scan', asyncHandler(async (req, res) => {
       cwd: projectRoot,
       env: {
         ...process.env,
+        GLOG_minloglevel: '2',
+        PADDLE_PDX_LOG_LEVEL: 'ERROR',
         PADDLE_PDX_ENABLE_MKLDNN_BYDEFAULT: 'False',
         FLAGS_use_onednn: '0',
         PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK: 'True',
@@ -74,7 +76,11 @@ router.post('/scan', asyncHandler(async (req, res) => {
     res.json({ ...result, planWarnings });
   } catch (error) {
     console.error('OCR scan failed:', error);
-    const detail = error?.stderr?.trim() || errorMessage(error, 'Unknown OCR error');
+    const rawDetail = error?.stderr?.trim() || errorMessage(error, 'Unknown OCR error');
+    const detailLines = rawDetail
+      .split(/\r?\n/)
+      .filter((line) => !line.includes('Creating model:') && !line.includes('Model files already exist') && !line.includes('Checking connectivity'));
+    const detail = detailLines.join('\n').trim() || rawDetail;
     const unavailable = error?.code === 'ENOENT' || /No module named ['"]?(paddle|paddleocr)/i.test(detail);
     const message = unavailable
       ? 'OCR is unavailable. Install PaddleOCR and PaddlePaddle, then set PYTHON_EXECUTABLE if needed.'

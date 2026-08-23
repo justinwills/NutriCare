@@ -6,16 +6,24 @@ the file.  Nothing from a user's receipt is stored in the repository.
 """
 
 import json
+import logging
 import os
 import re
+import shutil
 import sys
 import tempfile
 
 # Disable oneDNN / MKLDNN in PaddleX & Paddle to avoid oneDNN PIR execution errors on CPU
+os.environ["GLOG_minloglevel"] = "2"
+os.environ["PADDLE_PDX_LOG_LEVEL"] = "ERROR"
 os.environ["PADDLE_PDX_ENABLE_MKLDNN_BYDEFAULT"] = "False"
 os.environ["FLAGS_use_onednn"] = "0"
 os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
 os.environ["PYTHONWARNINGS"] = "ignore"
+
+logging.basicConfig(level=logging.ERROR)
+for _logger in ("paddlex", "paddle", "ppocr", "root"):
+    logging.getLogger(_logger).setLevel(logging.ERROR)
 
 from paddleocr import PaddleOCR
 
@@ -422,31 +430,47 @@ def main():
     if len(sys.argv) != 2:
         raise SystemExit("Usage: ocr_pipeline.py IMAGE_PATH")
 
-    ocr = PaddleOCR(
-        use_doc_orientation_classify=False,
-        use_doc_unwarping=False,
-        use_textline_orientation=False,
-        engine="paddle",
-    )
-    result = next(iter(ocr.predict(sys.argv[1])), None)
+    try:
+        ocr = PaddleOCR(
+            use_doc_orientation_classify=False,
+            use_doc_unwarping=False,
+            use_textline_orientation=False,
+            engine="paddle",
+        )
+        prediction = ocr.predict(sys.argv[1])
+        result = next(iter(prediction), None)
+    except Exception as e:
+        sys.stderr.write(f"OCR Exception: {e}\n")
+        print(json.dumps({"products": [], "detectedLines": []}))
+        return
+
     if result is None:
         print(json.dumps({"products": [], "detectedLines": []}))
         return
 
-    # `save_to_json` is the stable PaddleOCR result API used by the existing
-    # prototype. Use an OS-managed temporary file so concurrent web requests
-    # never overwrite one another's results.
-    # NamedTemporaryFile keeps its handle open on Windows, which prevents
-    # PaddleOCR from opening the same path to write. Create and close the
-    # path first, then clean it up ourselves.
-    file_descriptor, output_path = tempfile.mkstemp(suffix=".json")
-    os.close(file_descriptor)
+    payload = {}
+    temp_dir = tempfile.mkdtemp()
     try:
-        result.save_to_json(output_path)
-        with open(output_path, "r", encoding="utf-8") as output:
-            payload = json.load(output)
+        if hasattr(result, "save_to_json"):
+            result.save_to_json(temp_dir)
+        for root_dir, _, files in os.walk(temp_dir):
+            for file_name in files:
+                if file_name.endswith(".json"):
+                    with open(os.path.join(root_dir, file_name), "r", encoding="utf-8") as f:
+                        payload = json.load(f)
+                    break
+    except Exception:
+        pass
     finally:
-        os.unlink(output_path)
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+    if not payload:
+        if isinstance(result, dict):
+            payload = result
+        elif hasattr(result, "json"):
+            payload = result.json
+        else:
+            payload = {}
     data = payload.get("res", payload)
     texts = data.get("rec_texts", [])
     scores = data.get("rec_scores", [])
