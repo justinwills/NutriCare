@@ -22,8 +22,15 @@ os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
 os.environ["PYTHONWARNINGS"] = "ignore"
 
 logging.basicConfig(level=logging.ERROR)
+logging.disable(logging.WARNING)
 for _logger in ("paddlex", "paddle", "ppocr", "root"):
     logging.getLogger(_logger).setLevel(logging.ERROR)
+
+try:
+    import paddlex.utils.logging as _pdx_logging
+    _pdx_logging._logger.setLevel(logging.ERROR)
+except Exception:
+    pass
 
 
 IGNORED_TERMS = (
