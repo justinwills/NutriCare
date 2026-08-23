@@ -14,6 +14,8 @@
     { "source": "/ocr", "destination": "/api/index.js" },
     { "source": "/supervision/(.*)", "destination": "/api/index.js" },
     { "source": "/supervision", "destination": "/api/index.js" },
+    { "source": "/food-gallery/(.*)", "destination": "/api/index.js" },
+    { "source": "/food-gallery", "destination": "/api/index.js" },
     { "source": "/health", "destination": "/api/index.js" }
   ]
 }
