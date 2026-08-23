@@ -21,6 +21,7 @@ function parseMeal(raw: RawMeal): MealView {
 }
 
 // Each item with a pantryItemId triggers a real deduction server-side.
+// Manual items with an exact pantry product-name match are also deducted.
 // If ANY item in the array fails (e.g. insufficient stock on one
 // ingredient), the WHOLE meal log fails — verified in meals.js, the
 // backend wraps this in a transaction and rolls back on any item
@@ -36,12 +37,13 @@ export async function logMeal(input: {
     items: RawMeal["items"];
     nutrition: MealNutrition;
     alertsCreated: number;
-  }>(
-    "/meals",
-    { method: "POST", body: input }
-  );
+  }>("/meals", { method: "POST", body: input });
   return {
-    meal: parseMeal({ ...result.meal, items: result.items, nutrition: result.nutrition }),
+    meal: parseMeal({
+      ...result.meal,
+      items: result.items,
+      nutrition: result.nutrition,
+    }),
     alertsCreated: result.alertsCreated,
   };
 }

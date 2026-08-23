@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
@@ -9,11 +15,14 @@ import * as mealsApi from "@/lib/api/meals";
 import type { MealView } from "@/lib/api/meals";
 import * as pantryApi from "@/lib/api/pantry";
 import type { PantryItemView } from "@/lib/api/parse";
+import { recognizeFood, scanReceipt } from "@/lib/api/ocr";
 import { formatQty, unitsForBase } from "@/lib/units";
 import type { MealItemSource, MeasurementUnit } from "@/lib/types/api";
 import { playAlertSound } from "@/lib/playAlertSound";
 import { MealNutritionDetails } from "@/components/meals/MealNutritionDetails";
 import { Icon } from "@/components/ui/Icons";
+import * as foodGalleryApi from "@/lib/api/foodGallery";
+import type { FoodGalleryEntry } from "@/lib/api/foodGallery";
 
 type DraftItem = {
   pantryItemId: string;
@@ -30,6 +39,8 @@ function MealsPageInner() {
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const [recognizingPlate, setRecognizingPlate] = useState(false);
   const [expandedMealId, setExpandedMealId] = useState<string | null>(null);
 
   const [notes, setNotes] = useState("");
@@ -41,14 +52,17 @@ function MealsPageInner() {
     source: "manual",
   });
   const [queued, setQueued] = useState<DraftItem[]>([]);
+  const [gallery, setGallery] = useState<FoodGalleryEntry[]>([]);
 
   const refresh = useCallback(async () => {
-    const [mealList, pantryList] = await Promise.all([
+    const [mealList, pantryList, galleryList] = await Promise.all([
       mealsApi.listMeals(),
       pantryApi.listPantryItems(),
+      foodGalleryApi.listMyFoodGallery(),
     ]);
     setMeals(mealList);
     setPantry(pantryList);
+    setGallery(galleryList);
   }, []);
 
   useEffect(() => {
@@ -58,7 +72,9 @@ function MealsPageInner() {
         await refresh();
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof ApiError ? err.message : "Failed to load meals");
+          setError(
+            err instanceof ApiError ? err.message : "Failed to load meals",
+          );
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -109,6 +125,111 @@ function MealsPageInner() {
     });
   }
 
+  async function handleFoodScan(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setError(null);
+    setStatus(null);
+    setScanning(true);
+    try {
+      const imageData = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("Could not read image"));
+        reader.readAsDataURL(file);
+      });
+      const result = await scanReceipt(imageData);
+      const detected = result.products.filter((product) =>
+        product.suggestedName.trim(),
+      );
+      if (detected.length === 0) {
+        setError(
+          "No food name was detected. Try a clearer photo of the label.",
+        );
+        return;
+      }
+      setQueued((prev) => [
+        ...prev,
+        ...detected.map((product) => ({
+          pantryItemId: "",
+          label: product.suggestedName.trim(),
+          quantityUsed:
+            product.initialQuantity == null
+              ? ""
+              : String(product.initialQuantity),
+          unit: product.baseUnit,
+          source: "manual" as const,
+        })),
+      ]);
+      setStatus(
+        `${detected.length} food item${detected.length === 1 ? "" : "s"} detected. Confirm the amount before logging.`,
+      );
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Could not scan this food label",
+      );
+    } finally {
+      setScanning(false);
+    }
+  }
+
+  async function handlePlateRecognition(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setError(null);
+    setStatus(null);
+    setRecognizingPlate(true);
+    try {
+      const imageData = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("Could not read image"));
+        reader.readAsDataURL(file);
+      });
+      const result = await recognizeFood(imageData);
+      if (result.foods.length === 0) {
+        setError(
+          "No food was recognized. Try a well-lit photo showing the whole plate.",
+        );
+        return;
+      }
+      setQueued((prev) => [
+        ...prev,
+        ...result.foods.map((food) => ({
+          pantryItemId: "",
+          label: food.name,
+          quantityUsed:
+            food.estimatedQuantity > 0 ? String(food.estimatedQuantity) : "",
+          unit: food.unit,
+          source: "manual" as const,
+        })),
+      ]);
+      const savedGalleryEntry = await foodGalleryApi.saveFoodGalleryEntry({
+        imageData,
+        detectedFoods: result.foods,
+        nutrition: { planWarnings: result.planWarnings },
+      });
+      setGallery((prev) => [savedGalleryEntry, ...prev]);
+      setStatus(
+        `${result.foods.length} food item${result.foods.length === 1 ? "" : "s"} recognized. Review the estimated portions before logging.`,
+      );
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Could not recognize food in this photo",
+      );
+    } finally {
+      setRecognizingPlate(false);
+    }
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
@@ -123,6 +244,10 @@ function MealsPageInner() {
 
     if (items.length === 0) {
       setError("Add at least one food and confirm the amount eaten");
+      return;
+    }
+    if (items.some((item) => !item.label.trim() || !item.quantityUsed)) {
+      setError("Confirm a food name and amount for every detected item");
       return;
     }
 
@@ -166,18 +291,27 @@ function MealsPageInner() {
   return (
     <>
       <div className="mb-8">
-        <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-sage">Daily rhythm</p>
-        <h1 className="font-display text-4xl font-semibold tracking-[-0.04em] text-ink sm:text-5xl">Meal journal</h1>
+        <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-sage">
+          Daily rhythm
+        </p>
+        <h1 className="font-display text-4xl font-semibold tracking-[-0.04em] text-ink sm:text-5xl">
+          Meal journal
+        </h1>
         <p className="mt-2 text-sm text-ink/55">
           Log what you ate — pantry-linked items get deducted automatically
         </p>
       </div>
 
       {status && (
-        <p className="mb-3 rounded-lg bg-sage/10 px-3 py-2 text-sm text-sage">{status}</p>
+        <p className="mb-3 rounded-lg bg-sage/10 px-3 py-2 text-sm text-sage">
+          {status}
+        </p>
       )}
       {error && (
-        <p role="alert" className="mb-3 rounded-lg bg-brick/10 px-3 py-2 text-sm text-brick">
+        <p
+          role="alert"
+          className="mb-3 rounded-lg bg-brick/10 px-3 py-2 text-sm text-brick"
+        >
           {error}
         </p>
       )}
@@ -190,17 +324,55 @@ function MealsPageInner() {
           <label className="text-sm font-medium text-ink/80">Item source</label>
           <select
             className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base"
-            value={draft.source === "bought" ? "__bought__" : draft.pantryItemId}
+            value={
+              draft.source === "bought" ? "__bought__" : draft.pantryItemId
+            }
             onChange={(e) => onPantryPick(e.target.value)}
           >
-            <option value="">Manual entry — no deduction</option>
-            <option value="__bought__">Bought outside — no pantry deduction</option>
+            <option value="">
+              Manual entry — auto-deducts exact pantry match
+            </option>
+            <option value="__bought__">
+              Bought outside — no pantry deduction
+            </option>
             {pantry.map((item) => (
               <option key={item.id} value={item.id}>
-                {item.productName} ({formatQty(item.remainingQuantity, item.baseUnit)} left)
+                {item.productName} (
+                {formatQty(item.remainingQuantity, item.baseUnit)} left)
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border-warm bg-paper/70 p-3">
+          <div>
+            <p className="text-sm font-medium text-ink">Scan a food label</p>
+            <p className="text-xs text-ink/55">
+              Detect packaged food names, then confirm the amount.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <label className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-border-warm bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-sm transition hover:-translate-y-0.5 hover:border-sage/30 focus-within:ring-2 focus-within:ring-sage/30">
+              {recognizingPlate ? "Recognizing…" : "Recognize plate"}
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="sr-only"
+                disabled={recognizingPlate || scanning}
+                onChange={handlePlateRecognition}
+              />
+            </label>
+            <label className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-border-warm bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-sm transition hover:-translate-y-0.5 hover:border-sage/30 focus-within:ring-2 focus-within:ring-sage/30">
+              {scanning ? "Scanning…" : "Scan label"}
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="sr-only"
+                disabled={scanning || recognizingPlate}
+                onChange={handleFoodScan}
+              />
+            </label>
+          </div>
         </div>
 
         <TextField
@@ -214,8 +386,12 @@ function MealsPageInner() {
           label={draft.source === "bought" ? "Food name" : "Label"}
           required={queued.length === 0}
           value={draft.label}
-          onChange={(e) => setDraft((prev) => ({ ...prev, label: e.target.value }))}
-          placeholder={draft.source === "bought" ? "Nasi padang" : "Chicken breast"}
+          onChange={(e) =>
+            setDraft((prev) => ({ ...prev, label: e.target.value }))
+          }
+          placeholder={
+            draft.source === "bought" ? "Nasi padang" : "Chicken breast"
+          }
         />
 
         <div className="grid grid-cols-2 gap-3">
@@ -256,16 +432,59 @@ function MealsPageInner() {
         {queued.length > 0 && (
           <ul className="rounded-xl border border-border-warm bg-paper/80 p-3 text-sm">
             {queued.map((item, idx) => (
-              <li key={`${item.label}-${idx}`} className="flex justify-between gap-2 py-1">
-                <span>
-                  {item.label} · {item.quantityUsed}
-                  {item.unit}
-                  {item.source === "pantry" ? " (from pantry)" : " (manual)"}
-                </span>
+              <li
+                key={`${item.label}-${idx}`}
+                className="flex items-center justify-between gap-2 py-1"
+              >
+                <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                <input
+                  className="w-20 rounded-lg border border-border-warm bg-white px-2 py-1.5 text-sm"
+                  type="number"
+                  min={0.01}
+                  step="any"
+                  aria-label={`Amount for ${item.label}`}
+                  value={item.quantityUsed}
+                  onChange={(e) =>
+                    setQueued((prev) =>
+                      prev.map((queuedItem, itemIndex) =>
+                        itemIndex === idx
+                          ? { ...queuedItem, quantityUsed: e.target.value }
+                          : queuedItem,
+                      ),
+                    )
+                  }
+                />
+                <select
+                  className="rounded-lg border border-border-warm bg-white px-2 py-1.5 text-sm"
+                  aria-label={`Unit for ${item.label}`}
+                  value={item.unit}
+                  onChange={(e) =>
+                    setQueued((prev) =>
+                      prev.map((queuedItem, itemIndex) =>
+                        itemIndex === idx
+                          ? {
+                              ...queuedItem,
+                              unit: e.target.value as MeasurementUnit,
+                            }
+                          : queuedItem,
+                      ),
+                    )
+                  }
+                >
+                  {(["g", "ml", "tsp", "tbsp", "cup"] as MeasurementUnit[]).map(
+                    (unit) => (
+                      <option key={unit} value={unit}>
+                        {unit}
+                      </option>
+                    ),
+                  )}
+                </select>
                 <button
                   type="button"
                   className="text-brick hover:underline"
-                  onClick={() => setQueued((prev) => prev.filter((_, i) => i !== idx))}
+                  onClick={() =>
+                    setQueued((prev) => prev.filter((_, i) => i !== idx))
+                  }
                 >
                   Remove
                 </button>
@@ -294,14 +513,19 @@ function MealsPageInner() {
       ) : (
         <ul className="flex flex-col gap-3">
           {meals.map((meal) => (
-            <li key={meal.id} className="app-surface overflow-hidden rounded-[22px]">
+            <li
+              key={meal.id}
+              className="app-surface overflow-hidden rounded-[22px]"
+            >
               <button
                 type="button"
                 className="flex w-full items-start justify-between gap-4 p-5 text-left outline-none transition hover:bg-sage/[0.04] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sage/40 sm:p-6"
                 aria-expanded={expandedMealId === meal.id}
                 aria-controls={`meal-nutrition-${meal.id}`}
                 onClick={() =>
-                  setExpandedMealId((current) => current === meal.id ? null : meal.id)
+                  setExpandedMealId((current) =>
+                    current === meal.id ? null : meal.id,
+                  )
                 }
               >
                 <span className="min-w-0">
@@ -327,7 +551,10 @@ function MealsPageInner() {
                 <span className="flex shrink-0 items-center gap-3">
                   {meal.nutrition.matchedItems.length > 0 && (
                     <span className="hidden text-sm font-semibold text-ink/60 sm:block">
-                      {Math.round(meal.nutrition.totals.caloriesKcal).toLocaleString()} kcal
+                      {Math.round(
+                        meal.nutrition.totals.caloriesKcal,
+                      ).toLocaleString()}{" "}
+                      kcal
                     </span>
                   )}
                   <span className="grid h-10 w-10 place-items-center rounded-xl border border-border-warm bg-white text-ink/55">
@@ -348,6 +575,40 @@ function MealsPageInner() {
             </li>
           ))}
         </ul>
+      )}
+
+      {gallery.length > 0 && (
+        <section className="mt-8">
+          <h2 className="mb-3 text-lg font-semibold text-ink">
+            Food photo gallery
+          </h2>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {gallery.map((entry) => (
+              <li
+                key={entry.id}
+                className="app-surface overflow-hidden rounded-[22px]"
+              >
+                <img
+                  src={entry.image_data}
+                  alt="Saved meal plate"
+                  className="aspect-[4/3] w-full object-cover"
+                />
+                <div className="p-4">
+                  <p className="text-xs text-ink/50">
+                    {new Date(entry.created_at).toLocaleString()}
+                  </p>
+                  <p className="mt-2 text-sm text-ink/80">
+                    {entry.detected_foods
+                      .map(
+                        (food) => `${food.name} (${food.estimatedQuantity}g)`,
+                      )
+                      .join(", ")}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </>
   );

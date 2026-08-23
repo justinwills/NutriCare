@@ -1,36 +1,54 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { toBaseUnit } from './units.js';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { toBaseUnit } from "./units.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const nutritionDbPath = path.resolve(__dirname, '../../../nutrition_db.json');
-const nutritionDb = JSON.parse(fs.readFileSync(nutritionDbPath, 'utf8'));
+const nutritionDbPath = path.resolve(__dirname, "../../../nutrition_db.json");
+const commonGroceriesPath = path.resolve(
+  __dirname,
+  "../../../common_groceries.json",
+);
+const additionalFoodsPath = path.resolve(
+  __dirname,
+  "../../../additional_foods.json",
+);
+const nutritionDb = JSON.parse(fs.readFileSync(nutritionDbPath, "utf8"));
+const commonGroceries = JSON.parse(
+  fs.readFileSync(commonGroceriesPath, "utf8"),
+);
+const additionalFoods = JSON.parse(
+  fs.readFileSync(additionalFoodsPath, "utf8"),
+);
 
 const NUTRIENT_KEYS = [
-  'caloriesKcal',
-  'proteinG',
-  'carbohydrateG',
-  'fatG',
-  'fiberG',
-  'sugarG',
-  'sodiumMg',
+  "caloriesKcal",
+  "proteinG",
+  "carbohydrateG",
+  "fatG",
+  "fiberG",
+  "sugarG",
+  "sodiumMg",
 ];
 
 function normalizeFoodLabel(value) {
-  return String(value || '')
-    .normalize('NFKD')
-    .replace(/\p{M}/gu, '')
+  return String(value || "")
+    .normalize("NFKD")
+    .replace(/\p{M}/gu, "")
     .toLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
     .trim()
-    .replace(/\s+/g, ' ');
+    .replace(/\s+/g, " ");
 }
 
-const foodTerms = nutritionDb.foods.flatMap((food) =>
+const foodTerms = [
+  ...nutritionDb.foods,
+  ...commonGroceries,
+  ...additionalFoods,
+].flatMap((food) =>
   [food.name, ...(food.aliases || [])]
     .map((term) => ({ food, term: normalizeFoodLabel(term) }))
-    .filter((entry) => entry.term)
+    .filter((entry) => entry.term),
 );
 
 function findFood(label) {
@@ -50,8 +68,10 @@ function findFood(label) {
   // A short manual label such as "rice" can still identify a longer
   // database term such as "white rice". Limit this fallback to a single
   // complete token so partial words do not create surprising matches.
-  if (!normalized.includes(' ') && normalized.length >= 4) {
-    const tokenMatch = foodTerms.find(({ term }) => term.split(' ').includes(normalized));
+  if (!normalized.includes(" ") && normalized.length >= 4) {
+    const tokenMatch = foodTerms.find(({ term }) =>
+      term.split(" ").includes(normalized),
+    );
     if (tokenMatch) return tokenMatch.food;
   }
 
@@ -74,20 +94,20 @@ export function calculateMealNutrition(items) {
         itemId: item.id,
         label: item.label,
         reason: food?.requiresNutritionLabel
-          ? 'This branded food needs its nutrition label.'
-          : 'No matching food-composition record.',
+          ? "This branded food needs its nutrition label."
+          : "No matching food-composition record.",
       });
       continue;
     }
 
     let quantityGrams;
     try {
-      quantityGrams = toBaseUnit(item.quantity_used, item.unit, 'g');
+      quantityGrams = toBaseUnit(item.quantity_used, item.unit, "g");
     } catch {
       unmatchedItems.push({
         itemId: item.id,
         label: item.label,
-        reason: 'Nutrition calculation currently requires a mass unit.',
+        reason: "Nutrition calculation currently requires a mass unit.",
       });
       continue;
     }
@@ -114,7 +134,7 @@ export function calculateMealNutrition(items) {
     totals,
     matchedItems,
     unmatchedItems,
-    source: nutritionDb.source?.name || 'Food composition database',
+    source: nutritionDb.source?.name || "Food composition database",
     estimated: true,
   };
 }

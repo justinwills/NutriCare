@@ -83,6 +83,8 @@ Set `PYTHON_EXECUTABLE` in `backend\.env` to the absolute path of `.venv\Scripts
 
 OCR suggestions are review-only. A receipt can suggest a purchased food name and package quantity, but it never confirms consumption. The patient must edit or confirm the food name, consumed quantity, and unit in the meal journal before nutrition totals are updated.
 
+Plate photo recognition uses an OpenAI-compatible vision API. Set `OPENAI_API_KEY` in `backend\.env` (and optionally `OPENAI_VISION_MODEL` or `OPENAI_BASE_URL`), restart the backend, then use **Recognize plate** in the meal journal. The returned foods and estimated portion weights are only suggestions; the patient must review them before logging.
+
 ## Doctor Supervision Flow
 
 1. Register one `hospital_patient` account and one `doctor` account.
@@ -97,23 +99,26 @@ Daily boundaries use the patient browser's IANA timezone when supplied during me
 
 ## Supervision Routes
 
-| Method | Route | Access |
-| --- | --- | --- |
-| `GET` | `/doctor/patients` | Doctor |
-| `POST` | `/doctor/link-patient` | Doctor; hospital patients only |
-| `GET` | `/doctor/patients/:patientId/plan` | Actively linked doctor |
-| `PUT` | `/doctor/patients/:patientId/conditions` | Actively linked doctor |
-| `POST` | `/doctor/patients/:patientId/limits` | Actively linked doctor |
-| `PATCH` | `/doctor/patients/:patientId/limits/:limitId` | Owning, actively linked doctor |
-| `DELETE` | `/doctor/patients/:patientId/limits/:limitId` | Owning, actively linked doctor |
-| `POST` | `/doctor/patients/:patientId/recommendations` | Actively linked doctor |
-| `PATCH` | `/doctor/patients/:patientId/recommendations/:recommendationId` | Owning, actively linked doctor |
-| `DELETE` | `/doctor/patients/:patientId/recommendations/:recommendationId` | Owning, actively linked doctor |
-| `GET` | `/supervision` | Hospital patient, own plan only |
-| `GET` | `/supervision/daily-totals` | Hospital patient, own totals only |
-| `PUT` | `/supervision/timezone` | Hospital patient |
-| `POST` | `/ocr/check-foods` | Hospital patient; possible-purchase check only |
-| `POST` | `/meals` | Authenticated; supervision calculation is automatic for hospital patients |
+| Method   | Route                                                           | Access                                                                    |
+| -------- | --------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `GET`    | `/doctor/patients`                                              | Doctor                                                                    |
+| `POST`   | `/doctor/link-patient`                                          | Doctor; hospital patients only                                            |
+| `GET`    | `/doctor/patients/:patientId/plan`                              | Actively linked doctor                                                    |
+| `PUT`    | `/doctor/patients/:patientId/conditions`                        | Actively linked doctor                                                    |
+| `POST`   | `/doctor/patients/:patientId/limits`                            | Actively linked doctor                                                    |
+| `PATCH`  | `/doctor/patients/:patientId/limits/:limitId`                   | Owning, actively linked doctor                                            |
+| `DELETE` | `/doctor/patients/:patientId/limits/:limitId`                   | Owning, actively linked doctor                                            |
+| `POST`   | `/doctor/patients/:patientId/recommendations`                   | Actively linked doctor                                                    |
+| `PATCH`  | `/doctor/patients/:patientId/recommendations/:recommendationId` | Owning, actively linked doctor                                            |
+| `DELETE` | `/doctor/patients/:patientId/recommendations/:recommendationId` | Owning, actively linked doctor                                            |
+| `GET`    | `/supervision`                                                  | Hospital patient, own plan only                                           |
+| `GET`    | `/supervision/daily-totals`                                     | Hospital patient, own totals only                                         |
+| `PUT`    | `/supervision/timezone`                                         | Hospital patient                                                          |
+| `POST`   | `/ocr/check-foods`                                              | Hospital patient; possible-purchase check only                            |
+| `POST`   | `/food-gallery`                                                 | Authenticated; save own plate photo and recognition results               |
+| `GET`    | `/food-gallery`                                                 | Authenticated; view own saved food photos                                 |
+| `GET`    | `/food-gallery/patient/:patientId`                              | Doctor with an active link to the patient                                 |
+| `POST`   | `/meals`                                                        | Authenticated; supervision calculation is automatic for hospital patients |
 
 Legacy `/doctor/nutrition-targets` and `/doctor/check-nutrition` routes remain available for compatibility. New supervision plans use `/doctor/patients/:patientId/*`, and meal logging performs checks automatically.
 

@@ -1,0 +1,2462 @@
+[
+  {
+    "id": "beef_steak_cooked",
+    "name": "Beef steak, cooked",
+    "aliases": ["steak", "beef steak", "cooked steak"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 271,
+      "proteinG": 25.9,
+      "carbohydrateG": 0,
+      "fatG": 18.0,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 55
+    }
+  },
+  {
+    "id": "beef_roast_cooked",
+    "name": "Beef roast, cooked",
+    "aliases": ["roast beef", "beef roast"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 250,
+      "proteinG": 26,
+      "carbohydrateG": 0,
+      "fatG": 15,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 60
+    }
+  },
+  {
+    "id": "chicken_thigh_cooked",
+    "name": "Chicken thigh, cooked",
+    "aliases": ["chicken thighs", "cooked chicken thigh"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 209,
+      "proteinG": 26,
+      "carbohydrateG": 0,
+      "fatG": 10.9,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 84
+    }
+  },
+  {
+    "id": "chicken_wing_cooked",
+    "name": "Chicken wing, cooked",
+    "aliases": ["chicken wings", "cooked chicken wing"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 203,
+      "proteinG": 30.5,
+      "carbohydrateG": 0,
+      "fatG": 8.1,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 82
+    }
+  },
+  {
+    "id": "chicken_drumstick_cooked",
+    "name": "Chicken drumstick, cooked",
+    "aliases": ["chicken legs", "drumstick"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 175,
+      "proteinG": 28,
+      "carbohydrateG": 0,
+      "fatG": 6.2,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 82
+    }
+  },
+  {
+    "id": "duck_cooked",
+    "name": "Duck, cooked",
+    "aliases": ["cooked duck", "duck meat"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 337,
+      "proteinG": 19,
+      "carbohydrateG": 0,
+      "fatG": 28,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 59
+    }
+  },
+  {
+    "id": "lamb_chop_cooked",
+    "name": "Lamb chop, cooked",
+    "aliases": ["lamb chops", "cooked lamb", "lamb"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 294,
+      "proteinG": 25,
+      "carbohydrateG": 0,
+      "fatG": 21,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 72
+    }
+  },
+  {
+    "id": "ham_ready",
+    "name": "Ham, sliced",
+    "aliases": ["ham", "sliced ham"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 145,
+      "proteinG": 20.9,
+      "carbohydrateG": 1.5,
+      "fatG": 5.5,
+      "fiberG": 0,
+      "sugarG": 1.1,
+      "sodiumMg": 1203
+    }
+  },
+  {
+    "id": "turkey_sausage",
+    "name": "Turkey sausage, cooked",
+    "aliases": ["turkey sausage"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 217,
+      "proteinG": 19.2,
+      "carbohydrateG": 3.5,
+      "fatG": 13.9,
+      "fiberG": 0,
+      "sugarG": 0.8,
+      "sodiumMg": 821
+    }
+  },
+  {
+    "id": "meatballs_cooked",
+    "name": "Meatballs, cooked",
+    "aliases": ["meatballs", "cooked meatballs"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 286,
+      "proteinG": 16.6,
+      "carbohydrateG": 9.3,
+      "fatG": 20.5,
+      "fiberG": 0.5,
+      "sugarG": 1.2,
+      "sodiumMg": 480
+    }
+  },
+  {
+    "id": "tilapia_cooked",
+    "name": "Tilapia, cooked",
+    "aliases": ["cooked tilapia", "tilapia"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 128,
+      "proteinG": 26.2,
+      "carbohydrateG": 0,
+      "fatG": 2.7,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 56
+    }
+  },
+  {
+    "id": "trout_cooked",
+    "name": "Trout, cooked",
+    "aliases": ["cooked trout", "trout"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 168,
+      "proteinG": 23.8,
+      "carbohydrateG": 0,
+      "fatG": 7.4,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 52
+    }
+  },
+  {
+    "id": "sardines_canned",
+    "name": "Sardines, canned in oil",
+    "aliases": ["sardines", "canned sardines"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 208,
+      "proteinG": 24.6,
+      "carbohydrateG": 0,
+      "fatG": 11.5,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 307
+    }
+  },
+  {
+    "id": "crab_cooked",
+    "name": "Crab, cooked",
+    "aliases": ["cooked crab", "crab meat"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 97,
+      "proteinG": 20.0,
+      "carbohydrateG": 0,
+      "fatG": 1.5,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 107
+    }
+  },
+  {
+    "id": "scallops_cooked",
+    "name": "Scallops, cooked",
+    "aliases": ["cooked scallops", "scallops"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 111,
+      "proteinG": 20.5,
+      "carbohydrateG": 5.4,
+      "fatG": 0.8,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 667
+    }
+  },
+  {
+    "id": "octopus_cooked",
+    "name": "Octopus, cooked",
+    "aliases": ["cooked octopus", "octopus"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 164,
+      "proteinG": 29.8,
+      "carbohydrateG": 4.4,
+      "fatG": 2.1,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 230
+    }
+  },
+  {
+    "id": "canned_salmon",
+    "name": "Salmon, canned",
+    "aliases": ["canned salmon"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 139,
+      "proteinG": 23.5,
+      "carbohydrateG": 0,
+      "fatG": 4.9,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 403
+    }
+  },
+  {
+    "id": "edamame_cooked",
+    "name": "Edamame, cooked",
+    "aliases": ["cooked edamame", "edamame", "soybeans"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 121,
+      "proteinG": 11.9,
+      "carbohydrateG": 8.9,
+      "fatG": 5.2,
+      "fiberG": 5.2,
+      "sugarG": 2.2,
+      "sodiumMg": 6
+    }
+  },
+  {
+    "id": "split_peas_cooked",
+    "name": "Split peas, cooked",
+    "aliases": ["cooked split peas", "split peas"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 118,
+      "proteinG": 8.3,
+      "carbohydrateG": 21.1,
+      "fatG": 0.4,
+      "fiberG": 8.3,
+      "sugarG": 2.9,
+      "sodiumMg": 2
+    }
+  },
+  {
+    "id": "navy_beans_cooked",
+    "name": "Navy beans, cooked",
+    "aliases": ["cooked navy beans", "navy beans"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 140,
+      "proteinG": 8.2,
+      "carbohydrateG": 26.1,
+      "fatG": 0.6,
+      "fiberG": 10.5,
+      "sugarG": 0.4,
+      "sodiumMg": 2
+    }
+  },
+  {
+    "id": "pinto_beans_cooked",
+    "name": "Pinto beans, cooked",
+    "aliases": ["cooked pinto beans", "pinto beans"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 143,
+      "proteinG": 9.0,
+      "carbohydrateG": 26.2,
+      "fatG": 0.7,
+      "fiberG": 9.0,
+      "sugarG": 0.3,
+      "sodiumMg": 1
+    }
+  },
+  {
+    "id": "lima_beans_cooked",
+    "name": "Lima beans, cooked",
+    "aliases": ["cooked lima beans", "lima beans"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 115,
+      "proteinG": 7.8,
+      "carbohydrateG": 20.9,
+      "fatG": 0.4,
+      "fiberG": 7.0,
+      "sugarG": 2.9,
+      "sodiumMg": 2
+    }
+  },
+  {
+    "id": "mung_beans_cooked",
+    "name": "Mung beans, cooked",
+    "aliases": ["cooked mung beans", "mung beans"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 105,
+      "proteinG": 7.0,
+      "carbohydrateG": 19.2,
+      "fatG": 0.4,
+      "fiberG": 7.6,
+      "sugarG": 2.0,
+      "sodiumMg": 2
+    }
+  },
+  {
+    "id": "rice_wild_cooked",
+    "name": "Wild rice, cooked",
+    "aliases": ["cooked wild rice", "wild rice"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 101,
+      "proteinG": 4.0,
+      "carbohydrateG": 21.3,
+      "fatG": 0.3,
+      "fiberG": 1.8,
+      "sugarG": 0.7,
+      "sodiumMg": 3
+    }
+  },
+  {
+    "id": "millet_cooked",
+    "name": "Millet, cooked",
+    "aliases": ["cooked millet", "millet"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 119,
+      "proteinG": 3.5,
+      "carbohydrateG": 23.7,
+      "fatG": 1.0,
+      "fiberG": 1.3,
+      "sugarG": 0.1,
+      "sodiumMg": 2
+    }
+  },
+  {
+    "id": "buckwheat_cooked",
+    "name": "Buckwheat groats, cooked",
+    "aliases": ["cooked buckwheat", "buckwheat"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 92,
+      "proteinG": 3.4,
+      "carbohydrateG": 19.9,
+      "fatG": 0.6,
+      "fiberG": 2.7,
+      "sugarG": 0.9,
+      "sodiumMg": 4
+    }
+  },
+  {
+    "id": "farro_cooked",
+    "name": "Farro, cooked",
+    "aliases": ["cooked farro", "farro"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 100,
+      "proteinG": 4.0,
+      "carbohydrateG": 26.0,
+      "fatG": 0.7,
+      "fiberG": 3.0,
+      "sugarG": 0.5,
+      "sodiumMg": 5
+    }
+  },
+  {
+    "id": "bread_rye",
+    "name": "Rye bread",
+    "aliases": ["rye bread", "rye"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 259,
+      "proteinG": 8.5,
+      "carbohydrateG": 48.3,
+      "fatG": 3.3,
+      "fiberG": 5.8,
+      "sugarG": 4.3,
+      "sodiumMg": 603
+    }
+  },
+  {
+    "id": "bagel_plain",
+    "name": "Plain bagel",
+    "aliases": ["bagel", "plain bagel"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 257,
+      "proteinG": 10.0,
+      "carbohydrateG": 50.0,
+      "fatG": 1.5,
+      "fiberG": 2.3,
+      "sugarG": 5.0,
+      "sodiumMg": 430
+    }
+  },
+  {
+    "id": "english_muffin",
+    "name": "English muffin",
+    "aliases": ["english muffin"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 227,
+      "proteinG": 8.0,
+      "carbohydrateG": 44.0,
+      "fatG": 1.8,
+      "fiberG": 2.3,
+      "sugarG": 2.3,
+      "sodiumMg": 425
+    }
+  },
+  {
+    "id": "croissant",
+    "name": "Croissant",
+    "aliases": ["croissant", "croissants"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 406,
+      "proteinG": 8.2,
+      "carbohydrateG": 45.8,
+      "fatG": 21.0,
+      "fiberG": 2.6,
+      "sugarG": 11.3,
+      "sodiumMg": 412
+    }
+  },
+  {
+    "id": "pita_bread",
+    "name": "Pita bread",
+    "aliases": ["pita", "pita bread"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 275,
+      "proteinG": 9.1,
+      "carbohydrateG": 55.7,
+      "fatG": 1.2,
+      "fiberG": 2.2,
+      "sugarG": 1.2,
+      "sodiumMg": 536
+    }
+  },
+  {
+    "id": "pretzels",
+    "name": "Pretzels",
+    "aliases": ["pretzel", "pretzels"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 380,
+      "proteinG": 9.0,
+      "carbohydrateG": 80.0,
+      "fatG": 3.0,
+      "fiberG": 3.0,
+      "sugarG": 2.5,
+      "sodiumMg": 1250
+    }
+  },
+  {
+    "id": "rice_noodles_cooked",
+    "name": "Rice noodles, cooked",
+    "aliases": ["cooked rice noodles", "rice noodles"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 109,
+      "proteinG": 1.8,
+      "carbohydrateG": 24.9,
+      "fatG": 0.2,
+      "fiberG": 1.0,
+      "sugarG": 0.1,
+      "sodiumMg": 19
+    }
+  },
+  {
+    "id": "egg_noodles_cooked",
+    "name": "Egg noodles, cooked",
+    "aliases": ["cooked egg noodles", "egg noodles"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 138,
+      "proteinG": 4.5,
+      "carbohydrateG": 25.0,
+      "fatG": 2.1,
+      "fiberG": 1.2,
+      "sugarG": 0.4,
+      "sodiumMg": 5
+    }
+  },
+  {
+    "id": "lasagna_cooked",
+    "name": "Lasagna with meat sauce",
+    "aliases": ["lasagna"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 135,
+      "proteinG": 7.5,
+      "carbohydrateG": 14.0,
+      "fatG": 5.5,
+      "fiberG": 1.2,
+      "sugarG": 3.0,
+      "sodiumMg": 350
+    }
+  },
+  {
+    "id": "macaroni_cheese",
+    "name": "Macaroni and cheese",
+    "aliases": ["mac and cheese", "macaroni cheese"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 164,
+      "proteinG": 5.3,
+      "carbohydrateG": 18.0,
+      "fatG": 7.0,
+      "fiberG": 1.0,
+      "sugarG": 2.0,
+      "sodiumMg": 436
+    }
+  },
+  {
+    "id": "couscous_dry",
+    "name": "Couscous, dry",
+    "aliases": ["dry couscous"],
+    "state": "dry",
+    "nutrientsPer100g": {
+      "caloriesKcal": 376,
+      "proteinG": 12.8,
+      "carbohydrateG": 77.4,
+      "fatG": 0.6,
+      "fiberG": 5.0,
+      "sugarG": 0,
+      "sodiumMg": 10
+    }
+  },
+  {
+    "id": "cornmeal_dry",
+    "name": "Cornmeal, dry",
+    "aliases": ["dry cornmeal"],
+    "state": "dry",
+    "nutrientsPer100g": {
+      "caloriesKcal": 362,
+      "proteinG": 8.1,
+      "carbohydrateG": 76.9,
+      "fatG": 3.6,
+      "fiberG": 7.3,
+      "sugarG": 1.6,
+      "sodiumMg": 1
+    }
+  },
+  {
+    "id": "beet_cooked",
+    "name": "Beets, cooked",
+    "aliases": ["cooked beets", "beetroot"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 44,
+      "proteinG": 1.7,
+      "carbohydrateG": 10.0,
+      "fatG": 0.2,
+      "fiberG": 2.0,
+      "sugarG": 7.0,
+      "sodiumMg": 77
+    }
+  },
+  {
+    "id": "asparagus_cooked",
+    "name": "Asparagus, cooked",
+    "aliases": ["cooked asparagus", "asparagus"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 22,
+      "proteinG": 2.4,
+      "carbohydrateG": 4.1,
+      "fatG": 0.2,
+      "fiberG": 2.0,
+      "sugarG": 1.3,
+      "sodiumMg": 14
+    }
+  },
+  {
+    "id": "brussels_sprouts_cooked",
+    "name": "Brussels sprouts, cooked",
+    "aliases": ["cooked brussels sprouts", "brussels sprouts"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 36,
+      "proteinG": 2.6,
+      "carbohydrateG": 7.1,
+      "fatG": 0.5,
+      "fiberG": 3.8,
+      "sugarG": 1.7,
+      "sodiumMg": 21
+    }
+  },
+  {
+    "id": "spinach_cooked",
+    "name": "Spinach, cooked",
+    "aliases": ["cooked spinach", "spinach cooked"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 23,
+      "proteinG": 2.97,
+      "carbohydrateG": 3.75,
+      "fatG": 0.3,
+      "fiberG": 2.4,
+      "sugarG": 0.4,
+      "sodiumMg": 70
+    }
+  },
+  {
+    "id": "chard_cooked",
+    "name": "Swiss chard, cooked",
+    "aliases": ["cooked chard", "swiss chard"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 20,
+      "proteinG": 1.9,
+      "carbohydrateG": 3.7,
+      "fatG": 0.1,
+      "fiberG": 2.1,
+      "sugarG": 1.1,
+      "sodiumMg": 179
+    }
+  },
+  {
+    "id": "turnip_cooked",
+    "name": "Turnips, cooked",
+    "aliases": ["cooked turnips", "turnips"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 22,
+      "proteinG": 0.7,
+      "carbohydrateG": 5.1,
+      "fatG": 0.1,
+      "fiberG": 2.0,
+      "sugarG": 3.0,
+      "sodiumMg": 51
+    }
+  },
+  {
+    "id": "parsnip_cooked",
+    "name": "Parsnips, cooked",
+    "aliases": ["cooked parsnips", "parsnips"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 71,
+      "proteinG": 1.3,
+      "carbohydrateG": 17.0,
+      "fatG": 0.3,
+      "fiberG": 3.6,
+      "sugarG": 4.8,
+      "sodiumMg": 10
+    }
+  },
+  {
+    "id": "pumpkin_cooked",
+    "name": "Pumpkin, cooked",
+    "aliases": ["cooked pumpkin", "pumpkin"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 20,
+      "proteinG": 0.7,
+      "carbohydrateG": 4.9,
+      "fatG": 0.1,
+      "fiberG": 1.1,
+      "sugarG": 2.1,
+      "sodiumMg": 1
+    }
+  },
+  {
+    "id": "butternut_squash_cooked",
+    "name": "Butternut squash, cooked",
+    "aliases": ["cooked butternut squash", "butternut squash"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 40,
+      "proteinG": 0.9,
+      "carbohydrateG": 10.5,
+      "fatG": 0.1,
+      "fiberG": 2.0,
+      "sugarG": 2.0,
+      "sodiumMg": 4
+    }
+  },
+  {
+    "id": "okra_cooked",
+    "name": "Okra, cooked",
+    "aliases": ["cooked okra", "okra"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 22,
+      "proteinG": 1.9,
+      "carbohydrateG": 4.5,
+      "fatG": 0.2,
+      "fiberG": 2.5,
+      "sugarG": 2.4,
+      "sodiumMg": 3
+    }
+  },
+  {
+    "id": "artichoke_cooked",
+    "name": "Artichoke, cooked",
+    "aliases": ["cooked artichoke", "artichoke"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 53,
+      "proteinG": 2.9,
+      "carbohydrateG": 11.9,
+      "fatG": 0.3,
+      "fiberG": 5.4,
+      "sugarG": 1.0,
+      "sodiumMg": 60
+    }
+  },
+  {
+    "id": "radish_raw",
+    "name": "Radish, raw",
+    "aliases": ["radish", "radishes"],
+    "state": "raw",
+    "nutrientsPer100g": {
+      "caloriesKcal": 16,
+      "proteinG": 0.7,
+      "carbohydrateG": 3.4,
+      "fatG": 0.1,
+      "fiberG": 1.6,
+      "sugarG": 1.9,
+      "sodiumMg": 39
+    }
+  },
+  {
+    "id": "spinach_raw_baby",
+    "name": "Baby spinach, raw",
+    "aliases": ["baby spinach"],
+    "state": "raw",
+    "nutrientsPer100g": {
+      "caloriesKcal": 23,
+      "proteinG": 2.9,
+      "carbohydrateG": 3.6,
+      "fatG": 0.4,
+      "fiberG": 2.2,
+      "sugarG": 0.4,
+      "sodiumMg": 79
+    }
+  },
+  {
+    "id": "arugula_raw",
+    "name": "Arugula, raw",
+    "aliases": ["arugula", "rocket leaves"],
+    "state": "raw",
+    "nutrientsPer100g": {
+      "caloriesKcal": 25,
+      "proteinG": 2.6,
+      "carbohydrateG": 3.7,
+      "fatG": 0.7,
+      "fiberG": 1.6,
+      "sugarG": 2.1,
+      "sodiumMg": 27
+    }
+  },
+  {
+    "id": "green_onion_raw",
+    "name": "Green onions, raw",
+    "aliases": ["green onion", "scallions", "spring onion"],
+    "state": "raw",
+    "nutrientsPer100g": {
+      "caloriesKcal": 32,
+      "proteinG": 1.8,
+      "carbohydrateG": 7.3,
+      "fatG": 0.2,
+      "fiberG": 2.6,
+      "sugarG": 2.3,
+      "sodiumMg": 16
+    }
+  },
+  {
+    "id": "ginger_raw",
+    "name": "Ginger root, raw",
+    "aliases": ["ginger", "fresh ginger"],
+    "state": "raw",
+    "nutrientsPer100g": {
+      "caloriesKcal": 80,
+      "proteinG": 1.8,
+      "carbohydrateG": 17.8,
+      "fatG": 0.8,
+      "fiberG": 2.0,
+      "sugarG": 1.7,
+      "sodiumMg": 13
+    }
+  },
+  {
+    "id": "jalapeno_raw",
+    "name": "Jalapeno pepper, raw",
+    "aliases": ["jalapeno", "jalapeno pepper"],
+    "state": "raw",
+    "nutrientsPer100g": {
+      "caloriesKcal": 29,
+      "proteinG": 0.9,
+      "carbohydrateG": 6.5,
+      "fatG": 0.4,
+      "fiberG": 2.8,
+      "sugarG": 4.1,
+      "sodiumMg": 3
+    }
+  },
+  {
+    "id": "olives_green",
+    "name": "Green olives",
+    "aliases": ["green olives", "olives"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 145,
+      "proteinG": 1.0,
+      "carbohydrateG": 3.8,
+      "fatG": 15.3,
+      "fiberG": 3.3,
+      "sugarG": 0.5,
+      "sodiumMg": 1556
+    }
+  },
+  {
+    "id": "olives_black",
+    "name": "Black olives",
+    "aliases": ["black olives"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 116,
+      "proteinG": 0.8,
+      "carbohydrateG": 6.0,
+      "fatG": 10.9,
+      "fiberG": 1.6,
+      "sugarG": 0.0,
+      "sodiumMg": 735
+    }
+  },
+  {
+    "id": "pickles",
+    "name": "Pickles, cucumber",
+    "aliases": ["pickles", "pickle"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 12,
+      "proteinG": 0.5,
+      "carbohydrateG": 2.4,
+      "fatG": 0.2,
+      "fiberG": 1.2,
+      "sugarG": 1.1,
+      "sodiumMg": 1208
+    }
+  },
+  {
+    "id": "sauerkraut",
+    "name": "Sauerkraut",
+    "aliases": ["sauerkraut"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 19,
+      "proteinG": 0.9,
+      "carbohydrateG": 4.3,
+      "fatG": 0.1,
+      "fiberG": 2.9,
+      "sugarG": 1.8,
+      "sodiumMg": 661
+    }
+  },
+  {
+    "id": "kimchi",
+    "name": "Kimchi",
+    "aliases": ["kimchi"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 15,
+      "proteinG": 1.1,
+      "carbohydrateG": 2.4,
+      "fatG": 0.5,
+      "fiberG": 1.6,
+      "sugarG": 1.1,
+      "sodiumMg": 498
+    }
+  },
+  {
+    "id": "coconut_meat",
+    "name": "Coconut meat, raw",
+    "aliases": ["coconut", "coconut meat"],
+    "state": "raw",
+    "nutrientsPer100g": {
+      "caloriesKcal": 354,
+      "proteinG": 3.3,
+      "carbohydrateG": 15.2,
+      "fatG": 33.5,
+      "fiberG": 9.0,
+      "sugarG": 6.2,
+      "sodiumMg": 20
+    }
+  },
+  {
+    "id": "pomegranate_raw",
+    "name": "Pomegranate arils",
+    "aliases": ["pomegranate", "pomegranate seeds"],
+    "state": "raw",
+    "nutrientsPer100g": {
+      "caloriesKcal": 83,
+      "proteinG": 1.7,
+      "carbohydrateG": 18.7,
+      "fatG": 1.2,
+      "fiberG": 4.0,
+      "sugarG": 13.7,
+      "sodiumMg": 3
+    }
+  },
+  {
+    "id": "kiwifruit_raw",
+    "name": "Kiwifruit, raw",
+    "aliases": ["kiwi", "kiwifruit"],
+    "state": "raw",
+    "nutrientsPer100g": {
+      "caloriesKcal": 61,
+      "proteinG": 1.1,
+      "carbohydrateG": 14.7,
+      "fatG": 0.5,
+      "fiberG": 3.0,
+      "sugarG": 9.0,
+      "sodiumMg": 3
+    }
+  },
+  {
+    "id": "papaya_raw",
+    "name": "Papaya, raw",
+    "aliases": ["papaya"],
+    "state": "raw",
+    "nutrientsPer100g": {
+      "caloriesKcal": 43,
+      "proteinG": 0.5,
+      "carbohydrateG": 10.8,
+      "fatG": 0.3,
+      "fiberG": 1.7,
+      "sugarG": 7.8,
+      "sodiumMg": 8
+    }
+  },
+  {
+    "id": "cantaloupe_raw",
+    "name": "Cantaloupe, raw",
+    "aliases": ["cantaloupe", "melon"],
+    "state": "raw",
+    "nutrientsPer100g": {
+      "caloriesKcal": 34,
+      "proteinG": 0.8,
+      "carbohydrateG": 8.2,
+      "fatG": 0.2,
+      "fiberG": 0.9,
+      "sugarG": 7.9,
+      "sodiumMg": 16
+    }
+  },
+  {
+    "id": "raspberries_raw",
+    "name": "Raspberries, raw",
+    "aliases": ["raspberries", "raspberry"],
+    "state": "raw",
+    "nutrientsPer100g": {
+      "caloriesKcal": 52,
+      "proteinG": 1.2,
+      "carbohydrateG": 11.9,
+      "fatG": 0.7,
+      "fiberG": 6.5,
+      "sugarG": 4.4,
+      "sodiumMg": 1
+    }
+  },
+  {
+    "id": "blackberries_raw",
+    "name": "Blackberries, raw",
+    "aliases": ["blackberries", "blackberry"],
+    "state": "raw",
+    "nutrientsPer100g": {
+      "caloriesKcal": 43,
+      "proteinG": 1.4,
+      "carbohydrateG": 9.6,
+      "fatG": 0.5,
+      "fiberG": 5.3,
+      "sugarG": 4.9,
+      "sodiumMg": 1
+    }
+  },
+  {
+    "id": "dates_dried",
+    "name": "Dates, dried",
+    "aliases": ["dates", "date fruit"],
+    "state": "dried",
+    "nutrientsPer100g": {
+      "caloriesKcal": 282,
+      "proteinG": 2.5,
+      "carbohydrateG": 75.0,
+      "fatG": 0.4,
+      "fiberG": 8.0,
+      "sugarG": 63.4,
+      "sodiumMg": 2
+    }
+  },
+  {
+    "id": "figs_dried",
+    "name": "Figs, dried",
+    "aliases": ["dried figs", "figs"],
+    "state": "dried",
+    "nutrientsPer100g": {
+      "caloriesKcal": 249,
+      "proteinG": 3.3,
+      "carbohydrateG": 63.9,
+      "fatG": 0.9,
+      "fiberG": 9.8,
+      "sugarG": 47.9,
+      "sodiumMg": 10
+    }
+  },
+  {
+    "id": "apricots_dried",
+    "name": "Apricots, dried",
+    "aliases": ["dried apricots", "apricots"],
+    "state": "dried",
+    "nutrientsPer100g": {
+      "caloriesKcal": 241,
+      "proteinG": 3.4,
+      "carbohydrateG": 62.6,
+      "fatG": 0.5,
+      "fiberG": 7.3,
+      "sugarG": 53.4,
+      "sodiumMg": 10
+    }
+  },
+  {
+    "id": "pumpkin_seeds",
+    "name": "Pumpkin seeds",
+    "aliases": ["pumpkin seeds", "pepitas"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 559,
+      "proteinG": 30.2,
+      "carbohydrateG": 10.7,
+      "fatG": 49.1,
+      "fiberG": 6.0,
+      "sugarG": 1.4,
+      "sodiumMg": 7
+    }
+  },
+  {
+    "id": "sunflower_seeds",
+    "name": "Sunflower seed kernels",
+    "aliases": ["sunflower seeds", "sunflower seed"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 584,
+      "proteinG": 20.8,
+      "carbohydrateG": 20.0,
+      "fatG": 51.5,
+      "fiberG": 8.6,
+      "sugarG": 2.6,
+      "sodiumMg": 9
+    }
+  },
+  {
+    "id": "pistachios",
+    "name": "Pistachios",
+    "aliases": ["pistachios", "pistachio"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 560,
+      "proteinG": 20.2,
+      "carbohydrateG": 27.2,
+      "fatG": 45.3,
+      "fiberG": 10.6,
+      "sugarG": 7.7,
+      "sodiumMg": 1
+    }
+  },
+  {
+    "id": "hazelnuts",
+    "name": "Hazelnuts",
+    "aliases": ["hazelnuts", "hazelnut"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 628,
+      "proteinG": 15.0,
+      "carbohydrateG": 16.7,
+      "fatG": 60.8,
+      "fiberG": 9.7,
+      "sugarG": 4.3,
+      "sodiumMg": 0
+    }
+  },
+  {
+    "id": "flaxseed",
+    "name": "Flaxseed",
+    "aliases": ["flaxseed", "linseed"],
+    "state": "dry",
+    "nutrientsPer100g": {
+      "caloriesKcal": 534,
+      "proteinG": 18.3,
+      "carbohydrateG": 28.9,
+      "fatG": 42.2,
+      "fiberG": 27.3,
+      "sugarG": 1.6,
+      "sodiumMg": 30
+    }
+  },
+  {
+    "id": "sesame_seeds",
+    "name": "Sesame seeds",
+    "aliases": ["sesame seeds", "sesame"],
+    "state": "dry",
+    "nutrientsPer100g": {
+      "caloriesKcal": 573,
+      "proteinG": 17.7,
+      "carbohydrateG": 23.4,
+      "fatG": 49.7,
+      "fiberG": 11.8,
+      "sugarG": 0.3,
+      "sodiumMg": 11
+    }
+  },
+  {
+    "id": "parmesan_cheese",
+    "name": "Parmesan cheese",
+    "aliases": ["parmesan", "parmesan cheese"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 392,
+      "proteinG": 35.8,
+      "carbohydrateG": 3.2,
+      "fatG": 25.8,
+      "fiberG": 0,
+      "sugarG": 0.9,
+      "sodiumMg": 1602
+    }
+  },
+  {
+    "id": "feta_cheese",
+    "name": "Feta cheese",
+    "aliases": ["feta", "feta cheese"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 265,
+      "proteinG": 14.2,
+      "carbohydrateG": 3.9,
+      "fatG": 21.5,
+      "fiberG": 0,
+      "sugarG": 3.9,
+      "sodiumMg": 1116
+    }
+  },
+  {
+    "id": "greek_yogurt",
+    "name": "Greek yogurt, plain",
+    "aliases": ["greek yogurt", "plain greek yogurt"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 97,
+      "proteinG": 9.0,
+      "carbohydrateG": 3.9,
+      "fatG": 5.0,
+      "fiberG": 0,
+      "sugarG": 3.6,
+      "sodiumMg": 47
+    }
+  },
+  {
+    "id": "sour_cream",
+    "name": "Sour cream",
+    "aliases": ["sour cream"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 193,
+      "proteinG": 2.4,
+      "carbohydrateG": 4.6,
+      "fatG": 19.4,
+      "fiberG": 0,
+      "sugarG": 3.4,
+      "sodiumMg": 44
+    }
+  },
+  {
+    "id": "heavy_cream",
+    "name": "Heavy cream",
+    "aliases": ["heavy cream", "whipping cream"],
+    "state": "fluid",
+    "nutrientsPer100g": {
+      "caloriesKcal": 340,
+      "proteinG": 2.1,
+      "carbohydrateG": 2.8,
+      "fatG": 36.1,
+      "fiberG": 0,
+      "sugarG": 2.9,
+      "sodiumMg": 38
+    }
+  },
+  {
+    "id": "almond_milk",
+    "name": "Almond milk, unsweetened",
+    "aliases": ["almond milk"],
+    "state": "fluid",
+    "nutrientsPer100g": {
+      "caloriesKcal": 15,
+      "proteinG": 0.6,
+      "carbohydrateG": 0.3,
+      "fatG": 1.2,
+      "fiberG": 0.2,
+      "sugarG": 0.1,
+      "sodiumMg": 149
+    }
+  },
+  {
+    "id": "buttermilk",
+    "name": "Buttermilk",
+    "aliases": ["buttermilk"],
+    "state": "fluid",
+    "nutrientsPer100g": {
+      "caloriesKcal": 40,
+      "proteinG": 3.3,
+      "carbohydrateG": 4.8,
+      "fatG": 0.9,
+      "fiberG": 0,
+      "sugarG": 4.8,
+      "sodiumMg": 105
+    }
+  },
+  {
+    "id": "tea_black",
+    "name": "Black tea, brewed",
+    "aliases": ["black tea", "tea"],
+    "state": "ready_to_drink",
+    "nutrientsPer100g": {
+      "caloriesKcal": 1,
+      "proteinG": 0,
+      "carbohydrateG": 0.3,
+      "fatG": 0,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 3
+    }
+  },
+  {
+    "id": "green_tea",
+    "name": "Green tea, brewed",
+    "aliases": ["green tea"],
+    "state": "ready_to_drink",
+    "nutrientsPer100g": {
+      "caloriesKcal": 1,
+      "proteinG": 0.2,
+      "carbohydrateG": 0,
+      "fatG": 0,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 1
+    }
+  },
+  {
+    "id": "coconut_water",
+    "name": "Coconut water",
+    "aliases": ["coconut water"],
+    "state": "fluid",
+    "nutrientsPer100g": {
+      "caloriesKcal": 19,
+      "proteinG": 0.7,
+      "carbohydrateG": 3.7,
+      "fatG": 0.2,
+      "fiberG": 1.1,
+      "sugarG": 2.6,
+      "sodiumMg": 105
+    }
+  },
+  {
+    "id": "lemon_juice",
+    "name": "Lemon juice",
+    "aliases": ["lemon juice"],
+    "state": "fluid",
+    "nutrientsPer100g": {
+      "caloriesKcal": 22,
+      "proteinG": 0.4,
+      "carbohydrateG": 6.9,
+      "fatG": 0.2,
+      "fiberG": 0.3,
+      "sugarG": 2.5,
+      "sodiumMg": 1
+    }
+  },
+  {
+    "id": "lime_juice",
+    "name": "Lime juice",
+    "aliases": ["lime juice"],
+    "state": "fluid",
+    "nutrientsPer100g": {
+      "caloriesKcal": 25,
+      "proteinG": 0.4,
+      "carbohydrateG": 8.4,
+      "fatG": 0.1,
+      "fiberG": 0.4,
+      "sugarG": 1.7,
+      "sodiumMg": 2
+    }
+  },
+  {
+    "id": "balsamic_vinegar",
+    "name": "Balsamic vinegar",
+    "aliases": ["balsamic vinegar", "balsamic"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 88,
+      "proteinG": 0.5,
+      "carbohydrateG": 17.0,
+      "fatG": 0,
+      "fiberG": 0,
+      "sugarG": 14.0,
+      "sodiumMg": 23
+    }
+  },
+  {
+    "id": "apple_cider_vinegar",
+    "name": "Apple cider vinegar",
+    "aliases": ["apple cider vinegar"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 21,
+      "proteinG": 0,
+      "carbohydrateG": 0.9,
+      "fatG": 0,
+      "fiberG": 0,
+      "sugarG": 0.4,
+      "sodiumMg": 5
+    }
+  },
+  {
+    "id": "mustard",
+    "name": "Yellow mustard",
+    "aliases": ["mustard", "yellow mustard"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 66,
+      "proteinG": 4.4,
+      "carbohydrateG": 5.8,
+      "fatG": 3.3,
+      "fiberG": 3.3,
+      "sugarG": 0.9,
+      "sodiumMg": 1135
+    }
+  },
+  {
+    "id": "salsa",
+    "name": "Salsa",
+    "aliases": ["salsa", "tomato salsa"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 36,
+      "proteinG": 1.5,
+      "carbohydrateG": 7.0,
+      "fatG": 0.2,
+      "fiberG": 1.5,
+      "sugarG": 3.6,
+      "sodiumMg": 430
+    }
+  },
+  {
+    "id": "tahini",
+    "name": "Tahini",
+    "aliases": ["tahini", "sesame paste"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 595,
+      "proteinG": 17.0,
+      "carbohydrateG": 21.2,
+      "fatG": 53.8,
+      "fiberG": 9.3,
+      "sugarG": 0.5,
+      "sodiumMg": 115
+    }
+  },
+  {
+    "id": "pesto",
+    "name": "Pesto sauce",
+    "aliases": ["pesto", "pesto sauce"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 418,
+      "proteinG": 9.8,
+      "carbohydrateG": 7.6,
+      "fatG": 40.0,
+      "fiberG": 1.6,
+      "sugarG": 1.7,
+      "sodiumMg": 700
+    }
+  },
+  {
+    "id": "curry_sauce",
+    "name": "Curry sauce",
+    "aliases": ["curry sauce", "curry"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 110,
+      "proteinG": 2.5,
+      "carbohydrateG": 8.0,
+      "fatG": 7.5,
+      "fiberG": 1.5,
+      "sugarG": 3.0,
+      "sodiumMg": 420
+    }
+  },
+  {
+    "id": "chili_pepper_dried",
+    "name": "Chili pepper, dried",
+    "aliases": ["dried chili", "chili flakes", "red pepper flakes"],
+    "state": "dried",
+    "nutrientsPer100g": {
+      "caloriesKcal": 282,
+      "proteinG": 13.5,
+      "carbohydrateG": 56.6,
+      "fatG": 14.3,
+      "fiberG": 27.2,
+      "sugarG": 5.3,
+      "sodiumMg": 164
+    }
+  },
+  {
+    "id": "cinnamon_ground",
+    "name": "Cinnamon, ground",
+    "aliases": ["cinnamon"],
+    "state": "dry_spice",
+    "nutrientsPer100g": {
+      "caloriesKcal": 247,
+      "proteinG": 4.0,
+      "carbohydrateG": 80.6,
+      "fatG": 1.2,
+      "fiberG": 53.1,
+      "sugarG": 2.2,
+      "sodiumMg": 10
+    }
+  },
+  {
+    "id": "turmeric_ground",
+    "name": "Turmeric, ground",
+    "aliases": ["turmeric"],
+    "state": "dry_spice",
+    "nutrientsPer100g": {
+      "caloriesKcal": 312,
+      "proteinG": 9.7,
+      "carbohydrateG": 67.1,
+      "fatG": 3.2,
+      "fiberG": 22.7,
+      "sugarG": 3.2,
+      "sodiumMg": 27
+    }
+  },
+  {
+    "id": "paprika",
+    "name": "Paprika",
+    "aliases": ["paprika"],
+    "state": "dry_spice",
+    "nutrientsPer100g": {
+      "caloriesKcal": 282,
+      "proteinG": 14.1,
+      "carbohydrateG": 53.9,
+      "fatG": 12.9,
+      "fiberG": 34.9,
+      "sugarG": 10.3,
+      "sodiumMg": 68
+    }
+  },
+  {
+    "id": "cumin_ground",
+    "name": "Cumin, ground",
+    "aliases": ["cumin"],
+    "state": "dry_spice",
+    "nutrientsPer100g": {
+      "caloriesKcal": 375,
+      "proteinG": 17.8,
+      "carbohydrateG": 44.2,
+      "fatG": 17.8,
+      "fiberG": 10.5,
+      "sugarG": 2.3,
+      "sodiumMg": 168
+    }
+  },
+  {
+    "id": "oregano_dried",
+    "name": "Oregano, dried",
+    "aliases": ["oregano"],
+    "state": "dry_spice",
+    "nutrientsPer100g": {
+      "caloriesKcal": 265,
+      "proteinG": 9.0,
+      "carbohydrateG": 68.9,
+      "fatG": 4.3,
+      "fiberG": 42.5,
+      "sugarG": 4.1,
+      "sodiumMg": 25
+    }
+  },
+  {
+    "id": "basil_dried",
+    "name": "Basil, dried",
+    "aliases": ["dried basil", "basil"],
+    "state": "dry_spice",
+    "nutrientsPer100g": {
+      "caloriesKcal": 233,
+      "proteinG": 22.98,
+      "carbohydrateG": 47.8,
+      "fatG": 4.1,
+      "fiberG": 37.7,
+      "sugarG": 1.7,
+      "sodiumMg": 76
+    }
+  },
+  {
+    "id": "rosemary_dried",
+    "name": "Rosemary, dried",
+    "aliases": ["rosemary"],
+    "state": "dry_spice",
+    "nutrientsPer100g": {
+      "caloriesKcal": 331,
+      "proteinG": 4.9,
+      "carbohydrateG": 64.1,
+      "fatG": 15.2,
+      "fiberG": 42.6,
+      "sugarG": 2.2,
+      "sodiumMg": 50
+    }
+  },
+  {
+    "id": "thyme_dried",
+    "name": "Thyme, dried",
+    "aliases": ["thyme"],
+    "state": "dry_spice",
+    "nutrientsPer100g": {
+      "caloriesKcal": 276,
+      "proteinG": 9.1,
+      "carbohydrateG": 63.9,
+      "fatG": 7.4,
+      "fiberG": 37.0,
+      "sugarG": 1.7,
+      "sodiumMg": 55
+    }
+  },
+  {
+    "id": "bay_leaf_dried",
+    "name": "Bay leaf, dried",
+    "aliases": ["bay leaf", "bay leaves"],
+    "state": "dry_spice",
+    "nutrientsPer100g": {
+      "caloriesKcal": 313,
+      "proteinG": 7.6,
+      "carbohydrateG": 74.9,
+      "fatG": 8.4,
+      "fiberG": 26.3,
+      "sugarG": 0,
+      "sodiumMg": 23
+    }
+  },
+  {
+    "id": "vanilla_extract",
+    "name": "Vanilla extract",
+    "aliases": ["vanilla extract", "vanilla"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 288,
+      "proteinG": 0.1,
+      "carbohydrateG": 12.7,
+      "fatG": 0.1,
+      "fiberG": 0,
+      "sugarG": 12.7,
+      "sodiumMg": 9
+    }
+  },
+  {
+    "id": "baking_powder",
+    "name": "Baking powder",
+    "aliases": ["baking powder"],
+    "state": "dry",
+    "nutrientsPer100g": {
+      "caloriesKcal": 53,
+      "proteinG": 0.0,
+      "carbohydrateG": 27.7,
+      "fatG": 0,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 10600
+    }
+  },
+  {
+    "id": "cocoa_powder",
+    "name": "Cocoa powder, unsweetened",
+    "aliases": ["cocoa powder", "unsweetened cocoa"],
+    "state": "dry",
+    "nutrientsPer100g": {
+      "caloriesKcal": 228,
+      "proteinG": 19.6,
+      "carbohydrateG": 57.9,
+      "fatG": 13.1,
+      "fiberG": 29.8,
+      "sugarG": 1.8,
+      "sodiumMg": 21
+    }
+  },
+  {
+    "id": "gelatin_dry",
+    "name": "Gelatin, dry powder",
+    "aliases": ["gelatin", "gelatine"],
+    "state": "dry",
+    "nutrientsPer100g": {
+      "caloriesKcal": 335,
+      "proteinG": 85.6,
+      "carbohydrateG": 0,
+      "fatG": 0.1,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 196
+    }
+  },
+  {
+    "id": "whey_protein",
+    "name": "Whey protein powder",
+    "aliases": ["whey protein", "protein powder"],
+    "state": "dry",
+    "nutrientsPer100g": {
+      "caloriesKcal": 400,
+      "proteinG": 80,
+      "carbohydrateG": 8,
+      "fatG": 6,
+      "fiberG": 0,
+      "sugarG": 5,
+      "sodiumMg": 400
+    }
+  },
+  {
+    "id": "vegetable_broth",
+    "name": "Vegetable broth",
+    "aliases": ["vegetable stock", "vegetable broth"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 5,
+      "proteinG": 0.2,
+      "carbohydrateG": 0.8,
+      "fatG": 0.1,
+      "fiberG": 0.2,
+      "sugarG": 0.3,
+      "sodiumMg": 250
+    }
+  },
+  {
+    "id": "chicken_broth",
+    "name": "Chicken broth",
+    "aliases": ["chicken stock", "chicken broth"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 5,
+      "proteinG": 0.4,
+      "carbohydrateG": 0.4,
+      "fatG": 0.2,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 343
+    }
+  },
+  {
+    "id": "beef_broth",
+    "name": "Beef broth",
+    "aliases": ["beef stock", "beef broth"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 6,
+      "proteinG": 0.5,
+      "carbohydrateG": 0.4,
+      "fatG": 0.2,
+      "fiberG": 0,
+      "sugarG": 0,
+      "sodiumMg": 350
+    }
+  },
+  {
+    "id": "canned_tomatoes",
+    "name": "Tomatoes, canned",
+    "aliases": ["canned tomatoes", "tinned tomatoes"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 21,
+      "proteinG": 1.1,
+      "carbohydrateG": 4.1,
+      "fatG": 0.2,
+      "fiberG": 1.1,
+      "sugarG": 2.9,
+      "sodiumMg": 236
+    }
+  },
+  {
+    "id": "tomato_paste",
+    "name": "Tomato paste",
+    "aliases": ["tomato paste"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 82,
+      "proteinG": 4.3,
+      "carbohydrateG": 18.9,
+      "fatG": 0.5,
+      "fiberG": 4.1,
+      "sugarG": 12.9,
+      "sodiumMg": 59
+    }
+  },
+  {
+    "id": "canned_corn",
+    "name": "Corn, canned",
+    "aliases": ["canned corn"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 79,
+      "proteinG": 2.3,
+      "carbohydrateG": 17.0,
+      "fatG": 0.5,
+      "fiberG": 2.2,
+      "sugarG": 3.2,
+      "sodiumMg": 238
+    }
+  },
+  {
+    "id": "canned_peas",
+    "name": "Peas, canned",
+    "aliases": ["canned peas"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 58,
+      "proteinG": 3.0,
+      "carbohydrateG": 10.5,
+      "fatG": 0.5,
+      "fiberG": 3.6,
+      "sugarG": 4.0,
+      "sodiumMg": 250
+    }
+  },
+  {
+    "id": "canned_mushrooms",
+    "name": "Mushrooms, canned",
+    "aliases": ["canned mushrooms"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 22,
+      "proteinG": 2.1,
+      "carbohydrateG": 4.1,
+      "fatG": 0.5,
+      "fiberG": 2.2,
+      "sugarG": 1.5,
+      "sodiumMg": 441
+    }
+  },
+  {
+    "id": "canned_pumpkin",
+    "name": "Pumpkin, canned",
+    "aliases": ["canned pumpkin"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 34,
+      "proteinG": 1.1,
+      "carbohydrateG": 8.1,
+      "fatG": 0.3,
+      "fiberG": 2.9,
+      "sugarG": 3.0,
+      "sodiumMg": 288
+    }
+  },
+  {
+    "id": "canned_coconut_milk",
+    "name": "Coconut milk, canned",
+    "aliases": ["canned coconut milk", "coconut milk"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 197,
+      "proteinG": 2.0,
+      "carbohydrateG": 2.8,
+      "fatG": 21.0,
+      "fiberG": 0,
+      "sugarG": 1.6,
+      "sodiumMg": 13
+    }
+  },
+  {
+    "id": "refried_beans",
+    "name": "Refried beans",
+    "aliases": ["refried beans"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 127,
+      "proteinG": 5.4,
+      "carbohydrateG": 20.3,
+      "fatG": 3.8,
+      "fiberG": 5.5,
+      "sugarG": 1.0,
+      "sodiumMg": 480
+    }
+  },
+  {
+    "id": "falafel_cooked",
+    "name": "Falafel",
+    "aliases": ["falafel", "cooked falafel"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 333,
+      "proteinG": 13.3,
+      "carbohydrateG": 31.8,
+      "fatG": 17.8,
+      "fiberG": 4.9,
+      "sugarG": 2.3,
+      "sodiumMg": 294
+    }
+  },
+  {
+    "id": "seitan",
+    "name": "Seitan",
+    "aliases": ["seitan", "wheat meat"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 141,
+      "proteinG": 24.7,
+      "carbohydrateG": 12.1,
+      "fatG": 1.9,
+      "fiberG": 0.6,
+      "sugarG": 0.6,
+      "sodiumMg": 289
+    }
+  },
+  {
+    "id": "vegetable_burger",
+    "name": "Vegetable burger patty",
+    "aliases": ["veggie burger", "vegetable burger"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 190,
+      "proteinG": 14,
+      "carbohydrateG": 10,
+      "fatG": 10,
+      "fiberG": 4,
+      "sugarG": 2,
+      "sodiumMg": 450
+    }
+  },
+  {
+    "id": "tofu_silken",
+    "name": "Tofu, silken",
+    "aliases": ["silken tofu"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 55,
+      "proteinG": 4.8,
+      "carbohydrateG": 2.8,
+      "fatG": 3.0,
+      "fiberG": 0.1,
+      "sugarG": 0.6,
+      "sodiumMg": 7
+    }
+  },
+  {
+    "id": "rice_cakes",
+    "name": "Rice cakes",
+    "aliases": ["rice cakes", "rice cake"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 387,
+      "proteinG": 8.0,
+      "carbohydrateG": 81.0,
+      "fatG": 2.8,
+      "fiberG": 3.0,
+      "sugarG": 0.5,
+      "sodiumMg": 290
+    }
+  },
+  {
+    "id": "granola",
+    "name": "Granola",
+    "aliases": ["granola"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 471,
+      "proteinG": 10.0,
+      "carbohydrateG": 64.0,
+      "fatG": 20.0,
+      "fiberG": 7.0,
+      "sugarG": 24.0,
+      "sodiumMg": 250
+    }
+  },
+  {
+    "id": "corn_flakes",
+    "name": "Corn flakes",
+    "aliases": ["corn flakes", "cereal"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 357,
+      "proteinG": 7.5,
+      "carbohydrateG": 84.0,
+      "fatG": 0.4,
+      "fiberG": 3.3,
+      "sugarG": 10.0,
+      "sodiumMg": 729
+    }
+  },
+  {
+    "id": "muesli",
+    "name": "Muesli",
+    "aliases": ["muesli"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 350,
+      "proteinG": 10.0,
+      "carbohydrateG": 65.0,
+      "fatG": 6.0,
+      "fiberG": 8.0,
+      "sugarG": 15.0,
+      "sodiumMg": 50
+    }
+  },
+  {
+    "id": "shortbread",
+    "name": "Shortbread cookie",
+    "aliases": ["shortbread", "shortbread cookie"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 502,
+      "proteinG": 5.0,
+      "carbohydrateG": 64.0,
+      "fatG": 25.0,
+      "fiberG": 1.5,
+      "sugarG": 16.0,
+      "sodiumMg": 350
+    }
+  },
+  {
+    "id": "oat_cookie",
+    "name": "Oatmeal cookie",
+    "aliases": ["oatmeal cookie", "oat cookies"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 450,
+      "proteinG": 6.0,
+      "carbohydrateG": 67.0,
+      "fatG": 18.0,
+      "fiberG": 3.0,
+      "sugarG": 32.0,
+      "sodiumMg": 330
+    }
+  },
+  {
+    "id": "hummus_beet",
+    "name": "Beet hummus",
+    "aliases": ["beet hummus"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 150,
+      "proteinG": 5.0,
+      "carbohydrateG": 15.0,
+      "fatG": 8.0,
+      "fiberG": 5.0,
+      "sugarG": 3.0,
+      "sodiumMg": 350
+    }
+  },
+  {
+    "id": "chia_pudding",
+    "name": "Chia pudding",
+    "aliases": ["chia pudding"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 120,
+      "proteinG": 4.0,
+      "carbohydrateG": 12.0,
+      "fatG": 6.0,
+      "fiberG": 5.0,
+      "sugarG": 4.0,
+      "sodiumMg": 50
+    }
+  },
+  {
+    "id": "fruit_salad",
+    "name": "Fruit salad",
+    "aliases": ["fruit salad"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 50,
+      "proteinG": 0.7,
+      "carbohydrateG": 12.0,
+      "fatG": 0.2,
+      "fiberG": 1.7,
+      "sugarG": 9.0,
+      "sodiumMg": 2
+    }
+  },
+  {
+    "id": "coleslaw",
+    "name": "Coleslaw",
+    "aliases": ["coleslaw", "cole slaw"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 152,
+      "proteinG": 1.0,
+      "carbohydrateG": 14.0,
+      "fatG": 10.0,
+      "fiberG": 2.0,
+      "sugarG": 10.0,
+      "sodiumMg": 250
+    }
+  },
+  {
+    "id": "potato_salad",
+    "name": "Potato salad",
+    "aliases": ["potato salad"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 143,
+      "proteinG": 2.6,
+      "carbohydrateG": 16.0,
+      "fatG": 7.2,
+      "fiberG": 1.5,
+      "sugarG": 2.0,
+      "sodiumMg": 350
+    }
+  },
+  {
+    "id": "greek_salad",
+    "name": "Greek salad",
+    "aliases": ["greek salad"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 90,
+      "proteinG": 2.5,
+      "carbohydrateG": 5.0,
+      "fatG": 7.0,
+      "fiberG": 1.5,
+      "sugarG": 2.5,
+      "sodiumMg": 300
+    }
+  },
+  {
+    "id": "caesar_salad",
+    "name": "Caesar salad",
+    "aliases": ["caesar salad"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 127,
+      "proteinG": 5.0,
+      "carbohydrateG": 6.0,
+      "fatG": 9.0,
+      "fiberG": 1.5,
+      "sugarG": 1.5,
+      "sodiumMg": 400
+    }
+  },
+  {
+    "id": "guacamole",
+    "name": "Guacamole",
+    "aliases": ["guacamole"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 150,
+      "proteinG": 2.0,
+      "carbohydrateG": 8.5,
+      "fatG": 13.0,
+      "fiberG": 6.5,
+      "sugarG": 1.0,
+      "sodiumMg": 300
+    }
+  },
+  {
+    "id": "taco_shell",
+    "name": "Taco shell",
+    "aliases": ["taco shell", "tacos"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 490,
+      "proteinG": 6.0,
+      "carbohydrateG": 63.0,
+      "fatG": 24.0,
+      "fiberG": 5.0,
+      "sugarG": 1.0,
+      "sodiumMg": 480
+    }
+  },
+  {
+    "id": "sushi_roll",
+    "name": "Sushi roll",
+    "aliases": ["sushi roll", "sushi"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 150,
+      "proteinG": 6.0,
+      "carbohydrateG": 28.0,
+      "fatG": 2.0,
+      "fiberG": 1.0,
+      "sugarG": 4.0,
+      "sodiumMg": 350
+    }
+  },
+  {
+    "id": "dumplings_cooked",
+    "name": "Dumplings, cooked",
+    "aliases": ["dumplings", "cooked dumplings", "gyoza"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 220,
+      "proteinG": 8.0,
+      "carbohydrateG": 30.0,
+      "fatG": 7.0,
+      "fiberG": 1.5,
+      "sugarG": 1.0,
+      "sodiumMg": 500
+    }
+  },
+  {
+    "id": "spring_rolls_cooked",
+    "name": "Spring rolls, cooked",
+    "aliases": ["spring rolls", "cooked spring rolls"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 230,
+      "proteinG": 5.0,
+      "carbohydrateG": 28.0,
+      "fatG": 11.0,
+      "fiberG": 2.0,
+      "sugarG": 3.0,
+      "sodiumMg": 400
+    }
+  },
+  {
+    "id": "naan",
+    "name": "Naan bread",
+    "aliases": ["naan", "naan bread"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 310,
+      "proteinG": 9.0,
+      "carbohydrateG": 53.0,
+      "fatG": 7.0,
+      "fiberG": 2.0,
+      "sugarG": 3.0,
+      "sodiumMg": 500
+    }
+  },
+  {
+    "id": "chapati",
+    "name": "Chapati",
+    "aliases": ["chapati", "roti"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 297,
+      "proteinG": 11.3,
+      "carbohydrateG": 55.7,
+      "fatG": 4.5,
+      "fiberG": 11.0,
+      "sugarG": 2.0,
+      "sodiumMg": 400
+    }
+  },
+  {
+    "id": "polenta_cooked",
+    "name": "Polenta, cooked",
+    "aliases": ["cooked polenta", "polenta"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 70,
+      "proteinG": 1.7,
+      "carbohydrateG": 15.0,
+      "fatG": 0.3,
+      "fiberG": 1.0,
+      "sugarG": 0.2,
+      "sodiumMg": 1
+    }
+  },
+  {
+    "id": "cornbread",
+    "name": "Cornbread",
+    "aliases": ["cornbread"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 330,
+      "proteinG": 6.0,
+      "carbohydrateG": 45.0,
+      "fatG": 14.0,
+      "fiberG": 3.0,
+      "sugarG": 12.0,
+      "sodiumMg": 650
+    }
+  },
+  {
+    "id": "mashed_potatoes",
+    "name": "Mashed potatoes",
+    "aliases": ["mashed potato", "mashed potatoes"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 113,
+      "proteinG": 2.0,
+      "carbohydrateG": 16.0,
+      "fatG": 4.5,
+      "fiberG": 1.5,
+      "sugarG": 1.2,
+      "sodiumMg": 250
+    }
+  },
+  {
+    "id": "roasted_vegetables",
+    "name": "Roasted vegetables",
+    "aliases": ["roasted vegetables", "mixed roasted vegetables"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 80,
+      "proteinG": 2.0,
+      "carbohydrateG": 12.0,
+      "fatG": 3.0,
+      "fiberG": 3.0,
+      "sugarG": 4.0,
+      "sodiumMg": 60
+    }
+  },
+  {
+    "id": "vegetable_stir_fry",
+    "name": "Vegetable stir-fry",
+    "aliases": ["stir fry vegetables", "vegetable stir fry"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 90,
+      "proteinG": 2.5,
+      "carbohydrateG": 10.0,
+      "fatG": 4.5,
+      "fiberG": 3.0,
+      "sugarG": 4.0,
+      "sodiumMg": 300
+    }
+  },
+  {
+    "id": "chicken_stir_fry",
+    "name": "Chicken stir-fry",
+    "aliases": ["chicken stir fry"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 150,
+      "proteinG": 17.0,
+      "carbohydrateG": 7.0,
+      "fatG": 6.0,
+      "fiberG": 1.5,
+      "sugarG": 3.0,
+      "sodiumMg": 350
+    }
+  },
+  {
+    "id": "beef_stir_fry",
+    "name": "Beef stir-fry",
+    "aliases": ["beef stir fry"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 180,
+      "proteinG": 16.0,
+      "carbohydrateG": 7.0,
+      "fatG": 10.0,
+      "fiberG": 1.5,
+      "sugarG": 3.0,
+      "sodiumMg": 350
+    }
+  },
+  {
+    "id": "chicken_curry",
+    "name": "Chicken curry",
+    "aliases": ["chicken curry"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 160,
+      "proteinG": 14.0,
+      "carbohydrateG": 6.0,
+      "fatG": 9.0,
+      "fiberG": 1.5,
+      "sugarG": 2.0,
+      "sodiumMg": 300
+    }
+  },
+  {
+    "id": "beef_chili",
+    "name": "Beef chili",
+    "aliases": ["beef chili", "chili con carne"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 120,
+      "proteinG": 9.0,
+      "carbohydrateG": 10.0,
+      "fatG": 5.0,
+      "fiberG": 3.0,
+      "sugarG": 3.0,
+      "sodiumMg": 350
+    }
+  },
+  {
+    "id": "lentil_soup",
+    "name": "Lentil soup",
+    "aliases": ["lentil soup"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 60,
+      "proteinG": 3.5,
+      "carbohydrateG": 9.0,
+      "fatG": 1.5,
+      "fiberG": 3.0,
+      "sugarG": 2.0,
+      "sodiumMg": 300
+    }
+  },
+  {
+    "id": "tomato_soup",
+    "name": "Tomato soup",
+    "aliases": ["tomato soup"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 45,
+      "proteinG": 1.2,
+      "carbohydrateG": 8.0,
+      "fatG": 1.2,
+      "fiberG": 1.2,
+      "sugarG": 4.0,
+      "sodiumMg": 350
+    }
+  },
+  {
+    "id": "miso_soup",
+    "name": "Miso soup",
+    "aliases": ["miso soup"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 40,
+      "proteinG": 2.5,
+      "carbohydrateG": 4.5,
+      "fatG": 1.5,
+      "fiberG": 0.8,
+      "sugarG": 1.0,
+      "sodiumMg": 600
+    }
+  },
+  {
+    "id": "oat_milk_sweetened",
+    "name": "Oat milk, sweetened",
+    "aliases": ["sweetened oat milk"],
+    "state": "fluid",
+    "nutrientsPer100g": {
+      "caloriesKcal": 60,
+      "proteinG": 1.0,
+      "carbohydrateG": 9.0,
+      "fatG": 2.0,
+      "fiberG": 0.8,
+      "sugarG": 5.0,
+      "sodiumMg": 45
+    }
+  },
+  {
+    "id": "protein_bar",
+    "name": "Protein bar",
+    "aliases": ["protein bar", "energy bar"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 350,
+      "proteinG": 25.0,
+      "carbohydrateG": 40.0,
+      "fatG": 12.0,
+      "fiberG": 8.0,
+      "sugarG": 15.0,
+      "sodiumMg": 250
+    }
+  },
+  {
+    "id": "trail_mix",
+    "name": "Trail mix",
+    "aliases": ["trail mix"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 462,
+      "proteinG": 14.0,
+      "carbohydrateG": 44.0,
+      "fatG": 30.0,
+      "fiberG": 6.0,
+      "sugarG": 24.0,
+      "sodiumMg": 100
+    }
+  },
+  {
+    "id": "beef_jerky",
+    "name": "Beef jerky",
+    "aliases": ["beef jerky", "jerky"],
+    "state": "dried",
+    "nutrientsPer100g": {
+      "caloriesKcal": 410,
+      "proteinG": 33.0,
+      "carbohydrateG": 11.0,
+      "fatG": 25.0,
+      "fiberG": 0,
+      "sugarG": 9.0,
+      "sodiumMg": 2080
+    }
+  },
+  {
+    "id": "seaweed_snack",
+    "name": "Seaweed snack",
+    "aliases": ["seaweed", "seaweed snack"],
+    "state": "ready_to_eat",
+    "nutrientsPer100g": {
+      "caloriesKcal": 350,
+      "proteinG": 25.0,
+      "carbohydrateG": 40.0,
+      "fatG": 5.0,
+      "fiberG": 30.0,
+      "sugarG": 0,
+      "sodiumMg": 900
+    }
+  },
+  {
+    "id": "instant_noodles",
+    "name": "Instant noodles, cooked",
+    "aliases": ["instant noodles", "ramen", "cooked ramen"],
+    "state": "cooked",
+    "nutrientsPer100g": {
+      "caloriesKcal": 138,
+      "proteinG": 4.5,
+      "carbohydrateG": 18.0,
+      "fatG": 5.5,
+      "fiberG": 1.0,
+      "sugarG": 1.0,
+      "sodiumMg": 700
+    }
+  }
+]

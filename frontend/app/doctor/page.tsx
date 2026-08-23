@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { ApiError } from "@/lib/api/client";
 import * as doctorApi from "@/lib/api/doctor";
+import * as foodGalleryApi from "@/lib/api/foodGallery";
+import type { FoodGalleryEntry } from "@/lib/api/foodGallery";
 import type {
   DietaryLimitType,
   DietaryLimitUnit,
@@ -75,6 +77,7 @@ function DoctorPageInner() {
   const [busy, setBusy] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [foodGallery, setFoodGallery] = useState<FoodGalleryEntry[]>([]);
 
   const [linkPatientId, setLinkPatientId] = useState("");
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
@@ -83,13 +86,17 @@ function DoctorPageInner() {
   const [editingLimitId, setEditingLimitId] = useState<string | null>(null);
   const [recommendationDraft, setRecommendationDraft] =
     useState<RecommendationDraft>(EMPTY_RECOMMENDATION);
-  const [editingRecommendationId, setEditingRecommendationId] = useState<string | null>(null);
+  const [editingRecommendationId, setEditingRecommendationId] = useState<
+    string | null
+  >(null);
 
   const loadPatients = useCallback(async () => {
     const list = await doctorApi.listMyPatients();
     setPatients(list);
     setSelectedPatientId((current) =>
-      list.some((patient) => patient.id === current) ? current : list[0]?.id || ""
+      list.some((patient) => patient.id === current)
+        ? current
+        : list[0]?.id || "",
     );
   }, []);
 
@@ -112,9 +119,29 @@ function DoctorPageInner() {
       setCustomConditions(custom.join(", "));
       setError(null);
     } catch (caught) {
-      setError(caught instanceof ApiError ? caught.message : "Could not load patient plan");
+      setError(
+        caught instanceof ApiError
+          ? caught.message
+          : "Could not load patient plan",
+      );
     } finally {
       setPlanLoading(false);
+    }
+  }, []);
+
+  const loadFoodGallery = useCallback(async (patientId: string) => {
+    if (!patientId) {
+      setFoodGallery([]);
+      return;
+    }
+    try {
+      setFoodGallery(await foodGalleryApi.listPatientFoodGallery(patientId));
+    } catch (caught) {
+      setError(
+        caught instanceof ApiError
+          ? caught.message
+          : "Could not load patient food photos",
+      );
     }
   }, []);
 
@@ -125,7 +152,11 @@ function DoctorPageInner() {
         await loadPatients();
       } catch (caught) {
         if (!cancelled) {
-          setError(caught instanceof ApiError ? caught.message : "Could not load linked patients");
+          setError(
+            caught instanceof ApiError
+              ? caught.message
+              : "Could not load linked patients",
+          );
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -141,6 +172,12 @@ function DoctorPageInner() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadPlan(selectedPatientId);
   }, [loadPlan, selectedPatientId]);
+
+  useEffect(() => {
+    // Selection changes intentionally trigger a remote gallery load.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void loadFoodGallery(selectedPatientId);
+  }, [loadFoodGallery, selectedPatientId]);
 
   function beginAction(key: string) {
     setBusy(key);
@@ -207,7 +244,11 @@ function DoctorPageInner() {
     };
     try {
       if (editingLimitId) {
-        await doctorApi.updateDietaryLimit(selectedPatientId, editingLimitId, input);
+        await doctorApi.updateDietaryLimit(
+          selectedPatientId,
+          editingLimitId,
+          input,
+        );
       } else {
         await doctorApi.createDietaryLimit(selectedPatientId, input);
       }
@@ -225,7 +266,9 @@ function DoctorPageInner() {
     if (!selectedPatientId) return;
     beginAction(`limit-${limitId}`);
     try {
-      await doctorApi.updateDietaryLimit(selectedPatientId, limitId, { enabled });
+      await doctorApi.updateDietaryLimit(selectedPatientId, limitId, {
+        enabled,
+      });
       await loadPlan(selectedPatientId);
       setStatus(enabled ? "Limit enabled" : "Limit disabled");
       setBusy(null);
@@ -267,14 +310,15 @@ function DoctorPageInner() {
       ...recommendationDraft,
       foodName: recommendationDraft.foodName.trim(),
       doctorReason: recommendationDraft.doctorReason.trim(),
-      recommendedFrequency: recommendationDraft.recommendedFrequency.trim() || undefined,
+      recommendedFrequency:
+        recommendationDraft.recommendedFrequency.trim() || undefined,
     };
     try {
       if (editingRecommendationId) {
         await doctorApi.updateFoodRecommendation(
           selectedPatientId,
           editingRecommendationId,
-          input
+          input,
         );
       } else {
         await doctorApi.createFoodRecommendation(selectedPatientId, input);
@@ -293,7 +337,10 @@ function DoctorPageInner() {
     if (!selectedPatientId) return;
     beginAction(`recommendation-${recommendationId}`);
     try {
-      await doctorApi.deleteFoodRecommendation(selectedPatientId, recommendationId);
+      await doctorApi.deleteFoodRecommendation(
+        selectedPatientId,
+        recommendationId,
+      );
       await loadPlan(selectedPatientId);
       setStatus("Food guidance removed");
       setBusy(null);
@@ -319,19 +366,32 @@ function DoctorPageInner() {
         <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-sage">
           Clinical workspace
         </p>
-        <h1 className="font-display text-4xl font-semibold text-ink sm:text-5xl">Patient care</h1>
-        <p className="mt-2 text-sm text-ink/55">Doctor-entered nutrition supervision plans</p>
+        <h1 className="font-display text-4xl font-semibold text-ink sm:text-5xl">
+          Patient care
+        </h1>
+        <p className="mt-2 text-sm text-ink/55">
+          Doctor-entered nutrition supervision plans
+        </p>
       </div>
 
-      {status && <p className="mb-3 rounded-lg bg-sage/10 px-3 py-2 text-sm text-sage">{status}</p>}
+      {status && (
+        <p className="mb-3 rounded-lg bg-sage/10 px-3 py-2 text-sm text-sage">
+          {status}
+        </p>
+      )}
       {error && (
-        <p role="alert" className="mb-3 rounded-lg bg-brick/10 px-3 py-2 text-sm text-brick">
+        <p
+          role="alert"
+          className="mb-3 rounded-lg bg-brick/10 px-3 py-2 text-sm text-brick"
+        >
           {error}
         </p>
       )}
 
       <section className="app-surface mb-5 rounded-[24px] p-5 sm:p-6">
-        <h2 className="text-lg font-semibold text-ink">Linked hospital patient</h2>
+        <h2 className="text-lg font-semibold text-ink">
+          Linked hospital patient
+        </h2>
         {loading ? (
           <p className="mt-3 text-sm text-ink/50">Loading linked patients...</p>
         ) : patients.length > 0 ? (
@@ -353,7 +413,10 @@ function DoctorPageInner() {
           <p className="mt-3 text-sm text-ink/50">No active patient links.</p>
         )}
 
-        <form onSubmit={handleLink} className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end">
+        <form
+          onSubmit={handleLink}
+          className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end"
+        >
           <div className="flex-1">
             <TextField
               label="Hospital patient user ID"
@@ -363,7 +426,9 @@ function DoctorPageInner() {
               placeholder="Patient UUID"
             />
           </div>
-          <Button type="submit" loading={busy === "link"}>Link patient</Button>
+          <Button type="submit" loading={busy === "link"}>
+            Link patient
+          </Button>
         </form>
       </section>
 
@@ -372,11 +437,16 @@ function DoctorPageInner() {
       ) : !plan ? null : (
         <>
           <section className="app-surface mb-5 rounded-[24px] p-5 sm:p-6">
-            <h2 className="text-lg font-semibold text-ink">Medical conditions</h2>
+            <h2 className="text-lg font-semibold text-ink">
+              Medical conditions
+            </h2>
             <form onSubmit={handleConditions} className="mt-4">
               <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {CONDITION_OPTIONS.map((condition) => (
-                  <label key={condition} className="flex items-center gap-2 text-sm text-ink/75">
+                  <label
+                    key={condition}
+                    className="flex items-center gap-2 text-sm text-ink/75"
+                  >
                     <input
                       type="checkbox"
                       className="accent-clay"
@@ -385,7 +455,7 @@ function DoctorPageInner() {
                         setSelectedConditions((current) =>
                           event.target.checked
                             ? [...current, condition]
-                            : current.filter((value) => value !== condition)
+                            : current.filter((value) => value !== condition),
                         )
                       }
                     />
@@ -401,7 +471,11 @@ function DoctorPageInner() {
                   placeholder="Separate multiple conditions with commas"
                 />
               </div>
-              <Button className="mt-4" type="submit" loading={busy === "conditions"}>
+              <Button
+                className="mt-4"
+                type="submit"
+                loading={busy === "conditions"}
+              >
                 Save conditions
               </Button>
             </form>
@@ -410,7 +484,9 @@ function DoctorPageInner() {
           <section className="app-surface mb-5 rounded-[24px] p-5 sm:p-6">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-ink">Daily dietary limits</h2>
+                <h2 className="text-lg font-semibold text-ink">
+                  Daily dietary limits
+                </h2>
                 <p className="mt-1 text-xs text-ink/50">
                   Current totals for {plan.date} in {plan.patient.timezone}
                 </p>
@@ -422,15 +498,29 @@ function DoctorPageInner() {
             ) : (
               <ul className="mt-4 divide-y divide-border-warm">
                 {plan.limits.map((limit) => (
-                  <li key={limit.id} className="grid gap-3 py-4 md:grid-cols-[minmax(0,1fr)_auto]">
+                  <li
+                    key={limit.id}
+                    className="grid gap-3 py-4 md:grid-cols-[minmax(0,1fr)_auto]"
+                  >
                     <div>
                       <p className="font-semibold text-ink">
-                        {limit.name}: {formatNumber(Number(limit.maximum_amount))} {limit.unit} maximum
+                        {limit.name}:{" "}
+                        {formatNumber(Number(limit.maximum_amount))}{" "}
+                        {limit.unit} maximum
                       </p>
-                      <p className={`mt-1 text-sm ${limit.exceeded ? "text-brick" : "text-ink/60"}`}>
-                        Today: {limit.current_amount === null ? "not calculated" : `${formatNumber(limit.current_amount)} ${limit.unit}`}
+                      <p
+                        className={`mt-1 text-sm ${limit.exceeded ? "text-brick" : "text-ink/60"}`}
+                      >
+                        Today:{" "}
+                        {limit.current_amount === null
+                          ? "not calculated"
+                          : `${formatNumber(limit.current_amount)} ${limit.unit}`}
                       </p>
-                      {limit.explanation && <p className="mt-1 text-xs text-ink/50">{limit.explanation}</p>}
+                      {limit.explanation && (
+                        <p className="mt-1 text-xs text-ink/50">
+                          {limit.explanation}
+                        </p>
+                      )}
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <label className="flex items-center gap-2 text-sm text-ink/65">
@@ -439,11 +529,19 @@ function DoctorPageInner() {
                           className="accent-clay"
                           checked={limit.enabled}
                           disabled={busy === `limit-${limit.id}`}
-                          onChange={(event) => void toggleLimit(limit.id, event.target.checked)}
+                          onChange={(event) =>
+                            void toggleLimit(limit.id, event.target.checked)
+                          }
                         />
                         Enabled
                       </label>
-                      <Button type="button" variant="secondary" onClick={() => editLimit(limit)}>Edit</Button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => editLimit(limit)}
+                      >
+                        Edit
+                      </Button>
                       <Button
                         type="button"
                         variant="danger"
@@ -458,7 +556,10 @@ function DoctorPageInner() {
               </ul>
             )}
 
-            <form onSubmit={handleLimit} className="mt-5 grid gap-3 border-t border-border-warm pt-5 sm:grid-cols-2">
+            <form
+              onSubmit={handleLimit}
+              className="mt-5 grid gap-3 border-t border-border-warm pt-5 sm:grid-cols-2"
+            >
               <label className="flex flex-col gap-2 text-sm font-semibold text-ink/70">
                 Type
                 <select
@@ -480,7 +581,12 @@ function DoctorPageInner() {
                 required
                 list="limit-name-options"
                 value={limitDraft.name}
-                onChange={(event) => setLimitDraft((current) => ({ ...current, name: event.target.value }))}
+                onChange={(event) =>
+                  setLimitDraft((current) => ({
+                    ...current,
+                    name: event.target.value,
+                  }))
+                }
                 placeholder="Sodium or cooking oil"
               />
               <datalist id="limit-name-options">
@@ -498,7 +604,12 @@ function DoctorPageInner() {
                 min={0.01}
                 step="any"
                 value={limitDraft.maximumAmount}
-                onChange={(event) => setLimitDraft((current) => ({ ...current, maximumAmount: event.target.value }))}
+                onChange={(event) =>
+                  setLimitDraft((current) => ({
+                    ...current,
+                    maximumAmount: event.target.value,
+                  }))
+                }
               />
               <label className="flex flex-col gap-2 text-sm font-semibold text-ink/70">
                 Unit
@@ -506,7 +617,10 @@ function DoctorPageInner() {
                   className={SELECT_CLASS}
                   value={limitDraft.unit}
                   onChange={(event) =>
-                    setLimitDraft((current) => ({ ...current, unit: event.target.value as DietaryLimitUnit }))
+                    setLimitDraft((current) => ({
+                      ...current,
+                      unit: event.target.value as DietaryLimitUnit,
+                    }))
                   }
                 >
                   <option value="mg">mg</option>
@@ -519,7 +633,12 @@ function DoctorPageInner() {
                 <TextField
                   label="Doctor explanation (optional)"
                   value={limitDraft.explanation}
-                  onChange={(event) => setLimitDraft((current) => ({ ...current, explanation: event.target.value }))}
+                  onChange={(event) =>
+                    setLimitDraft((current) => ({
+                      ...current,
+                      explanation: event.target.value,
+                    }))
+                  }
                 />
               </div>
               <label className="flex items-center gap-2 text-sm text-ink/70">
@@ -527,7 +646,12 @@ function DoctorPageInner() {
                   type="checkbox"
                   className="accent-clay"
                   checked={limitDraft.enabled}
-                  onChange={(event) => setLimitDraft((current) => ({ ...current, enabled: event.target.checked }))}
+                  onChange={(event) =>
+                    setLimitDraft((current) => ({
+                      ...current,
+                      enabled: event.target.checked,
+                    }))
+                  }
                 />
                 Enabled
               </label>
@@ -554,28 +678,48 @@ function DoctorPageInner() {
           <section className="app-surface mb-5 rounded-[24px] p-5 sm:p-6">
             <h2 className="text-lg font-semibold text-ink">Food guidance</h2>
             {plan.recommendations.length === 0 ? (
-              <p className="mt-4 text-sm text-ink/50">No food guidance added.</p>
+              <p className="mt-4 text-sm text-ink/50">
+                No food guidance added.
+              </p>
             ) : (
               <ul className="mt-4 divide-y divide-border-warm">
                 {plan.recommendations.map((recommendation) => (
-                  <li key={recommendation.id} className="grid gap-3 py-4 md:grid-cols-[minmax(0,1fr)_auto]">
+                  <li
+                    key={recommendation.id}
+                    className="grid gap-3 py-4 md:grid-cols-[minmax(0,1fr)_auto]"
+                  >
                     <div>
                       <p className="font-semibold text-ink">
-                        {recommendation.food_name} · {recommendation.recommendation_type === "avoid" ? "avoid or limit" : "consume more"}
+                        {recommendation.food_name} ·{" "}
+                        {recommendation.recommendation_type === "avoid"
+                          ? "avoid or limit"
+                          : "consume more"}
                       </p>
-                      <p className="mt-1 text-sm text-ink/60">{recommendation.doctor_reason}</p>
+                      <p className="mt-1 text-sm text-ink/60">
+                        {recommendation.doctor_reason}
+                      </p>
                       <p className="mt-1 text-xs text-ink/45">
                         {recommendation.priority} priority
-                        {recommendation.recommended_frequency ? ` · ${recommendation.recommended_frequency}` : ""}
+                        {recommendation.recommended_frequency
+                          ? ` · ${recommendation.recommended_frequency}`
+                          : ""}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button type="button" variant="secondary" onClick={() => editRecommendation(recommendation)}>Edit</Button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => editRecommendation(recommendation)}
+                      >
+                        Edit
+                      </Button>
                       <Button
                         type="button"
                         variant="danger"
                         loading={busy === `recommendation-${recommendation.id}`}
-                        onClick={() => void deleteRecommendation(recommendation.id)}
+                        onClick={() =>
+                          void deleteRecommendation(recommendation.id)
+                        }
                       >
                         Delete
                       </Button>
@@ -585,7 +729,10 @@ function DoctorPageInner() {
               </ul>
             )}
 
-            <form onSubmit={handleRecommendation} className="mt-5 grid gap-3 border-t border-border-warm pt-5 sm:grid-cols-2">
+            <form
+              onSubmit={handleRecommendation}
+              className="mt-5 grid gap-3 border-t border-border-warm pt-5 sm:grid-cols-2"
+            >
               <label className="flex flex-col gap-2 text-sm font-semibold text-ink/70">
                 List
                 <select
@@ -594,7 +741,8 @@ function DoctorPageInner() {
                   onChange={(event) =>
                     setRecommendationDraft((current) => ({
                       ...current,
-                      recommendationType: event.target.value as RecommendationType,
+                      recommendationType: event.target
+                        .value as RecommendationType,
                     }))
                   }
                 >
@@ -606,13 +754,23 @@ function DoctorPageInner() {
                 label="Food name or category"
                 required
                 value={recommendationDraft.foodName}
-                onChange={(event) => setRecommendationDraft((current) => ({ ...current, foodName: event.target.value }))}
+                onChange={(event) =>
+                  setRecommendationDraft((current) => ({
+                    ...current,
+                    foodName: event.target.value,
+                  }))
+                }
               />
               <TextField
                 label="Doctor reason"
                 required
                 value={recommendationDraft.doctorReason}
-                onChange={(event) => setRecommendationDraft((current) => ({ ...current, doctorReason: event.target.value }))}
+                onChange={(event) =>
+                  setRecommendationDraft((current) => ({
+                    ...current,
+                    doctorReason: event.target.value,
+                  }))
+                }
               />
               <label className="flex flex-col gap-2 text-sm font-semibold text-ink/70">
                 Priority
@@ -635,7 +793,12 @@ function DoctorPageInner() {
                 <TextField
                   label="Recommended frequency (optional)"
                   value={recommendationDraft.recommendedFrequency}
-                  onChange={(event) => setRecommendationDraft((current) => ({ ...current, recommendedFrequency: event.target.value }))}
+                  onChange={(event) =>
+                    setRecommendationDraft((current) => ({
+                      ...current,
+                      recommendedFrequency: event.target.value,
+                    }))
+                  }
                   placeholder="For example: once daily"
                 />
               </div>
@@ -660,9 +823,13 @@ function DoctorPageInner() {
           </section>
 
           <section className="app-surface rounded-[24px] p-5 sm:p-6">
-            <h2 className="text-lg font-semibold text-ink">Current daily totals</h2>
+            <h2 className="text-lg font-semibold text-ink">
+              Current daily totals
+            </h2>
             {plan.daily_totals.length === 0 ? (
-              <p className="mt-3 text-sm text-ink/50">No confirmed meals logged for this date.</p>
+              <p className="mt-3 text-sm text-ink/50">
+                No confirmed meals logged for this date.
+              </p>
             ) : (
               <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 {plan.daily_totals.map((total) => (
@@ -674,6 +841,48 @@ function DoctorPageInner() {
                   </div>
                 ))}
               </dl>
+            )}
+          </section>
+
+          <section className="app-surface rounded-[24px] p-5 sm:p-6">
+            <h2 className="text-lg font-semibold text-ink">
+              Patient food photos
+            </h2>
+            <p className="mt-1 text-sm text-ink/55">
+              Saved plate photos and recognition results from this patient.
+            </p>
+            {foodGallery.length === 0 ? (
+              <p className="mt-4 text-sm text-ink/50">
+                No food photos saved yet.
+              </p>
+            ) : (
+              <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+                {foodGallery.map((entry) => (
+                  <li
+                    key={entry.id}
+                    className="overflow-hidden rounded-xl border border-border-warm bg-white"
+                  >
+                    <img
+                      src={entry.image_data}
+                      alt="Patient meal plate"
+                      className="aspect-[4/3] w-full object-cover"
+                    />
+                    <div className="p-3">
+                      <p className="text-xs text-ink/50">
+                        {new Date(entry.created_at).toLocaleString()}
+                      </p>
+                      <p className="mt-1 text-sm text-ink/80">
+                        {entry.detected_foods
+                          .map(
+                            (food) =>
+                              `${food.name} (${food.estimatedQuantity}g)`,
+                          )
+                          .join(", ")}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             )}
           </section>
         </>
